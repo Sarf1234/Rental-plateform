@@ -1,9 +1,13 @@
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+export const revalidate = 0;
+
 // components/HomePosts.js
 import Link from "next/link";
 import Image from "next/image";
 import { apiRequest } from "@/lib/api";
 
-export const dynamic = "force-dynamic"; // ensures SSR
+
 
 export default async function HomePosts() {
   let posts = [];
