@@ -1,4 +1,4 @@
-import React from 'react'
+screenX
 
 const page = () => {
   return (
