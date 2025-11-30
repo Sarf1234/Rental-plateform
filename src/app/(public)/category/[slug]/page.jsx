@@ -80,6 +80,7 @@ export default async function CategoryPage({ params }) {
   }
 
   return (
+      <div className="bg-rose-300">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-20">
       {/* Category Header */}
       <h1 className="text-4xl font-extrabold text-rose-500 text-center mb-4">{category.name}</h1>
@@ -137,6 +138,7 @@ export default async function CategoryPage({ params }) {
           ))}
         </div>
       )}
+    </div>
     </div>
   );
 }

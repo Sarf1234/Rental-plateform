@@ -80,6 +80,7 @@ export default async function TagPage({ params }) {
   }
 
   return (
+    <div className="bg-rose-300">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-20">
       {/* Tag Header */}
       <h1 className="text-4xl font-extrabold text-pink-500 text-center mb-4">
@@ -139,6 +140,7 @@ export default async function TagPage({ params }) {
           ))}
         </div>
       )}
+    </div>
     </div>
   );
 }
