@@ -7,8 +7,8 @@ import { NextResponse } from "next/server";
 export async function POST(req) {
   try {
     await connectDB();
-    const body = await req.json();
-    const { email, password } = body;
+
+    const { email, password } = await req.json();
 
     if (!email || !password) {
       return NextResponse.json(
@@ -19,10 +19,7 @@ export async function POST(req) {
 
     const user = await User.findOne({ email });
     if (!user) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const match = await comparePassword(password, user.password);
@@ -33,23 +30,33 @@ export async function POST(req) {
       );
     }
 
-    // Generate token
-    const token = createToken({ id: user._id, role: user.role });
+    // IMPORTANT: Await the token
+    const token = await createToken({
+      id: user._id.toString(),
+      role: user.role,
+    });
 
-    // Create response
-    const res = NextResponse.json({ message: "Login successful" });
+    const res = NextResponse.json({
+      message: "Login successful",
+      user: {
+        id: user._id,
+        email: user.email,
+        role: user.role,
+      },
+    });
 
-    // Set cookie here
+    // Set cookie
     res.cookies.set("token", token, {
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
       path: "/",
       maxAge: 60 * 60 * 24 * 7, // 7 days
     });
 
     return res;
-
   } catch (err) {
+    console.error("LOGIN ERROR:", err);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

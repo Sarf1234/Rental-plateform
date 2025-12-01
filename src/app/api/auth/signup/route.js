@@ -1,24 +1,31 @@
 import { connectDB } from "@/lib/db";
 import User from "@/models/User";
 import { hashPassword } from "@/lib/bcrypt";
+import { createToken } from "@/lib/auth";
+import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
     await connectDB();
-    const body = await req.json();
-    const { name, email, username, password } = body;
+
+    const { name, email, username, password } = await req.json();
 
     if (!name || !email || !username || !password) {
-      return Response.json({ error: "All fields are required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "All fields are required" },
+        { status: 400 }
+      );
     }
 
-    // Check if exists
-    const exist = await User.findOne({ email });
-    if (exist) {
-      return Response.json({ error: "Email already exists" }, { status: 400 });
+    // Check if user exists
+    const exists = await User.findOne({ email });
+    if (exists) {
+      return NextResponse.json(
+        { error: "Email already exists" },
+        { status: 400 }
+      );
     }
 
-    // Hash password
     const hashed = await hashPassword(password);
 
     const user = await User.create({
@@ -28,11 +35,32 @@ export async function POST(req) {
       password: hashed,
     });
 
-    return Response.json(
-      { message: "User created successfully", user },
-      { status: 201 }
-    );
+    // OPTIONAL: Auto-login after signup
+    const token = await createToken({
+      id: user._id,
+      role: user.role,
+    });
+
+    const res = NextResponse.json({
+      message: "User created successfully",
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+      },
+    });
+
+    res.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7,
+    });
+
+    return res;
   } catch (err) {
-    return Response.json({ error: err.message }, { status: 500 });
+    console.log("SIGNUP ERROR:", err);
+    return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }
