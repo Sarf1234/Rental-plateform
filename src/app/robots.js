@@ -8,6 +8,6 @@ export default function robots() {
         disallow: ["/admin/", "/login", "/sign-up"],
       },
     ],
-    sitemap: "https://love-and-relationship.vercel.app/sitemap.xml",
+    sitemap: "https://truefeelings.in/sitemap.xml",
   };
 }
