@@ -1,6 +1,7 @@
 import { connectDB } from "@/lib/db";
 import Post from "@/models/Post";
 import Category from "@/models/Category";
+import Tag from "@/models/Tag";
 
 export async function GET(req, { params }) {
   try {
