@@ -7,7 +7,7 @@ export async function GET(req, { params }) {
   try {
     await connectDB();
     const { slug } = await params;
-
+   // import new moelas here
     const category = await Category.findOne({ slug });
     if (!category) return new Response(JSON.stringify({ success: false, message: "Category not found" }), { status: 404 });
 
