@@ -3,68 +3,86 @@ import Link from "next/link";
 
 export default function Hero() {
   return (
-    <section className="relative bg-gradient-to-br from-rose-100 via-pink-50 to-purple-50 overflow-hidden">
+    <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-indigo-50">
 
-      {/* Soft Background Glow */}
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_#ffe4e6,_#f3d1ff)] opacity-40"></div>
+      {/* subtle background pattern */}
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.12),_transparent_55%)]" />
 
-      <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-24 flex flex-col md:flex-row items-center md:justify-between gap-12">
+      <div className="relative max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 pt-24 pb-20 flex flex-col lg:flex-row items-center gap-14">
 
         {/* LEFT CONTENT */}
-        <div className="md:w-1/2 text-center md:text-left">
+        <div className="w-full lg:w-1/2 text-center lg:text-left">
 
-          {/* MAIN TITLE (Keyword Optimized) */}
-          <h1 className="text-4xl sm:text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
-            Find Clarity in Love,{" "}
-            <span className="bg-gradient-to-r from-rose-500 via-pink-500 to-fuchsia-600 bg-clip-text text-transparent">
-              Heal Your Heart
+          {/* PRIMARY H1 */}
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 leading-tight mb-6">
+            Find clarity in AI —{" "}
+            <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent">
+              tools, tutorials & practical tips
             </span>{" "}
-            & Build Better Relationships
+            that make AI useful for everyone
           </h1>
 
-          {/* SUBTEXT (High-Intent Keywords) */}
-          <p className="text-lg sm:text-xl text-gray-700 mb-8 leading-relaxed">
-            Get expert-backed <strong>relationship advice</strong>, 
-            practical <strong>dating tips</strong>, 
-            proven <strong>breakup healing guides</strong>, 
-            and emotional support designed to help you grow, heal, and love fearlessly again.
+          {/* SHORT SUBTITLE (mobile-first) */}
+          <p className="text-base sm:text-lg text-slate-600 max-w-xl mx-auto lg:mx-0 mb-6">
+            Practical, easy-to-follow AI guides, tool walkthroughs, and explainers — for beginners and busy people.
+            Learn how AI can simplify tasks, boost productivity, and keep you safe online — no coding required.
           </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row justify-center md:justify-start gap-4">
+          {/* LONG PARAGRAPH (desktop only) */}
+          <p className="hidden lg:block text-slate-500 max-w-2xl mb-8">
+            From step-by-step tutorials and tool reviews to news and practical automation ideas — IndiaAIMag shows
+            how AI works in everyday life. We test the latest tools, explain what’s safe, and give hands-on examples
+            so anyone can use AI to save time and make smarter decisions.
+          </p>
+
+          {/* CTA GROUP */}
+          <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+
+            {/* Primary */}
             <Link
               href="/blog"
-              className="px-7 py-3 bg-rose-500 text-white rounded-lg shadow-lg font-semibold hover:bg-rose-600 transition-all duration-200 text-center"
+              className="px-7 py-3 rounded-lg bg-blue-600 text-white font-semibold shadow-md hover:bg-blue-700 transition text-center"
             >
-              Explore Relationship Blogs
+              Explore AI Guides
             </Link>
 
+            {/* Secondary */}
             <Link
-              href="/tag/breakup"
-              className="px-7 py-3 border border-rose-500 text-rose-600 rounded-lg font-semibold hover:bg-rose-50 transition-all duration-200 text-center"
+              href="/tools"
+              className="px-7 py-3 rounded-lg border border-slate-300 text-slate-700 font-semibold hover:bg-slate-100 transition text-center"
             >
-              Start Healing → 
+              Try AI Tools →
             </Link>
           </div>
 
-          {/* TRUST INDICATORS */}
-          <div className="mt-8 text-gray-600 text-sm sm:text-base">
-            ❤️ Trusted by thousands seeking{" "}
-            <span className="font-semibold text-rose-600">love clarity</span>  
-            &{" "}
-            <span className="font-semibold text-rose-600">emotional healing</span>
+          {/* Micro CTA */}
+          <div className="mt-4">
+            <Link
+              href="/news"
+              className="text-sm text-blue-600 hover:text-blue-700 transition font-medium"
+            >
+              Latest AI News →
+            </Link>
+          </div>
+
+          {/* Trust Line */}
+          <div className="mt-8 text-sm text-slate-500">
+            Trusted by readers who want simple AI help —{" "}
+            <span className="font-medium text-slate-700">
+              practical, tested, and privacy-minded
+            </span>.
           </div>
         </div>
 
-        {/* RIGHT ILLUSTRATION */}
-        <div className="md:w-1/2 flex justify-center md:justify-end">
+        {/* RIGHT IMAGE */}
+        <div className="w-full lg:w-1/2 flex justify-center lg:justify-end">
           <Image
             src="https://res.cloudinary.com/dsc5aznps/image/upload/v1764423345/posts/b4h68sz4bxoy5g9tcecl.png"
-            alt="Love, relationship and emotional healing illustration"
-            width={580}
-            height={580}
+            alt="AI tools and everyday automation for people — approachable AI guide"
+            width={560}
+            height={560}
             priority
-            className="animate-float drop-shadow-xl select-none"
+            className="select-none drop-shadow-lg"
           />
         </div>
 

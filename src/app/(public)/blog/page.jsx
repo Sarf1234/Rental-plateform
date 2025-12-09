@@ -1,83 +1,98 @@
 import Link from "next/link";
 import Image from "next/image";
 import { apiRequest } from "@/lib/api";
-import { Metadata } from "next";
 
 export const dynamic = "force-dynamic";
 
-// ✅ SEO Metadata for All Blogs Page
+/* ✅ SEO Metadata */
 export const metadata = {
-  title: "All Blog Posts – Latest Articles, Guides & Stories",
+  title: "AI Blogs & Guides for Beginners – Tools, Tutorials & News | IndiaAIMag",
   description:
-    "Explore all blog posts including guides, tips, stories, and the latest updates across multiple categories. Browse fresh content updated daily.",
+    "Browse AI blogs, beginner guides, tool tutorials, automation ideas, and the latest AI news. IndiaAIMag explains AI in simple language — practical, tested, and safe.",
   openGraph: {
-    title: "All Blog Posts – Latest Articles, Guides & Stories",
+    title: "AI Blogs & Guides for Beginners | IndiaAIMag",
     description:
-      "Explore all blog posts including guides, tips, stories, and the latest updates across multiple categories.",
+      "Practical AI guides, tutorials, tools, and real-world use cases. Learn how to use AI effectively — no coding required.",
     url: "/blog",
     type: "website",
   },
 };
 
-export default async function AllPostsPage({ searchParams }) {
+export default async function AllPostsPage() {
   let posts = [];
-  let total = 0;
 
   try {
-    const res = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/posts?page=1&limit=50`);
-
-
-    posts = res.data;
-    total = res.total;
+    const res = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/posts?page=1&limit=50`
+    );
+    posts = res.data || [];
   } catch (err) {
     console.error("SSR posts fetch failed:", err);
   }
 
   return (
-    <div className="bg-rose-100">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-24">
-        
-        {/* ⭐ SEO Headline */}
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-4 text-center sm:text-left">
-          All Blog Posts & Latest Stories
+    <section className="relative bg-slate-50 overflow-hidden">
+      {/* ✅ Soft AI glow */}
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.07),_transparent_65%)]" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-20">
+
+        {/* ✅ PRIMARY SEO H1 */}
+        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
+          AI Blogs, Guides & Practical Tutorials
         </h1>
 
-        {/* ⭐ SEO supporting text */}
-        <p className="text-gray-700 max-w-2xl mb-12 text-center sm:text-left">
-          Browse all our latest blog posts, guides, tips, and trending stories. 
-          Updated daily with fresh and high-quality content across multiple categories.
+        {/* ✅ Supporting SEO paragraph */}
+        <p className="text-gray-600 max-w-3xl mb-12 text-base sm:text-lg">
+          Discover beginner-friendly AI guides, step-by-step tutorials, tool reviews,
+          automation ideas, and the latest AI news. IndiaAIMag helps you understand
+          how to use AI in real life — safely and practically.
         </p>
 
+        {/* ❌ Empty state */}
         {posts.length === 0 ? (
-          <p className="text-center text-gray-500 mt-10">No posts found.</p>
+          <p className="text-center text-gray-500 mt-10">
+            No AI articles available right now.
+          </p>
         ) : (
-          <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+
             {posts.map((post) => (
               <Link
                 key={post._id}
                 href={`/blog/${post.slug}`}
-                className="group block overflow-hidden rounded-3xl bg-gradient-to-tr from-rose-50 to-purple-50 shadow-sm border border-rose-100 hover:shadow-2xl hover:scale-105 transition-transform duration-300"
-                prefetch={true}
+                prefetch
+                className="
+                  group rounded-3xl overflow-hidden
+                  bg-white
+                  border border-gray-200
+                  hover:border-indigo-300
+                  hover:shadow-xl
+                  transition-all duration-300
+                "
               >
-                {/* Cover Image */}
-                <div className="relative w-full h-64">
+                {/* Image */}
+                <div className="relative h-56 w-full overflow-hidden">
                   <Image
                     src={post.coverImage || "/placeholder.png"}
                     alt={post.title}
                     fill
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
-                    priority
+                    sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
 
-                <div className="p-6">
+                <div className="p-5">
+
                   {/* Categories */}
                   <div className="flex flex-wrap gap-2 mb-3">
                     {post.categories?.map((cat) => (
                       <span
                         key={cat._id}
-                        className="text-xs px-3 py-1 rounded-full bg-rose-100 text-rose-700 font-medium"
+                        className="
+                          text-[11px] px-3 py-1 rounded-full
+                          bg-indigo-50 text-indigo-600 font-medium
+                        "
                       >
                         {cat.name}
                       </span>
@@ -85,26 +100,32 @@ export default async function AllPostsPage({ searchParams }) {
                   </div>
 
                   {/* Title */}
-                  <h2 className="text-lg font-bold text-gray-900 leading-snug group-hover:text-rose-500 transition-colors duration-300">
+                  <h2 className="
+                    text-lg font-semibold text-gray-900 leading-snug
+                    group-hover:text-indigo-600 transition
+                  ">
                     {post.title}
                   </h2>
 
                   {/* Excerpt */}
-                  <p className="text-gray-600 mt-3 text-sm line-clamp-3">
+                  <p className="text-gray-600 text-sm mt-3 line-clamp-3">
                     {post.excerpt}
                   </p>
 
-                  {/* Meta Info */}
+                  {/* Meta */}
                   <div className="flex justify-between items-center mt-5 text-xs text-gray-500">
-                    <span>{new Date(post.createdAt).toLocaleDateString()}</span>
+                    <span>
+                      {new Date(post.createdAt).toLocaleDateString()}
+                    </span>
                     <span>{post.readTime || 3} min read</span>
                   </div>
                 </div>
               </Link>
             ))}
+
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 }

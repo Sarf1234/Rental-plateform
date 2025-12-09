@@ -4,67 +4,16 @@ import { apiRequest } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
-// Dynamic metadata for tag pages
-export async function generateMetadata({ params }) {
-  const { slug } = await params;
-  let tag = null;
-  let posts = [];
-
-  try {
-    const res = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/tags/${slug}`);
-    tag = res.tag || res.data;
-    posts = res.data.data || [];
-  } catch (err) {
-    console.error("Failed to fetch tag metadata:", err);
-  }
-
-  if (!tag) {
-    return {
-      title: "Tag Not Found",
-      description: "This tag does not exist on TrueFeelings.",
-    };
-  }
-
-  const metaTitle = tag.title || `Posts tagged with ${tag.name}`;
-  const metaDescription = tag.description || `Explore blog posts about ${tag.name}.`;
-  const metaKeywords = tag.keywords?.join(", ") || "";
-
-  const canonicalUrl = `https://truefeelings.in/tag/${tag.slug}`;
-
-  return {
-    title: metaTitle,
-    description: metaDescription,
-    keywords: metaKeywords,
-    alternates: { canonical: canonicalUrl },
-    openGraph: {
-      title: metaTitle,
-      description: metaDescription,
-      url: canonicalUrl,
-      type: "website",
-      images: [
-        {
-          url: posts[0]?.coverImage || "/placeholder.png",
-          width: 1200,
-          height: 630,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: metaTitle,
-      description: metaDescription,
-      images: [posts[0]?.coverImage || "/placeholder.png"],
-    },
-  };
-}
-
 export default async function TagPage({ params }) {
   const { slug } = await params;
+
   let posts = [];
   let tag = null;
 
   try {
-    const res = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/tags/${slug}`);
+    const res = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/tags/${slug}`
+    );
     tag = res.tag || res.data;
     posts = res.data || [];
   } catch (err) {
@@ -73,74 +22,95 @@ export default async function TagPage({ params }) {
 
   if (!tag) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-20 text-center">
-        <h2 className="text-3xl font-bold text-gray-900">Tag not found</h2>
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 text-gray-600">
+        <h2 className="text-xl font-semibold">Tag not found</h2>
       </div>
     );
   }
 
   return (
-    <div className="bg-rose-300">
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-20">
-      {/* Tag Header */}
-      <h1 className="text-4xl font-extrabold text-pink-500 text-center mb-4">
-        #{tag.name}
-      </h1>
-      <p className="text-center text-gray-700 mb-12">{tag.description}</p>
+    <section className="min-h-screen bg-gradient-to-b from-white via-slate-50 to-slate-100 py-16">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10">
 
-      {/* Posts Grid */}
-      {posts.length === 0 ? (
-        <p className="text-center text-gray-500">No posts found for this tag.</p>
-      ) : (
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
-          {posts.map((post) => (
-            <Link
-              key={post._id}
-              href={`/blog/${post.slug}`}
-              className="group rounded-2xl overflow-hidden bg-white shadow-sm border border-pink-100 hover:shadow-xl hover:border-pink-300 transition-all duration-300"
-              prefetch={true}
-            >
-              <div className="relative w-full h-56">
-                <Image
-                  src={post.coverImage || "/placeholder.png"}
-                  alt={post.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
-                />
-              </div>
+        {/* ✅ HEADER */}
+        <header className="text-center mb-14">
+          <h1 className="text-3xl sm:text-5xl font-extrabold text-gray-900">
+            #{tag.name}
+          </h1>
 
-              <div className="p-5">
-                {/* Tags */}
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {post.tags?.map((t) => (
-                    <span
-                      key={t._id}
-                      className="text-xs px-3 py-1 rounded-full bg-pink-100 text-pink-700 font-medium"
-                    >
-                      {t.name}
+          {tag.description && (
+            <p className="mt-4 text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">
+              {tag.description}
+            </p>
+          )}
+        </header>
+
+        {/* ✅ POSTS */}
+        {posts.length === 0 ? (
+          <p className="text-center text-gray-500">
+            No articles found for this tag
+          </p>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {posts.map((post) => (
+              <Link
+                key={post._id}
+                href={`/blog/${post.slug}`}
+                className="group rounded-2xl overflow-hidden
+                bg-white border border-gray-200
+                hover:border-indigo-300
+                hover:-translate-y-1
+                hover:shadow-lg transition-all duration-300"
+              >
+                {/* Image */}
+                <div className="relative h-52">
+                  <Image
+                    src={post.coverImage || "/placeholder.png"}
+                    alt={post.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+
+                {/* Content */}
+                <div className="p-5">
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {post.tags?.map((t) => (
+                      <span
+                        key={t._id}
+                        className="text-[11px] px-3 py-1 rounded-full
+                        bg-indigo-50 text-indigo-600 font-medium"
+                      >
+                        #{t.name}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Title */}
+                  <h2 className="text-lg font-semibold text-gray-900
+                    group-hover:text-indigo-600 transition">
+                    {post.title}
+                  </h2>
+
+                  {/* Excerpt */}
+                  <p className="text-sm text-gray-600 mt-3 line-clamp-3">
+                    {post.excerpt}
+                  </p>
+
+                  {/* Meta */}
+                  <div className="flex justify-between items-center mt-5 text-xs text-gray-500">
+                    <span>
+                      {new Date(post.createdAt).toLocaleDateString()}
                     </span>
-                  ))}
+                    <span>{post.readTime || 3} min read</span>
+                  </div>
                 </div>
-
-                {/* Post Title */}
-                <h2 className="text-lg font-bold text-gray-900 leading-snug group-hover:text-pink-500 transition-colors duration-300">
-                  {post.title}
-                </h2>
-
-                {/* Excerpt */}
-                <p className="text-gray-600 mt-3 text-sm line-clamp-3">{post.excerpt}</p>
-
-                {/* Meta */}
-                <div className="flex justify-between items-center mt-4 text-xs text-gray-500">
-                  <span>{new Date(post.createdAt).toLocaleDateString()}</span>
-                  <span>{post.readTime || 3} min read</span>
-                </div>
-              </div>
-            </Link>
-          ))}
-        </div>
-      )}
-    </div>
-    </div>
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
   );
 }

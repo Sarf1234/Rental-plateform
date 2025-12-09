@@ -1,50 +1,45 @@
 import Image from "next/image";
 import Link from "next/link";
 import { apiRequest } from "@/lib/api";
-import DOMPurify from "dompurify";
 
 export const dynamic = "force-dynamic";
 
-// Generate dynamic metadata for SEO
+/* =========================
+   ✅ Dynamic SEO Metadata
+========================= */
 export async function generateMetadata({ params }) {
   const { slug } = await params;
-  let post = null;
+  let post;
 
   try {
-    const res = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/slug/${slug}`);
+    const res = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/posts/slug/${slug}`
+    );
     post = res.data;
-  } catch (error) {
-    console.error("Failed to fetch post for metadata:", error);
+  } catch {
+    return {
+      title: "AI Article Not Found | IndiaAIMag",
+      description: "This AI article does not exist.",
+    };
   }
 
-  if (!post) return { title: "Post Not Found", description: "This post does not exist." };
-
-  const metaTitle = post.metaTitle || post.title;
-  const metaDescription =
+  const title = post.metaTitle || post.title;
+  const description =
     post.metaDescription ||
     post.excerpt ||
-    post.categories?.[0]?.description ||
-    "Read this informative post about love, relationships, and personal stories.";
+    "Read practical AI guides, tutorials, tools and real-world use cases on IndiaAIMag.";
 
-  const metaKeywords =
-    post.metaKeywords?.join(", ") ||
-    post.tags?.map((t) => t.name).join(", ") ||
-    post.categories?.map((c) => c.name).join(", ");
-
-  const canonicalUrl = `https://truefeelings.in/blog/${post.slug}`;
+  const canonicalUrl = `https://indiaaimag.com/blog/${post.slug}`;
 
   return {
-    title: metaTitle,
-    description: metaDescription,
-    keywords: metaKeywords,
-    alternates: {
-      canonical: canonicalUrl,
-    },
+    title,
+    description,
+    alternates: { canonical: canonicalUrl },
     openGraph: {
-      title: metaTitle,
-      description: metaDescription,
-      url: canonicalUrl,
       type: "article",
+      url: canonicalUrl,
+      title,
+      description,
       images: [
         {
           url: post.coverImage || "/placeholder.png",
@@ -55,70 +50,74 @@ export async function generateMetadata({ params }) {
     },
     twitter: {
       card: "summary_large_image",
-      title: metaTitle,
-      description: metaDescription,
+      title,
+      description,
       images: [post.coverImage || "/placeholder.png"],
     },
   };
 }
 
+/* =========================
+   ✅ Page Layout
+========================= */
 export default async function SinglePostPage({ params }) {
   const { slug } = await params;
-
-  let post = null;
+  let post;
 
   try {
-    const res = await apiRequest(`${process.env.NEXT_PUBLIC_API_URL}/api/posts/slug/${slug}`);
+    const res = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/posts/slug/${slug}`
+    );
     post = res.data;
-    console.log(post.content)
-  } catch (error) {
-    console.error("Failed to fetch post:", error);
-  }
-//   const safeContent = DOMPurify.sanitize(post.content);
-
-  if (!post) {
+  } catch {
     return (
-      <div className="max-w-6xl mx-auto py-32 text-center">
-        <h1 className="text-3xl font-bold text-gray-700">Post not found</h1>
+      <div className="min-h-screen flex items-center justify-center bg-slate-50">
+        <h1 className="text-2xl font-semibold text-gray-700">
+          Article not found
+        </h1>
       </div>
     );
   }
 
   return (
-    <article className="min-h-screen bg-gradient-to-b from-rose-50 via-pink-50 to-purple-50 pb-20">
+    <article className="bg-slate-50 pb-20">
 
-      {/* HEADER BANNER */}
-      <section className="relative w-full h-[55vh] rounded-b-3xl overflow-hidden shadow-xl">
+      {/* ✅ HERO */}
+      <section className="relative h-[42vh] sm:h-[50vh] w-full overflow-hidden">
         <Image
           src={post.coverImage || "/placeholder.png"}
           alt={post.title}
           fill
           priority
-          className="object-cover object-center brightness-[0.8]"
+          className="object-cover object-center"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
+        {/* Soft overlay */}
+        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/40 to-transparent"></div>
 
-        <div className="absolute bottom-14 left-1/2 -translate-x-1/2 w-full max-w-5xl px-6 text-center">
-          <h1 className="text-xl sm:text-5xl font-extrabold text-white leading-tight drop-shadow-2xl">
+        <div className="absolute bottom-10 left-1/2 -translate-x-1/2 w-full max-w-5xl px-4 sm:px-6 text-center">
+          <h1 className="text-2xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 leading-tight">
             {post.title}
           </h1>
-          <p className="text-rose-100 mt-3 text-sm">
-            {new Date(post.createdAt).toLocaleDateString()} • {post.readTime || 3} min read
+
+          <p className="mt-4 text-sm text-gray-600">
+            {new Date(post.createdAt).toLocaleDateString()} ·{" "}
+            {post.readTime || 3} min read
           </p>
         </div>
       </section>
 
-      {/* CONTENT */}
-      <div className="max-w-4xl mx-auto px-0 sm:px-8 -mt-12">
-        <div className="bg-white border border-rose-100 shadow-2xl rounded-3xl py-4 sm:p-12">
+      {/* ✅ CONTENT */}
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 -mt-10">
+        <div className="bg-white border border-gray-200 rounded-3xl shadow-xl p-6 sm:p-10">
 
           {/* Categories */}
-          <div className="flex flex-wrap px-2 gap-2 mb-6 pt-8">
+          <div className="flex flex-wrap gap-2 mb-6">
             {post.categories?.map((cat) => (
               <span
                 key={cat._id}
-                className="px-3 py-1 text-xs rounded-full bg-rose-100 text-rose-700 font-medium"
+                className="text-xs px-3 py-1 rounded-full
+                  bg-indigo-50 text-indigo-600 font-medium"
               >
                 {cat.name}
               </span>
@@ -127,34 +126,44 @@ export default async function SinglePostPage({ params }) {
 
           {/* Excerpt */}
           {post.excerpt && (
-            <p className="text-lg px-2 text-gray-700 italic border-l-4 border-rose-300 pl-5 mb-10">
+            <p className="text-base sm:text-lg text-gray-700 italic border-l-4 border-indigo-500 pl-5 mb-10">
               {post.excerpt}
             </p>
           )}
 
-          {/* Main content */}
+          {/* ✅ MAIN ARTICLE CONTENT */}
           <div
             className="
               prose prose-lg max-w-none
-              prose-p:text-gray-800
-              prose-li:text-gray-800
               prose-headings:text-gray-900
-              prose-a:text-rose-600 prose-a:no-underline hover:prose-a:underline
-              prose-img:rounded-xl prose-img:shadow-md
+              prose-p:text-gray-700
+              prose-li:text-gray-700
+              prose-strong:text-gray-900
+              prose-a:text-indigo-600
+              hover:prose-a:underline
+              prose-img:rounded-xl
+              prose-img:shadow-md
             "
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
 
           {/* Tags */}
           {post.tags?.length > 0 && (
-            <div className="mt-12 px-2 pt-8 border-t border-gray-200">
-              <h3 className="font-semibold text-gray-900 mb-4 text-lg">Related Tags</h3>
+            <div className="mt-14 pt-8 border-t border-gray-200">
+              <h3 className="text-gray-800 font-semibold mb-4">
+                Related Topics
+              </h3>
               <div className="flex flex-wrap gap-2">
                 {post.tags.map((tag) => (
                   <Link
                     key={tag._id}
                     href={`/tag/${tag.slug}`}
-                    className="px-3 py-1 rounded-full text-xs bg-purple-100 text-purple-700 hover:bg-purple-200 transition"
+                    className="
+                      text-xs px-3 py-1 rounded-full
+                      bg-slate-100 text-gray-700
+                      hover:bg-indigo-50 hover:text-indigo-600
+                      transition
+                    "
                   >
                     #{tag.name}
                   </Link>
@@ -164,15 +173,17 @@ export default async function SinglePostPage({ params }) {
           )}
         </div>
 
-        {/* Back button */}
+        {/* Back */}
         <div className="text-center mt-12">
           <Link
             href="/blog"
-            className="inline-block px-7 py-3 rounded-lg bg-gradient-to-r 
-              from-rose-500 to-fuchsia-600 text-white font-semibold shadow-lg 
-              hover:shadow-xl active:scale-95 transition-all"
+            className="
+              inline-block px-6 py-3 rounded-lg
+              bg-indigo-600 text-white font-semibold
+              hover:bg-indigo-700 transition
+            "
           >
-            ← Back to Blogs
+            ← Back to AI Blogs
           </Link>
         </div>
       </div>
