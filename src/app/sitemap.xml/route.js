@@ -15,7 +15,7 @@ export async function GET() {
       Tag.find({}, "slug").lean(),
     ]);
 
-    const baseUrl = "https://india-ai-mag.vercel.app"; // Replace with your production URL
+    const baseUrl = "https://truefeelings.in"; // Replace with your production URL
 
     // Static pages
     const urls = [
