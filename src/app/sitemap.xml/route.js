@@ -15,7 +15,7 @@ export async function GET() {
       Tag.find({}, "slug").lean(),
     ]);
 
-    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://india-ai-mag.vercel.app"; // Replace with your production URL
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://indiaaimag.com"; // Replace with your production URL
 
     // Static pages
     const urls = [

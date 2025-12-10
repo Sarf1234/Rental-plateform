@@ -53,7 +53,7 @@ export default async function TagsSection() {
                 <Image
                   src={
                     tag.coverImage ||
-                    "https://res.cloudinary.com/dsc5aznps/image/upload/v1764423345/posts/b4h68sz4bxoy5g9tcecl.png"
+                    "https://res.cloudinary.com/dsc5aznps/image/upload/v1765379173/posts/jdtfk1pn0jxldibef1zf.png"
                   }
                   alt={tag.name}
                   fill

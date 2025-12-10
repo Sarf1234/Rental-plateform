@@ -77,7 +77,7 @@ export default function Hero() {
         {/* RIGHT IMAGE */}
         <div className="w-full lg:w-1/2 flex justify-center lg:justify-end">
           <Image
-            src="https://res.cloudinary.com/dsc5aznps/image/upload/v1764423345/posts/b4h68sz4bxoy5g9tcecl.png"
+            src="https://res.cloudinary.com/dsc5aznps/image/upload/v1765379173/posts/jdtfk1pn0jxldibef1zf.png"
             alt="AI tools and everyday automation for people — approachable AI guide"
             width={560}
             height={560}
