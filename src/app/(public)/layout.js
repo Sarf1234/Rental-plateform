@@ -17,7 +17,7 @@ export const metadata = {
   metadataBase: new URL("https://indiaaimag.com"),
 
   title: {
-    default: "India AI Mag – AI Prompts, ChatGPT Tools & Automation in Hinglish",
+    default: "India AI Mag – AI Prompts, ChatGPT Tools & Automation",
     template: "%s | India AI Mag",
   },
 
