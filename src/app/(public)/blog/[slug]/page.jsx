@@ -108,11 +108,11 @@ export default async function SinglePostPage({ params }) {
       </section>
 
       {/* ✅ CONTENT */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 -mt-10">
-        <div className="bg-white border border-gray-200 rounded-3xl shadow-xl p-6 sm:p-10">
+      <div className="max-w-6xl mx-auto px-0 sm:px-6 -mt-10">
+        <div className="bg-white border border-gray-200 rounded-3xl shadow-xl py-6 px-2 sm:p-10">
 
           {/* Categories */}
-          <div className="flex flex-wrap gap-2 mb-6">
+          <div className="flex flex-wrap gap-2 mb-6 mt-6">
             {post.categories?.map((cat) => (
               <span
                 key={cat._id}
