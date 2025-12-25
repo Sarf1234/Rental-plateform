@@ -14,45 +14,48 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  metadataBase: new URL("https://truefeelings.in"),
+  metadataBase: new URL("https://indiaaimag.com"),
 
   title: {
-    default: "True Feelings – Love Advice, Breakup Healing & Relationship Tips",
-    template: "%s | True Feelings"
+    default: "India AI Mag – AI Prompts, ChatGPT Tools & Automation in Hinglish",
+    template: "%s | India AI Mag",
   },
 
   description:
-    "Get real love advice, breakup healing guides, dating tips, emotional support, and self-love motivation. True Feelings helps you build healthy relationships and heal with clarity.",
+    "India AI Mag ek Hinglish AI blog hai jahan aapko milte hain best AI prompts, ChatGPT tools, image generator prompts aur automation guides – beginners aur businesses ke liye simple language me.",
 
   keywords: [
-    "relationship advice",
-    "love tips",
-    "breakup healing",
-    "self love",
-    "dating tips",
-    "communication in relationships",
-    "how to move on",
+    "india ai mag",
+    "indiaaimag",
+    "ai prompts hinglish",
+    "chatgpt prompts hinglish",
+    "ai tools india",
+    "ai tools hinglish",
+    "ai automation india",
+    "learn ai hinglish",
+    "best ai prompts india",
+    "ai blog india",
   ],
 
   // Canonical URL
   alternates: {
-    canonical: "https://truefeelings.in",
+    canonical: "https://indiaaimag.com",
   },
 
-  // Social Sharing OG Tags
+  // Open Graph (Social Sharing)
   openGraph: {
-    title: "True Feelings – Love Advice & Breakup Healing",
+    title: "India AI Mag – AI Prompts & ChatGPT Tools in Hinglish",
     description:
-      "Find emotional healing, relationship guidance, and love tips that truly help.",
-    url: "https://truefeelings.in",
-    siteName: "True Feelings",
+      "Best AI prompts, ChatGPT tools, image generation tips aur automation guides Hinglish me. India AI Mag – practical AI learning for Indian users.",
+    url: "https://indiaaimag.com",
+    siteName: "India AI Mag",
     type: "website",
     images: [
       {
-        url: "https://truefeelings.in/og-image.jpg",
+        url: "https://indiaaimag.com/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "True Feelings – Love & Relationship Guidance",
+        alt: "India AI Mag – AI Prompts, Tools & Automation in Hinglish",
       },
     ],
   },
@@ -60,11 +63,11 @@ export const metadata = {
   // Twitter Card
   twitter: {
     card: "summary_large_image",
-    title: "True Feelings – Love & Relationship Support",
+    title: "India AI Mag – AI Prompts & Tools in Hinglish",
     description:
-      "Honest love advice, breakup recovery, and emotional healing articles.",
-    images: ["https://truefeelings.in/og-image.jpg"],
-    creator: "@truefeelings",
+      "AI prompts, ChatGPT tools aur automation guides Hinglish me. Learn practical AI with India AI Mag.",
+    images: ["https://indiaaimag.com/og-image.jpg"],
+    creator: "@indiaaimag", // optional (agar handle ho)
   },
 
   // Icons
@@ -77,13 +80,13 @@ export const metadata = {
   // Manifest (PWA optional)
   manifest: "/manifest.json",
 
-  // Verification (optional—fill actual values)
+  // Verification (fill real codes later)
   verification: {
     google: "YOUR_GOOGLE_VERIFICATION_CODE",
     bing: "YOUR_BING_VERIFICATION_CODE",
   },
 
-  // Other SEO
+  // Robots
   robots: {
     index: true,
     follow: true,
