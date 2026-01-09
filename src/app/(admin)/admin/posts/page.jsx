@@ -146,12 +146,12 @@ export default function PostsList() {
                   </td>
 
                   {/* Actions */}
-                  <td className="px-4 py-3 text-right space-x-2">
+                  <td className="px-4 py-3 text-right flex justify-between gap-2">
                     <Link href={`/admin/posts/${post._id}/edit`}>
                       <Button
                         size="sm"
                         variant="outline"
-                        className="hover:border-rose-600 hover:text-rose-600"
+                        className="hover:border-rose-600 hover:text-rose-600 cursor-pointer"
                       >
                         Edit
                       </Button>
@@ -161,6 +161,7 @@ export default function PostsList() {
                       size="sm"
                       variant="destructive"
                       onClick={() => handleDelete(post._id)}
+                      className="cursor-pointer"
                     >
                       Delete
                     </Button>
