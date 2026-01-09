@@ -157,6 +157,16 @@ export default function PostsList() {
                       </Button>
                     </Link>
 
+                    <Link href={`/blog/${post.slug}`}>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="hover:border-green-600 hover:text-green-600 cursor-pointer"
+                      >
+                        view
+                      </Button>
+                    </Link>
+
                     <Button
                       size="sm"
                       variant="destructive"
