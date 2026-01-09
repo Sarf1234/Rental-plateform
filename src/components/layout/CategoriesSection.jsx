@@ -20,46 +20,78 @@ export default async function CategoriesSection() {
   if (!categories.length) return null;
 
   return (
-    <section className="relative bg-slate-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-14">
+    <section className="relative overflow-hidden bg-gradient-to-br from-slate-50 via-white to-indigo-50">
 
-        {/* Soft AI background */}
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.08),_transparent_60%)]" />
+      {/* Soft AI background glow */}
+      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.14),_transparent_65%)]" />
 
-        {/* Heading */}
-        <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-900 text-center">
-          Explore AI Categories
-        </h2>
+      <div className="max-w-7xl mx-auto px-5 sm:px-8 lg:px-12 py-20">
 
-        <p className="mt-3 text-sm sm:text-base text-gray-600 text-center max-w-2xl mx-auto">
-          Beginner-friendly AI topics, automation guides, tools, prompts and real-world AI use cases.
-        </p>
+        {/* Heading + Content */}
+        <div className="text-center max-w-3xl mx-auto">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900">
+            Explore AI Topics & Categories
+          </h2>
 
-        {/* Grid */}
-        <div className="mt-10 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+          <p className="mt-4 text-sm sm:text-base text-slate-600 leading-relaxed">
+            AI tools, tutorials, prompts, automation ideas aur real-world use cases —
+            sab kuch simple Hinglish me. Beginner ho ya working professional,
+            IndiaAIMag ke AI categories aapko step-by-step guide karti hain.
+          </p>
+        </div>
+
+        {/* Categories Grid */}
+        <div className="mt-14 grid grid-cols-auto sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
+
           {categories.map((cat) => (
             <Link
               key={cat._id}
               href={`/category/${cat.slug}`}
               prefetch={false}
               className="
-                group rounded-xl px-4 py-3
-                bg-white
-                border border-gray-200
-                text-sm font-medium text-gray-800 text-center
+                group relative
+                rounded-2xl px-4 py-4
+                bg-white/70 backdrop-blur
+                border border-slate-200
+                text-sm font-semibold text-slate-800 text-center
                 shadow-sm
+                transition-all duration-300 ease-out
+                hover:-translate-y-1
+                hover:shadow-xl
                 hover:border-indigo-400
-                hover:shadow-md
-                hover:-translate-y-0.5
-                transition-all duration-200
-                active:scale-[0.98]
+                active:scale-[0.97]
               "
             >
-              <span className="relative z-10 group-hover:text-indigo-600 transition">
+              {/* Hover Gradient Glow */}
+              <span
+                className="
+                  absolute inset-0 rounded-2xl
+                  bg-gradient-to-br from-indigo-500/10 to-violet-500/10
+                  opacity-0 group-hover:opacity-100
+                  transition-opacity duration-300
+                "
+              />
+
+              {/* Category Name */}
+              <span className="relative z-10 whitespace-nowrap overflow-x-hidden group-hover:text-indigo-600 transition-colors">
                 {cat.name}
               </span>
+
+              {/* Micro hint (UX + SEO) */}
+              {/* <span className="relative z-10 mt-1 block text-[11px] text-slate-500 group-hover:text-indigo-500 transition">
+                View guides →
+              </span> */}
             </Link>
           ))}
+
+        </div>
+
+        {/* Bottom trust line */}
+        <div className="mt-14 text-center text-sm text-slate-500">
+          Learn AI the practical way —{" "}
+          <span className="font-medium text-slate-700">
+            tested tools, real examples, and beginner-friendly guides
+          </span>.
         </div>
 
       </div>

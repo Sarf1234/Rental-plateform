@@ -17,76 +17,72 @@ export const metadata = {
   metadataBase: new URL("https://indiaaimag.com"),
 
   title: {
-    default: "India AI Mag – AI Prompts, ChatGPT Tools & Automation",
-    template: "%s | India AI Mag",
+    default: "IndiaAIMag – AI Tools, Guides & Prompts for Beginners in India",
+    template: "%s | IndiaAIMag",
   },
 
   description:
-    "India AI Mag ek Hinglish AI blog hai jahan aapko milte hain best AI prompts, ChatGPT tools, image generator prompts aur automation guides – beginners aur businesses ke liye simple language me.",
+    "IndiaAIMag ek Hinglish AI platform hai jahan aapko milte hain practical AI tools, ChatGPT prompts, image generator tips aur automation guides — beginners aur Indian users ke liye simple language me.",
 
   keywords: [
-    "india ai mag",
     "indiaaimag",
-    "ai prompts hinglish",
-    "chatgpt prompts hinglish",
+    "india ai mag",
     "ai tools india",
-    "ai tools hinglish",
+    "ai guides for beginners",
+    "chatgpt prompts india",
+    "ai prompts hinglish",
     "ai automation india",
     "learn ai hinglish",
-    "best ai prompts india",
     "ai blog india",
   ],
 
-  // Canonical URL
   alternates: {
     canonical: "https://indiaaimag.com",
   },
 
-  // Open Graph (Social Sharing)
   openGraph: {
-    title: "India AI Mag – AI Prompts & ChatGPT Tools in Hinglish",
+    title: "IndiaAIMag – AI Tools, Guides & Prompts for India",
     description:
-      "Best AI prompts, ChatGPT tools, image generation tips aur automation guides Hinglish me. India AI Mag – practical AI learning for Indian users.",
+      "AI tools, ChatGPT prompts aur automation guides Hinglish me. IndiaAIMag helps beginners and Indian users use AI practically.",
     url: "https://indiaaimag.com",
-    siteName: "India AI Mag",
+    siteName: "IndiaAIMag",
     type: "website",
     images: [
       {
         url: "https://res.cloudinary.com/dsc5aznps/image/upload/v1767975434/posts/tbyj0t1ch4xn0enetlij.png",
         width: 1200,
         height: 630,
-        alt: "India AI Mag – AI Prompts, Tools & Automation in Hinglish",
+        alt: "IndiaAIMag – AI Tools, Guides & Prompts for Beginners",
       },
     ],
   },
 
-  // Twitter Card
   twitter: {
     card: "summary_large_image",
-    title: "India AI Mag – AI Prompts & Tools in Hinglish",
+    title: "IndiaAIMag – AI Tools & Prompts in Hinglish",
     description:
-      "AI prompts, ChatGPT tools aur automation guides Hinglish me. Learn practical AI with India AI Mag.",
-    images: ["https://res.cloudinary.com/dsc5aznps/image/upload/v1767975434/posts/tbyj0t1ch4xn0enetlij.png"],
-    creator: "@indiaaimag", // optional (agar handle ho)
+      "AI tools, ChatGPT prompts aur automation guides Hinglish me. Learn practical AI with IndiaAIMag.",
+    images: [
+      "https://res.cloudinary.com/dsc5aznps/image/upload/v1767975434/posts/tbyj0t1ch4xn0enetlij.png",
+    ],
+    creator: "@indiaaimag",
   },
 
-  // Icons
   icons: {
     icon: "https://res.cloudinary.com/dsc5aznps/image/upload/v1767975434/posts/tbyj0t1ch4xn0enetlij.png",
-    shortcut: "https://res.cloudinary.com/dsc5aznps/image/upload/v1767975434/posts/tbyj0t1ch4xn0enetlij.png",
-    apple: "https://res.cloudinary.com/dsc5aznps/image/upload/v1767975434/posts/tbyj0t1ch4xn0enetlij.png",
+    shortcut:
+      "https://res.cloudinary.com/dsc5aznps/image/upload/v1767975434/posts/tbyj0t1ch4xn0enetlij.png",
+    apple:
+      "https://res.cloudinary.com/dsc5aznps/image/upload/v1767975434/posts/tbyj0t1ch4xn0enetlij.png",
   },
 
-  // Manifest (PWA optional)
   manifest: "/manifest.json",
 
-  // Verification (fill real codes later)
   verification: {
     google: "YOUR_GOOGLE_VERIFICATION_CODE",
     bing: "YOUR_BING_VERIFICATION_CODE",
   },
 
-  // Robots
   robots: {
     index: true,
     follow: true,
@@ -96,9 +92,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-slate-900`}
+      >
         <Navbar />
-        {children}
+        <main>{children}</main>
         <Footer />
       </body>
     </html>
