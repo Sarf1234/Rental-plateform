@@ -84,9 +84,9 @@ export default function PostsList() {
             <thead className="bg-gray-50 border-b">
               <tr className="text-left text-gray-600">
                 <th className="px-4 py-3">Title</th>
-                <th className="px-4 py-3">Status</th>
+                {/* <th className="px-4 py-3">Status</th>
                 <th className="px-4 py-3">Featured</th>
-                <th className="px-4 py-3">Trending</th>
+                <th className="px-4 py-3">Trending</th> */}
                 <th className="px-4 py-3">Slug</th>
                 <th className="px-4 py-3">Created</th>
                 <th className="px-4 py-3 text-right">Actions</th>
@@ -101,12 +101,7 @@ export default function PostsList() {
                 >
                   {/* Title */}
                   <td className="px-4 py-3 font-medium text-gray-800">
-                    {post.title}
-                  </td>
-
-                  {/* Status */}
-                  <td className="px-4 py-3">
-                    {post.published ? (
+                    {post.title}  {post.isFeatured ? "Featured" : "—"} {post.isTrending ? "Trending" : "—"} {post.published ? (
                       <span className="px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-700">
                         Published
                       </span>
@@ -117,15 +112,28 @@ export default function PostsList() {
                     )}
                   </td>
 
+                  {/* Status */}
+                  {/* <td className="px-4 py-3">
+                    {post.published ? (
+                      <span className="px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-700">
+                        Published
+                      </span>
+                    ) : (
+                      <span className="px-2 py-0.5 text-xs rounded-full bg-gray-200 text-gray-600">
+                        Draft
+                      </span>
+                    )}
+                  </td> */}
+
                   {/* Featured */}
-                  <td className="px-4 py-3">
-                    {post.isFeatured ? "✅" : "—"}
-                  </td>
+                  {/* <td className="px-4 py-3">
+                    {post.isFeatured ? "Featured" : "—"}
+                  </td> */}
 
                   {/* Trending */}
-                  <td className="px-4 py-3">
-                    {post.isTrending ? "🔥" : "—"}
-                  </td>
+                  {/* <td className="px-4 py-3">
+                    {post.isTrending ? "Trending" : "—"}
+                  </td> */}
 
                   {/* Slug */}
                   <td className="px-4 py-3 font-mono text-xs text-gray-500">
