@@ -67,7 +67,12 @@ export async function GET(req) {
     // --------------------------------------------
     // SORT
     // --------------------------------------------
-    query = query.sort({ createdAt: -1 });
+    query = query.sort({
+      published: 1,     // ❗ drafts first
+      isFeatured: -1,   // ⭐ featured next
+      isTrending: -1,   // 🔥 trending next
+      createdAt: -1,    // 🕒 newest last
+    });
 
     // --------------------------------------------
     // PAGINATION
