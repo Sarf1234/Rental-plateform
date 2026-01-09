@@ -62,9 +62,6 @@ export default async function TagsSection() {
                 className="
                   group relative overflow-hidden
                   rounded-2xl
-                  bg-[#0F172A]
-                  border border-white/10
-                  hover:border-sky-400/40
                   hover:-translate-y-1
                   transition-all duration-300
                 "
