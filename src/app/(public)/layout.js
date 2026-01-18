@@ -70,12 +70,10 @@ export const metadata = {
   },
 
   icons: {
-    icon: "https://res.cloudinary.com/dsc5aznps/image/upload/v1767975434/posts/tbyj0t1ch4xn0enetlij.png",
-    shortcut:
-      "https://res.cloudinary.com/dsc5aznps/image/upload/v1767975434/posts/tbyj0t1ch4xn0enetlij.png",
-    apple:
-      "https://res.cloudinary.com/dsc5aznps/image/upload/v1767975434/posts/tbyj0t1ch4xn0enetlij.png",
-  },
+  icon: "/favicon.ico",
+  shortcut: "/favicon.ico",
+  apple: "/favicon.ico",
+},
 
   manifest: "/manifest.json",
 
