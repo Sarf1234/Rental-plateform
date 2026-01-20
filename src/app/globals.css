@@ -131,3 +131,169 @@
   will-change: transform;
 }
 
+
+@layer base {
+  /* ================================
+     CONTENT SYSTEM (BLOG / CMS)
+     ================================ */
+
+  .content {
+    line-height: 1.8;
+    color: var(--foreground);
+    font-size: 1rem;
+  }
+
+  /* -------- Headings -------- */
+  .content h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin: 2.5rem 0 1.25rem;
+    color: var(--foreground);
+  }
+
+  .content h2 {
+    font-size: 1.75rem;
+    font-weight: 600;
+    margin: 2.25rem 0 1rem;
+    color: var(--foreground);
+  }
+
+  .content h3 {
+    font-size: 1.4rem;
+    font-weight: 600;
+    margin: 2rem 0 0.75rem;
+    color: var(--foreground);
+  }
+
+  .content h4 {
+    font-size: 1.15rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.5rem;
+  }
+
+  /* -------- Paragraphs -------- */
+  .content p {
+    margin: 0.75rem 0;
+    color: var(--foreground);
+  }
+
+  /* -------- Links -------- */
+  .content a {
+    color: var(--primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-weight: 500;
+  }
+
+  .content a:hover {
+    opacity: 0.85;
+  }
+
+  /* -------- Lists -------- */
+  .content ul {
+    list-style: disc;
+    padding-left: 1.75rem;
+    margin: 1rem 0;
+  }
+
+  .content ol {
+    list-style: decimal;
+    padding-left: 1.75rem;
+    margin: 1rem 0;
+  }
+
+  .content li {
+    margin: 0.35rem 0;
+  }
+
+  /* -------- Images -------- */
+  .content img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 1.5rem auto;
+    border-radius: 0.75rem;
+  }
+
+  /* -------- Code -------- */
+  .content code {
+    background: var(--muted);
+    color: var(--foreground);
+    padding: 0.15rem 0.35rem;
+    border-radius: 0.375rem;
+    font-size: 0.9em;
+  }
+
+  .content pre {
+    background: var(--card);
+    color: var(--foreground);
+    padding: 1rem;
+    margin: 1.5rem 0;
+    border-radius: 0.75rem;
+    overflow-x: auto;
+    border: 1px solid var(--border);
+  }
+
+  .content pre code {
+    background: transparent;
+    padding: 0;
+  }
+
+  /* -------- Blockquote -------- */
+  .content blockquote {
+    margin: 1.5rem 0;
+    padding: 0.75rem 1rem;
+    border-left: 4px solid var(--primary);
+    background: var(--muted);
+    color: var(--foreground);
+    border-radius: 0.375rem;
+  }
+
+  /* -------- HR -------- */
+  .content hr {
+    margin: 2.5rem 0;
+    border: none;
+    border-top: 1px solid var(--border);
+  }
+
+  /* -------- Tables -------- */
+  .content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-size: 0.95rem;
+  }
+
+  .content th {
+    background: var(--muted);
+    font-weight: 600;
+  }
+
+  .content th,
+  .content td {
+    padding: 0.75rem;
+    border: 1px solid var(--border);
+    text-align: left;
+  }
+
+  /* -------- Generic Div Spacing -------- */
+  .content > div {
+    margin: 0.75rem 0;
+  }
+
+  /* -------- Dark Mode Fine-tuning -------- */
+  .dark .content {
+    color: var(--foreground);
+  }
+
+  .dark .content a {
+    color: var(--primary);
+  }
+
+  .dark .content pre {
+    background: var(--sidebar);
+  }
+}
+
+
+

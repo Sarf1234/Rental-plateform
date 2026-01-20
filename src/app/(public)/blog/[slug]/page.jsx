@@ -122,15 +122,7 @@ export default async function SinglePostPage({ params }) {
           {/* ================= ARTICLE BODY ================= */}
           <div
             className="
-              prose prose-lg max-w-none
-              prose-headings:text-gray-900
-              prose-p:text-gray-700
-              prose-li:text-gray-700
-              prose-strong:text-gray-900
-              prose-a:text-indigo-600
-              hover:prose-a:underline
-              prose-img:rounded-xl
-              prose-img:shadow-md
+              content
             "
             dangerouslySetInnerHTML={{ __html: post.content }}
           />
