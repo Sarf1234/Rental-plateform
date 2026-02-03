@@ -25,7 +25,7 @@ export default async function TagsSection() {
 
   try {
     const res = await apiRequest(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/tags`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/categories`
     );
     tags = res.data || [];
   } catch (err) {
@@ -42,13 +42,14 @@ export default async function TagsSection() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12">
         {/* Heading */}
         <h2 className="text-2xl sm:text-3xl font-extrabold text-gray-700 text-center mb-4">
-          Explore Topics & Tags
-        </h2>
+  Explore Rental Solutions
+</h2>
 
-        <p className="text-sm sm:text-base text-gray-500 text-center max-w-2xl mx-auto mb-12">
-          Discover AI guides, prompts, tools, automation ideas, and real-world
-          applications — organized by topic.
-        </p>
+<p className="text-sm sm:text-base text-gray-500 text-center max-w-2xl mx-auto mb-12">
+  Discover furniture, electronics, event items, office equipment and more —
+  available for short-term and long-term rental. Choose the right option
+  based on your budget, duration and usage needs.
+</p>
 
         {/* Tags Grid */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">

@@ -3,6 +3,7 @@ import "../globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { GoogleTagManager } from '@next/third-parties/google'
+import { CityProvider } from "@/context/CityContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -94,10 +95,12 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-slate-900`}
       >
-        <GoogleTagManager gtmId="GTM-KL3PXFC4" />
-        <Navbar />
-        <main>{children}</main>
-        <Footer />
+        {/* <GoogleTagManager gtmId="GTM-KL3PXFC4" /> */}
+        <CityProvider>
+          <Navbar />
+          <main>{children}</main>
+          <Footer />
+        </CityProvider>
       </body>
     </html>
   );

@@ -1,212 +1,137 @@
 export const categoriesSeed = [
   {
-    name: "AI for Beginners",
-    slug: "ai-for-beginners",
-    title: "AI for Beginners – AI Ka Use Kaise Kare (Hinglish Guide)",
+    name: "Wedding Rentals",
+    slug: "wedding-rentals",
+    title: "Wedding Rental Items – Shaadi Ke Liye Sab Kuch On Rent",
     description:
-      "Beginners ke liye simple Hinglish guides jo batati hain AI ka use kaise kare, bina coding aur bina technical confusion.",
+      "Stage decoration, tent, lighting, sofa, generator aur wedding setup items short-term rent par available.",
     keywords: [
-      "ai ka use kaise kare",
-      "ai for beginners india",
-      "ai basics hindi",
-      "learn ai hinglish",
+      "wedding items on rent",
+      "shaadi decoration on rent",
+      "tent house services",
     ],
   },
 
   {
-    name: "AI for Students",
-    slug: "ai-for-students",
-    title:
-      "AI for Students – Padhai, Assignments, Notes & Exams Me AI Ka Use",
+    name: "Birthday Party Rentals",
+    slug: "birthday-party-rentals",
+    title: "Birthday Party Items on Rent",
     description:
-      "Students ke liye practical AI guides: assignments, project reports, notes banana aur exam preparation ke liye AI ka sahi use.",
+      "Birthday decoration, balloon setup, tables, chairs aur party essentials rent kare.",
     keywords: [
-      "ai tools for students india",
-      "ai for assignments",
-      "ai for exam preparation",
-      "student ai tools",
+      "birthday decoration on rent",
+      "party items on rent",
+      "birthday setup rental",
     ],
   },
 
   {
-    name: "AI for Daily Work",
-    slug: "ai-for-daily-work",
-    title:
-      "AI for Daily Work – Office, Job & Routine Kaam Me AI Tools",
+    name: "Corporate Event Rentals",
+    slug: "corporate-event-rentals",
+    title: "Corporate & Office Event Rentals",
     description:
-      "Office work, Excel, email, resume, interview aur daily routine kaam ke liye AI ka practical use Hinglish me.",
+      "Corporate events ke liye LED screen, sound system, stage aur conference setup rentals.",
     keywords: [
-      "ai tools for daily work",
-      "ai for office work",
-      "ai for excel",
-      "ai for job",
+      "corporate event rental",
+      "conference setup on rent",
+      "led screen on rent",
     ],
   },
 
   {
-    name: "AI for Small Business",
-    slug: "ai-for-small-business",
-    title:
-      "AI for Small Business – Kirana Store, Shop & Local Business AI",
+    name: "Sound & Lighting",
+    slug: "sound-lighting-rentals",
+    title: "Sound & Lighting Equipment on Rent",
     description:
-      "Small business aur shop owners ke liye AI tools: billing, WhatsApp automation, marketing aur daily business operations.",
+      "DJ setup, speakers, mic, stage lighting aur professional sound systems rent kare.",
     keywords: [
-      "ai for small business india",
-      "ai for kirana store",
-      "ai tools for shop owners",
-      "ai business tools",
+      "dj on rent",
+      "sound system on rent",
+      "lighting on rent",
     ],
   },
 
   {
-    name: "Free AI Tools",
-    slug: "free-ai-tools",
-    title:
-      "Free AI Tools – Bina Paise AI Tools (Students, Beginners & Business)",
+    name: "Tent & Furniture Rentals",
+    slug: "tent-furniture-rentals",
+    title: "Tent, Sofa & Furniture Rentals",
     description:
-      "Free aur low-cost AI tools jo students, beginners aur small businesses daily kaam ke liye use kar sakte hain.",
+      "Tent house, chairs, tables, sofa aur event furniture short-term rent par.",
     keywords: [
-      "free ai tools",
-      "free ai tools for students",
-      "free ai tools india",
+      "tent house on rent",
+      "chair table rental",
+      "sofa on rent for event",
     ],
   },
 
   {
-    name: "No-Code AI & Automation",
-    slug: "no-code-ai-automation",
-    title:
-      "No-Code AI & Automation – Bina Coding AI Workflows Banaye",
+    name: "City Event Guides",
+    slug: "city-event-guides",
+    title: "City Wise Event Rental Guides",
     description:
-      "AI tools aur platforms jo bina coding automation, workflows aur integrations banane me madad karte hain.",
+      "Apne sheher me event rental services, pricing aur package details dekhe.",
     keywords: [
-      "no code ai",
-      "ai automation tools",
-      "build ai without code",
-      "no code workflows",
-    ],
-  },
-
-  {
-    name: "AI Tutorials & Guides",
-    slug: "ai-tutorials-guides",
-    title:
-      "AI Tutorials & Guides – Step-by-Step AI Use Karna Sikhe",
-    description:
-      "Step-by-step tutorials aur practical guides jo AI tools ko effectively use karna sikhate hain.",
-    keywords: [
-      "ai tutorials",
-      "how to use ai",
-      "ai guides",
-      "learn ai step by step",
-    ],
-  },
-
-  {
-    name: "AI Reality Check",
-    slug: "ai-reality-check",
-    title:
-      "AI Reality Check – Trends, Risks, Limitations & Future Impact",
-    description:
-      "AI ke trends, risks, limitations aur future impact ko simple Hinglish me samjhaane wali category.",
-    keywords: [
-      "ai trends india",
-      "ai risks",
-      "ai future impact",
-      "ai jobs impact",
+      "event rental in patna",
+      "event rental in delhi",
+      "party rental near me",
     ],
   },
 ];
 
 
+
 export const tagsSeed = [
-  {
-    name: "Beginner Guide",
-    slug: "beginner-guide",
-    title: "Beginner Guide – AI Content for New Users",
-    description:
-      "Introductory AI content jo beginners ko zero se AI samajhne aur use karne me madad karta hai.",
-    keywords: ["ai beginner guide", "ai for beginners", "learn ai basics"],
-  },
+  { name: "Short Term Rental", slug: "short-term-rental" },
+  { name: "1 Day Rental", slug: "1-day-rental" },
+  { name: "Wedding Setup", slug: "wedding-setup" },
+  { name: "Birthday Setup", slug: "birthday-setup" },
+  { name: "Corporate Events", slug: "corporate-events" },
+  { name: "Budget Packages", slug: "budget-packages" },
+  { name: "Premium Packages", slug: "premium-packages" },
+  { name: "Same Day Delivery", slug: "same-day-delivery" },
+  { name: "City Services", slug: "city-services" },
+];
 
-  {
-    name: "Non-Technical",
-    slug: "non-technical",
-    title: "Non-Technical – AI Without Coding",
-    description:
-      "AI content jo bina coding ya technical knowledge ke practical usage pe focus karta hai.",
-    keywords: [
-      "ai for non technical users",
-      "ai without coding",
-      "simple ai usage",
-    ],
-  },
 
-  {
-    name: "Students",
-    slug: "students",
-    title: "Students – AI for Padhai & Exams",
-    description:
-      "Students ke liye AI tools aur techniques jo padhai, assignments aur exams me help karti hain.",
-    keywords: ["ai for students", "student ai tools"],
-  },
+export const imagesLink = [
+  'https://res.cloudinary.com/dlwcvgox7/image/upload/v1770009606/posts/fnyi2xy1edn0tjb9kim9.jpg',
+  'https://res.cloudinary.com/dlwcvgox7/image/upload/v1770009642/posts/cv9ijrqqgrhjuq2rocbe.jpg',
+  'https://res.cloudinary.com/dlwcvgox7/image/upload/v1770009657/posts/kzhndpfckilkmvjecvaz.jpg',
+  'https://res.cloudinary.com/dlwcvgox7/image/upload/v1770009684/posts/wzw4ge3hjqc8pqaxnpaf.jpg',
+  'https://res.cloudinary.com/dlwcvgox7/image/upload/v1770009777/posts/xd3ftryqa4qrrqojqlva.webp',
+]
 
-  {
-    name: "Small Business",
-    slug: "small-business",
-    title: "Small Business – AI for Shop & Local Business",
-    description:
-      "Small business aur shop owners ke liye AI usage, tools aur automation ideas.",
-    keywords: ["ai for small business", "ai for shop owners"],
-  },
 
+export const carouselContent = [
   {
-    name: "Free & Accessible",
-    slug: "free-accessible",
-    title: "Free & Accessible – Free AI Tools",
-    description:
-      "Free ya low-cost AI tools jo beginners aur students easily use kar sakte hain.",
-    keywords: ["free ai tools", "accessible ai tools"],
+    title: "Book Event & Party Rentals in Your City",
+    desc: "Tent, decoration, sound system, catering aur sabhi event services ek hi jagah. Apne event ko stress-free banaye.",
+    cta: "Book Rental Services",
+    link: "https://docs.google.com/forms/d/e/1FAIpQLSex_Ai21O9OJ7C_08e4J4nYp8Ka30fAfBKzUuz5NuHZU2mnlA/viewform?usp=dialog",
   },
-
   {
-    name: "Productivity",
-    slug: "productivity",
-    title: "Productivity – AI Se Time & Effort Bachaye",
-    description:
-      "AI tools aur workflows jo productivity badhate hain aur manual work kam karte hain.",
-    keywords: [
-      "ai productivity",
-      "work efficiently with ai",
-      "ai time management",
-    ],
+    title: "Become a Vendor – Grow Your Rental Business",
+    desc: "Apni tent house, catering, DJ ya decoration service ko online laaye aur zyada customers tak pahunch badhaye.",
+    cta: "Join as Vendor",
+    link: "https://docs.google.com/forms/d/e/1FAIpQLSex_Ai21O9OJ7C_08e4J4nYp8Ka30fAfBKzUuz5NuHZU2mnlA/viewform?usp=dialog",
   },
-
   {
-    name: "Automation",
-    slug: "automation",
-    title: "Automation – Daily Kaam AI Se Automate Kare",
-    description:
-      "AI-based automation ideas jo repetitive aur boring tasks ko automate karti hain.",
-    keywords: ["ai automation", "automation using ai"],
+    title: "Affordable Wedding & Party Packages",
+    desc: "Shaadi, birthday, corporate event ya any celebration ke liye complete rental solutions – budget friendly pricing ke sath.",
+    cta: "Explore Packages",
+    link: "https://docs.google.com/forms/d/e/1FAIpQLSex_Ai21O9OJ7C_08e4J4nYp8Ka30fAfBKzUuz5NuHZU2mnlA/viewform?usp=dialog",
   },
-
   {
-    name: "Prompts & Templates",
-    slug: "prompts-templates",
-    title: "Prompts & Templates – Ready-to-Use AI Prompts",
-    description:
-      "Ready-made AI prompts aur templates jo writing, planning aur automation me kaam aate hain.",
-    keywords: ["ai prompts", "prompt templates", "chatgpt prompts"],
+    title: "Trusted Local Vendors with Verified Reviews",
+    desc: "Har service verified vendors se. Transparent pricing aur quality service ka bharosa.",
+    cta: "Find Trusted Vendors",
+    link: "https://docs.google.com/forms/d/e/1FAIpQLSex_Ai21O9OJ7C_08e4J4nYp8Ka30fAfBKzUuz5NuHZU2mnlA/viewform?usp=dialog",
   },
-
   {
-    name: "Privacy & Safety",
-    slug: "privacy-safety",
-    title: "Privacy & Safety – Responsible AI Use",
-    description:
-      "AI use karte waqt privacy, safety aur data protection se related awareness content.",
-    keywords: ["ai privacy", "ai safety", "responsible ai"],
+    title: "Complete Event Management Support",
+    desc: "Planning se lekar execution tak – decoration, lighting, catering, DJ aur manpower sab ek platform par.",
+    cta: "Plan Your Event Now",
+    link: "https://docs.google.com/forms/d/e/1FAIpQLSex_Ai21O9OJ7C_08e4J4nYp8Ka30fAfBKzUuz5NuHZU2mnlA/viewform?usp=dialog",
   },
 ];
 

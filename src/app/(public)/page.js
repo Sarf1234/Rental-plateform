@@ -6,6 +6,10 @@ import Hero from '@/components/layout/Hero'
 import HomePosts from '@/components/layout/HomePosts'
 import React from 'react'
 
+
+
+
+
 const page = () => {
   return (
     <div>

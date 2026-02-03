@@ -10,7 +10,7 @@ export default async function CategoriesSection() {
 
   try {
     const res = await apiRequest(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/categories`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/tags`
     );
     categories = res.data || [];
   } catch (err) {
@@ -29,16 +29,15 @@ export default async function CategoriesSection() {
 
         {/* Heading + Content */}
         <div className="text-center max-w-3xl mx-auto">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900">
-            Explore AI Topics & Categories
-          </h2>
+  <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900">
+    Browse Rental Categories
+  </h2>
 
-          <p className="mt-4 text-sm sm:text-base text-slate-600 leading-relaxed">
-            AI tools, tutorials, prompts, automation ideas aur real-world use cases —
-            sab kuch simple Hinglish me. Beginner ho ya working professional,
-            IndiaAIMag ke AI categories aapko step-by-step guide karti hain.
-          </p>
-        </div>
+  <p className="mt-4 text-sm sm:text-base text-slate-600 leading-relaxed">
+    Find furniture, electronics, event items, office equipment and more —
+    all available for short-term and long-term rental at affordable prices.
+  </p>
+</div>
 
         {/* Categories Grid */}
         <div className="mt-14 grid grid-cols-auto sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">
@@ -88,11 +87,11 @@ export default async function CategoriesSection() {
 
         {/* Bottom trust line */}
         <div className="mt-14 text-center text-sm text-slate-500">
-          Learn AI the practical way —{" "}
-          <span className="font-medium text-slate-700">
-            tested tools, real examples, and beginner-friendly guides
-          </span>.
-        </div>
+  Flexible plans, transparent pricing and fast delivery —{" "}
+  <span className="font-medium text-slate-700">
+    rent smart, save more.
+  </span>
+</div>
 
       </div>
     </section>
