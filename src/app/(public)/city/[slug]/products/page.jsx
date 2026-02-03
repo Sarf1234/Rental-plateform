@@ -34,10 +34,10 @@ export default async function CityHome({ params }) {
     <div className="min-h-screen mt-16">
       <HeroCarousel images={imagesLink} contents={carouselContent} />
       <Services />
-      <FlagsCards data={featured} title="Featured Services" />
-      <FlagsCards data={top} title=" Top Services" />
-      <FlagsCards data={best} title=" Best Services" />
-      <FlagsCards data={newproudct} title=" Best Services" />
+      <FlagsCards data={featured} title="Featured Services" citySlug={slug}/>
+      <FlagsCards data={top} title=" Top Services" citySlug={slug}/>
+      <FlagsCards data={best} title=" Best Services" citySlug={slug}/>
+      <FlagsCards data={newproudct} title=" Best Services" citySlug={slug}/>
 
       {/* HERO */}
       {/* <section className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-20 px-6 text-center">

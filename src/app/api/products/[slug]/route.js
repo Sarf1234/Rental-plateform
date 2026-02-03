@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Product from "@/models/Product";
+import ProductCategory from "@/models/ProductCategory";
+import ProductTag from "@/models/ProductTags";
+import City from "@/models/CityModels";
 import { requireAdmin } from "@/lib/protectRoute";
 import { createSlug } from "@/utils/createSlug";
 

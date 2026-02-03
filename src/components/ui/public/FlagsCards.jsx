@@ -1,7 +1,8 @@
 import ProductsCards from "./ProductCards";
 
 
-export default function FlagsCards({ data = [], title = "Hot Deals" }) {
+export default function FlagsCards({ data = [], title = "Hot Deals", citySlug }) {
+    console.log(citySlug)
  
   return (
     <section className="max-w-7xl mx-auto py-10">
@@ -19,6 +20,7 @@ export default function FlagsCards({ data = [], title = "Hot Deals" }) {
               <ProductsCards
                 key={service._id}
                 product={service}
+                citySlug={citySlug}
               />
             ))}
           </div>
