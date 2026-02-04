@@ -54,7 +54,7 @@ export default function ServiceCard({ service = {} }) {
     <div className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden relative">
 
       {/* Promotion Badges */}
-      <div className="absolute top-3 left-3 flex gap-2 z-10">
+      {/* <div className="absolute top-3 left-3 flex gap-2 z-10">
         {isFeatured && (
           <span className="text-xs bg-yellow-500 text-white px-2 py-1 rounded-md">
             Featured
@@ -70,7 +70,7 @@ export default function ServiceCard({ service = {} }) {
             Best
           </span>
         )}
-      </div>
+      </div> */}
 
       {/* Service Type Badge */}
       <div className="absolute top-3 right-3 z-10">
