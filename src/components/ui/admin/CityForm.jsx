@@ -36,6 +36,10 @@ export default function CityForm({
     !!initialData.seo?.noIndex
   );
 
+  const [subAreas, setSubAreas] = useState(
+  initialData.subAreas || []
+);
+
   /* ---------- GEO ---------- */
   const [lat, setLat] = useState(initialData.geo?.lat || "");
   const [lng, setLng] = useState(initialData.geo?.lng || "");
@@ -47,10 +51,10 @@ export default function CityForm({
 
   /* ---------- AUTO SLUG ---------- */
   useEffect(() => {
-    if (!initialData.slug) {
-      setSlug(createSlug(`${name}-${state}`));
-    }
-  }, [name, state]);
+  if (!initialData.slug) {
+    setSlug(createSlug(name));
+  }
+}, [name]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -61,7 +65,8 @@ export default function CityForm({
     const payload = {
       name: name.trim(),
       state: state.trim(),
-      slug: slug || createSlug(`${name}-${state}`),
+      slug: slug || createSlug(name),
+      subAreas,
       isActive,
 
       seo: {
@@ -89,6 +94,24 @@ export default function CityForm({
       setLoading(false);
     }
   }
+
+  function addSubArea() {
+  setSubAreas([
+    ...subAreas,
+    { name: "", isActive: true, priority: 0 },
+  ]);
+}
+
+function updateSubArea(index, field, value) {
+  const copy = [...subAreas];
+  copy[index][field] = value;
+  setSubAreas(copy);
+}
+
+function removeSubArea(index) {
+  setSubAreas(subAreas.filter((_, i) => i !== index));
+}
+
 
   return (
     <form onSubmit={handleSubmit} className="max-w-5xl mx-auto p-4">
@@ -118,6 +141,62 @@ export default function CityForm({
               className="mt-2"
             />
           </div>
+
+          <div className="bg-white border rounded-md p-4 shadow-sm space-y-4">
+  <div className="flex justify-between items-center">
+    <div className="text-sm font-medium text-blue-700">
+      Sub Areas
+    </div>
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      onClick={addSubArea}
+    >
+      + Add Area
+    </Button>
+  </div>
+
+  {subAreas.map((area, i) => (
+    <div key={i} className="flex gap-2 items-center">
+      <Input
+        placeholder="Area name"
+        value={area.name}
+        onChange={(e) =>
+          updateSubArea(i, "name", e.target.value)
+        }
+      />
+
+      <Input
+        type="number"
+        placeholder="Priority"
+        className="w-24"
+        value={area.priority}
+        onChange={(e) =>
+          updateSubArea(i, "priority", Number(e.target.value))
+        }
+      />
+
+      <input
+        type="checkbox"
+        checked={area.isActive}
+        onChange={(e) =>
+          updateSubArea(i, "isActive", e.target.checked)
+        }
+      />
+
+      <Button
+        type="button"
+        variant="destructive"
+        size="sm"
+        onClick={() => removeSubArea(i)}
+      >
+        ×
+      </Button>
+    </div>
+  ))}
+</div>
+
 
           <div>
             <Label className="text-sm font-medium text-blue-700">

@@ -39,7 +39,7 @@ export async function GET(req) {
     const total = await City.countDocuments(filter);
 
     const cities = await City.find(filter)
-      .select("name slug state seo isActive createdAt")
+      .select("name slug state subAreas seo isActive createdAt")
       .sort({ state: 1, name: 1 })
       .skip(skip)
       .limit(limit)
@@ -67,6 +67,7 @@ export async function POST(req) {
     await connectDB();
 
     const body = await req.json();
+    
 
     if (!body.name || !body.state) {
       return NextResponse.json(
@@ -75,24 +76,39 @@ export async function POST(req) {
       );
     }
 
-    let slug = body.slug
-      ? createSlug(body.slug)
-      : createSlug(`${body.name}-${body.state}`);
+ let slug = body.slug
+  ? createSlug(body.slug)
+  : createSlug(body.name);
 
-    const exists = await City.findOne({ slug });
-    if (exists) slug = `${slug}-${Date.now()}`;
+const exists = await City.findOne({ slug });
 
-    const city = await City.create({
-      name: body.name,
-      slug,
-      state: body.state,
+if (exists) {
+  return NextResponse.json(
+    { success: false, message: "City already exists" },
+    { status: 409 }
+  );
+}
 
-      seo: body.seo || {},
-      geo: body.geo || {},
+   const city = await City.create({
+  name: body.name,
+  slug,
+  state: body.state,
 
-      isActive:
-        body.isActive === undefined ? true : !!body.isActive,
-    });
+  subAreas: Array.isArray(body.subAreas)
+    ? body.subAreas.map((a) => ({
+        name: a.name?.trim(),
+        isActive: a.isActive !== false,
+        priority: a.priority || 0,
+      }))
+    : [],
+
+  seo: body.seo || {},
+  geo: body.geo || {},
+
+  isActive:
+    body.isActive === undefined ? true : !!body.isActive,
+});
+
 
     return NextResponse.json(
       {

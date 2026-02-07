@@ -25,6 +25,24 @@ const CitySchema = new mongoose.Schema(
       index: true,
     },
 
+    subAreas: [
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    isActive: {
+      type: Boolean,
+      default: true,
+    },
+    priority: {
+      type: Number,
+      default: 0,
+    },
+  },
+],
+
     /* ---------- SEO METADATA ---------- */
     seo: {
       metaTitle: {

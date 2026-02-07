@@ -4,7 +4,6 @@ import City from "@/models/CityModels";
 import { requireAdmin } from "@/lib/protectRoute";
 import { createSlug } from "@/utils/createSlug";
 
-
 export async function GET(req, { params }) {
   try {
     await connectDB();
@@ -19,7 +18,7 @@ export async function GET(req, { params }) {
     if (!city) {
       return NextResponse.json(
         { success: false, message: "City not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -31,11 +30,10 @@ export async function GET(req, { params }) {
     console.error("GET /api/cities/[slug] error:", err);
     return NextResponse.json(
       { success: false, message: err.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-
 
 export async function PUT(req, { params }) {
   try {
@@ -49,19 +47,24 @@ export async function PUT(req, { params }) {
     if (!city) {
       return NextResponse.json(
         { success: false, message: "City not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
     // slug update
-    if (body.slug || body.name || body.state) {
-      let newSlug = body.slug
-        ? createSlug(body.slug)
-        : createSlug(`${body.name || city.name}-${body.state || city.state}`);
+    if (body.slug || body.name) {
+      const newSlug = body.slug ? createSlug(body.slug) : createSlug(body.name);
 
       if (newSlug !== city.slug) {
         const exists = await City.findOne({ slug: newSlug });
-        if (exists) newSlug = `${newSlug}-${Date.now()}`;
+
+        if (exists) {
+          return NextResponse.json(
+            { success: false, message: "City already exists" },
+            { status: 409 },
+          );
+        }
+
         city.slug = newSlug;
       }
     }
@@ -71,6 +74,14 @@ export async function PUT(req, { params }) {
     if (body.seo !== undefined) city.seo = body.seo;
     if (body.geo !== undefined) city.geo = body.geo;
     if (body.isActive !== undefined) city.isActive = !!body.isActive;
+
+    if (Array.isArray(body.subAreas)) {
+      city.subAreas = body.subAreas.map((a) => ({
+        name: a.name?.trim(),
+        isActive: a.isActive !== false,
+        priority: a.priority || 0,
+      }));
+    }
 
     await city.save();
 
@@ -85,17 +96,16 @@ export async function PUT(req, { params }) {
     if (err.code === 11000) {
       return NextResponse.json(
         { success: false, message: "Duplicate slug" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
     return NextResponse.json(
       { success: false, message: err.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-
 
 export async function DELETE(req, { params }) {
   try {
@@ -108,7 +118,7 @@ export async function DELETE(req, { params }) {
     if (!city) {
       return NextResponse.json(
         { success: false, message: "City not found" },
-        { status: 404 }
+        { status: 404 },
       );
     }
 
@@ -123,7 +133,7 @@ export async function DELETE(req, { params }) {
     console.error("DELETE /api/cities/[slug] error:", err);
     return NextResponse.json(
       { success: false, message: err.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
