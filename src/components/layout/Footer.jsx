@@ -38,7 +38,7 @@ export default function Footer() {
 
           {/* Categories */}
           <div>
-            <h4 className="font-semibold text-gray-900 mb-4 uppercase tracking-wide text-xs">
+            <h4 className="font-semibold text-gray-900 mb-4 uppercase tracking-wide text-sm">
               Rental Categories
             </h4>
 
@@ -53,7 +53,7 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h4 className="font-semibold text-gray-900 mb-4 uppercase tracking-wide text-xs">
+            <h4 className="font-semibold text-gray-900 mb-4 uppercase tracking-wide text-sm">
               Quick Links
             </h4>
 
@@ -67,7 +67,7 @@ export default function Footer() {
 
           {/* Legal + Contact */}
           <div className="flex flex-col items-center md:items-start">
-            <h4 className="font-semibold text-gray-900 mb-4 uppercase tracking-wide text-xs">
+            <h4 className="font-semibold text-gray-900 mb-4 uppercase tracking-wide text-sm">
               Legal & Support
             </h4>
 
