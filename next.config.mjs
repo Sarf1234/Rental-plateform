@@ -29,7 +29,7 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/city/patna-bihar', // YAHAN APNA DEFAULT CITY DAAL DO
+        destination: '/city/patna', // YAHAN APNA DEFAULT CITY DAAL DO
         permanent: true, // 308 permanent redirect (SEO ke liye best)
       }
     ]
