@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
@@ -14,36 +14,27 @@ import {
   ShoppingBag,
 } from "lucide-react";
 import CitySelect from "../navbar/CitySelect";
+import { useCity } from "@/context/CityContext";
 
 /* ================= NAV ITEMS ================= */
 
 const NAV_ITEMS = [
-  { name: "Home", slug: "/", icon: <Home size={18} /> },
-  { name: "Products", slug: "/products", icon: <ShoppingBag size={18} /> },
-  { name: "Blogs", slug: "/blogs", icon: <BookOpen size={18} /> },
-  { name: "Contact Us", slug: "/contact", icon: <Phone size={18} /> },
+  { name: "Home", slug: "/" },
+  { name: "Products", slug: "/products" },
+  { name: "Blogs", slug: "/blogs" },
+  { name: "Contact Us", slug: "/contact" },
 ];
 
 export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { city, ready } = useCity();
+
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  /* ================= DETECT CITY SLUG ================= */
-
-  const citySlug = useMemo(() => {
-    if (!pathname) return null;
-
-    const parts = pathname.split("/");
-
-    if (parts[1] === "city" && parts[2]) {
-      return parts[2];
-    }
-
-    return null;
-  }, [pathname]);
+  const citySlug = city?.slug;
 
   /* ================= SCROLL EFFECT ================= */
 
@@ -53,21 +44,39 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* ================= ACTIVE STATE ================= */
+  /* ================= BUILD HREF ================= */
 
-  const isActive = (slug) => {
+  const buildHref = (slug) => {
+    if (!ready) return "#";
+
     if (slug === "/") {
-      if (citySlug) {
-        return pathname === `/city/${citySlug}`;
-      }
-      return pathname === "/";
+      return citySlug ? `/city/${citySlug}` : "/";
     }
 
     if (slug === "/products") {
-      if (citySlug) {
-        return pathname === `/city/${citySlug}/products`;
-      }
-      return pathname === "/products";
+      return citySlug
+        ? `/city/${citySlug}/products`
+        : "/products";
+    }
+
+    return slug;
+  };
+
+  /* ================= ACTIVE STATE ================= */
+
+  const isActive = (slug) => {
+    if (!ready) return false;
+
+    if (slug === "/") {
+      return citySlug
+        ? pathname === `/city/${citySlug}`
+        : pathname === "/";
+    }
+
+    if (slug === "/products") {
+      return citySlug
+        ? pathname === `/city/${citySlug}/products`
+        : pathname === "/products";
     }
 
     return pathname === slug;
@@ -84,8 +93,6 @@ export default function Navbar() {
     }
   };
 
-  /* ================= HEADER STYLE ================= */
-
   const headerStyle = `
     fixed top-0 z-50 w-full transition-all duration-300
     ${
@@ -99,9 +106,9 @@ export default function Navbar() {
     <header className={headerStyle}>
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
 
-        {/* ================= LOGO (City Aware Home) ================= */}
+        {/* ================= LOGO ================= */}
         <Link
-          href={citySlug ? `/city/${citySlug}` : "/"}
+          href={buildHref("/")}
           className="flex items-center gap-2 flex-shrink-0"
         >
           <div className="bg-blue-600 text-white p-2 rounded-lg">
@@ -135,33 +142,19 @@ export default function Navbar() {
 
           {/* ===== Desktop Nav ===== */}
           <nav className="hidden lg:flex items-center gap-2 text-sm font-medium">
-            {NAV_ITEMS.map((item) => {
-              let href = item.slug;
-
-              if (item.slug === "/") {
-                href = citySlug ? `/city/${citySlug}` : "/";
-              }
-
-              if (item.slug === "/products") {
-                href = citySlug
-                  ? `/city/${citySlug}/products`
-                  : "/products";
-              }
-
-              return (
-                <Link
-                  key={item.slug}
-                  href={href}
-                  className={`px-4 py-2 rounded-md transition ${
-                    isActive(item.slug)
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
-                  }`}
-                >
-                  {item.name}
-                </Link>
-              );
-            })}
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item.slug}
+                href={buildHref(item.slug)}
+                className={`px-4 py-2 rounded-md transition ${
+                  isActive(item.slug)
+                    ? "bg-blue-50 text-blue-600 font-semibold"
+                    : "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
           </nav>
 
           {/* ===== Desktop Login ===== */}
@@ -187,25 +180,23 @@ export default function Navbar() {
       {open && (
         <div className="fixed inset-0 z-[60] bg-white flex flex-col">
 
+          {/* Mobile Header */}
           <div className="flex items-center justify-between p-4 border-b">
             <Link
-              href={citySlug ? `/city/${citySlug}` : "/"}
-              className="flex items-center gap-2"
+              href={buildHref("/")}
               onClick={() => setOpen(false)}
+              className="flex items-center gap-2"
             >
-              <div className="bg-blue-600 text-white p-2 rounded-lg">
-                <Home size={20} />
-              </div>
-              <span className="text-lg font-bold text-gray-900">
-                Rent<span className="text-blue-600">Ease</span>
-              </span>
+              <Home size={20} />
+              <span className="font-bold">RentEase</span>
             </Link>
 
-            <button onClick={() => setOpen(false)} className="p-2">
-              <X size={24} className="text-gray-600" />
+            <button onClick={() => setOpen(false)}>
+              <X size={24} />
             </button>
           </div>
 
+          {/* Mobile Search */}
           <div className="p-4 border-b">
             <form onSubmit={handleSearch} className="relative">
               <Search
@@ -222,40 +213,25 @@ export default function Navbar() {
             </form>
           </div>
 
+          {/* Mobile Nav Links */}
           <div className="flex-1 overflow-y-auto p-4">
-            <nav className="flex flex-col gap-1">
-              {NAV_ITEMS.map((item) => {
-                let href = item.slug;
-
-                if (item.slug === "/") {
-                  href = citySlug ? `/city/${citySlug}` : "/";
-                }
-
-                if (item.slug === "/products") {
-                  href = citySlug
-                    ? `/city/${citySlug}/products`
-                    : "/products";
-                }
-
-                return (
-                  <Link
-                    key={item.slug}
-                    href={href}
-                    onClick={() => setOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition ${
-                      isActive(item.slug)
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-gray-700 hover:bg-gray-100"
-                    }`}
-                  >
-                    <span className="text-gray-500">{item.icon}</span>
-                    {item.name}
-                  </Link>
-                );
-              })}
-            </nav>
+            {NAV_ITEMS.map((item) => (
+              <Link
+                key={item.slug}
+                href={buildHref(item.slug)}
+                onClick={() => setOpen(false)}
+                className={`block px-4 py-3 rounded-lg transition ${
+                  isActive(item.slug)
+                    ? "bg-blue-50 text-blue-600"
+                    : "text-gray-700 hover:bg-gray-100"
+                }`}
+              >
+                {item.name}
+              </Link>
+            ))}
           </div>
 
+          {/* Footer */}
           <div className="border-t p-4 text-center text-sm text-gray-500">
             © {new Date().getFullYear()} RentEase. All rights reserved.
           </div>
