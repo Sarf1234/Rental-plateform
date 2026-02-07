@@ -118,6 +118,7 @@ export async function POST(req) {
     if (
       !body.title ||
       !body.description ||
+      !body.category ||
       !Array.isArray(body.providers) ||
       body.providers.length === 0
     ) {

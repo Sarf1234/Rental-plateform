@@ -312,6 +312,11 @@ export default function ServiceForm({
   const [faqs, setFaqs] = useState(
     initialData.faqs || []
   );
+  const [category, setCategory] = useState(
+    initialData.category?._id || initialData.category || ""
+  );
+
+  const [categoryList, setCategoryList] = useState([]);
 
   const [isFeatured, setIsFeatured] = useState(
     !!initialData.isFeatured
@@ -351,16 +356,18 @@ export default function ServiceForm({
   useEffect(() => {
     async function load() {
       try {
-        const [c, b, p] =
+        const [c, b, p, sc] =
           await Promise.all([
             apiRequest("/api/cities"),
             apiRequest("/api/business"),
             apiRequest("/api/products"),
+            apiRequest("/api/service-categories"),
           ]);
 
         setCities(c.data || []);
         setBusinessList(b.data || []);
         setProductList(p.data || []);
+        setCategoryList(sc.data || []);
       } catch {
         toast.error(
           "Failed to load dropdown data"
@@ -384,6 +391,7 @@ export default function ServiceForm({
     if (
       !title ||
       !description ||
+      !category ||
       providers.length === 0
     ) {
       return toast.error(
@@ -396,6 +404,7 @@ export default function ServiceForm({
       slug,
       description,
       serviceType,
+      category,
       images,
       serviceAreas,
       providers,
@@ -526,6 +535,29 @@ export default function ServiceForm({
                 </SelectContent>
               </Select>
             </div>
+
+            <div className="max-w-xs">
+  <Label className="text-sm font-medium text-rose-700">
+    Service Category *
+  </Label>
+
+  <Select
+    value={category}
+    onValueChange={setCategory}
+  >
+    <SelectTrigger className="mt-2">
+      <SelectValue placeholder="Select category" />
+    </SelectTrigger>
+    <SelectContent>
+      {categoryList.map((c) => (
+        <SelectItem key={c._id} value={c._id}>
+          {c.name}
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+</div>
+
           </div>
 
           {/* IMAGES */}

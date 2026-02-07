@@ -4,6 +4,7 @@ import Service from "@/models/Serviceproduct";
 import Business from "@/models/BusinessModel";
 import City from "@/models/CityModels";
 import Product from "@/models/Product";
+import ServiceCategory from "@/models/ServiceCategory";
 import { createSlug } from "@/utils/createSlug";
 import { requireAdmin } from "@/lib/protectRoute";
 
@@ -18,6 +19,7 @@ export async function GET(req, { params }) {
       slug,
     //   status: "published",
     })
+      .populate("category", "name slug images")
       .populate("providers", "name slug phone")
       .populate("products", "title slug")
       .populate("serviceAreas", "name slug")
@@ -85,6 +87,7 @@ export async function PUT(req, { params }) {
       "slug",
       "description",
       "serviceType",
+      "category",
       "images",
       "serviceAreas",
       "providers",

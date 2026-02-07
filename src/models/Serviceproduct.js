@@ -42,6 +42,13 @@ const ServiceSchema = new mongoose.Schema(
       index: true,
     },
 
+    category: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "ServiceCategory",
+        required: true,
+        index: true,
+      },
+
     /* ---------- MEDIA ---------- */
     images: {
       type: [String],
