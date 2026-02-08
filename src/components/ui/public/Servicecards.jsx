@@ -1,6 +1,6 @@
 import ServiceCard from "./ServiceProductCard";
 
-export default function Servicecards({ data = [], title = "Hot Deals", subtitle="" }) {
+export default function Servicecards({ data = [], title = "Hot Deals", subtitle="", citySlug }) {
 
   return (
     <section className="max-w-7xl mx-auto py-10">
@@ -23,6 +23,7 @@ export default function Servicecards({ data = [], title = "Hot Deals", subtitle=
               <ServiceCard
                 key={service._id}
                 service={service}
+                citySlug={citySlug}
               />
             ))}
           </div>

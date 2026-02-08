@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Phone, MessageCircle } from "lucide-react";
 
-export default function ServiceCard({ service = {} }) {
+export default function ServiceCard({ service = {}, citySlug }) {
   /* ---------- SAFE DEFAULT DATA ---------- */
   const {
     title = "Premium Wedding Decoration",
@@ -81,7 +81,7 @@ export default function ServiceCard({ service = {} }) {
 
       {/* Image */}
       <Link
-        href={`/services/${slug}`}
+        href={`/city/${citySlug}/${slug}`}
         className="relative block aspect-[4/3] overflow-hidden"
       >
         <Image
@@ -97,7 +97,7 @@ export default function ServiceCard({ service = {} }) {
       <div className="p-5 space-y-3">
 
         {/* Title */}
-        <Link href={`/services/${slug}`}>
+        <Link href={`/city/${citySlug}/${slug}`}>
           <h3 className="font-semibold text-base line-clamp-2 group-hover:text-blue-600 transition">
             {title}
           </h3>

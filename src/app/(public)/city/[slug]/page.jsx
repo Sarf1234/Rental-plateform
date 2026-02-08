@@ -53,18 +53,21 @@ try {
   data={featured}
   title="Featured Wedding Rentals in Patna"
   subtitle="Handpicked decoration and event rental services trusted by 500+ customers."
+  citySlug={slug}
 />
 
 <Servicecards
   data={top}
   title="Most Booked Rental Services"
   subtitle="Our top-performing and highest-rated rental packages."
+  citySlug={slug}
 />
 
 <Servicecards
   data={best}
   title="Premium & Luxury Rental Packages"
   subtitle="Exclusive high-end event setups for weddings, corporate events, and special occasions."
+  citySlug={slug}
 />
 
 

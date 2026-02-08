@@ -4,15 +4,16 @@ import { apiRequest } from '@/lib/api';
 export default async function ServiceDetailsPage({params}) {
   
 
-  const { slug } = await params;
+  const { serviceSlug } = await params;
      let featured = [];
  
      
        try {
          const res = await apiRequest(
-           `${process.env.NEXT_PUBLIC_API_URL}/api/service/${slug}`
+           `${process.env.NEXT_PUBLIC_API_URL}/api/service/${serviceSlug}`
          );
          featured = res.data || [];
+         
     
        } catch (err) {
          console.error("Failed to fetch categories:", err);
