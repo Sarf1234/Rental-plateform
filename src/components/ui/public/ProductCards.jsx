@@ -34,7 +34,7 @@ export default function ProductCard({ product, citySlug }) {
             src={image}
             alt={product.title}
             fill
-            className="object-cover group-hover:scale-105 transition duration-500"
+            className="object-fill group-hover:scale-105 transition duration-500"
           />
         </div>
       </Link>

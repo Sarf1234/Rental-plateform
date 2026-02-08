@@ -21,7 +21,7 @@ export async function GET(req, { params }) {
     })
       .populate("category", "name slug images")
       .populate("providers", "name slug phone")
-      .populate("products", "title slug")
+      .populate("products", "title slug images pricing highlights status")
       .populate("serviceAreas", "name slug")
       .lean();
 

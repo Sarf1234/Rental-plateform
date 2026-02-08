@@ -1,10 +1,11 @@
 import Image from "next/image";
 import { apiRequest } from '@/lib/api';
+import Link from "next/link";
 
 export default async function ServiceDetailsPage({params}) {
   
 
-  const { serviceSlug } = await params;
+  const { serviceSlug, slug } = await params;
      let featured = [];
  
      
@@ -38,7 +39,7 @@ export default async function ServiceDetailsPage({params}) {
 
           {/* CENTER CONTENT */}
           <div className="lg:col-span-6">
-            <CenterContent service={featured} />
+            <CenterContent service={featured}  city={slug}/>
           </div>
 
           {/* RIGHT SIDEBAR */}
@@ -133,20 +134,9 @@ function LeftSidebar({ service }) {
 
 
 
-function CenterContent({ service }) {
+function CenterContent({ service, city}) {
 
-  // Dummy rental data with images
-  const productsWithData = service.products.map((p, index) => ({
-    ...p,
-    price: 2500 + index * 1500,
-    unit: "per day",
-    image:
-      index === 0
-        ? "https://res.cloudinary.com/dlwcvgox7/image/upload/v1769848482/posts/ke2ohpcyjdey3pqpw2sx.webp"
-        : index === 1
-        ? "https://res.cloudinary.com/dlwcvgox7/image/upload/v1769848482/posts/ke2ohpcyjdey3pqpw2sx.webp"
-        : "https://res.cloudinary.com/dlwcvgox7/image/upload/v1769848482/posts/ke2ohpcyjdey3pqpw2sx.webp"
-  }));
+  
 
   return (
     <div className="space-y-12">
@@ -195,54 +185,56 @@ function CenterContent({ service }) {
 
         <div className="grid md:grid-cols-2 gap-8">
 
-          {productsWithData.map(product => (
-            <div
-              key={product._id}
-              className="group border border-gray-100 rounded-2xl overflow-hidden bg-white hover:shadow-2xl hover:-translate-y-1 transition duration-300"
-            >
+          {service.products?.map(product => {
+  const price =
+    product.pricing?.discountedPrice ||
+    product.pricing?.minPrice;
 
-              {/* Product Image */}
-              <div className="relative h-52 w-full overflow-hidden">
-                <Image
-                  src={product.image}
-                  alt={product.title}
-                  fill
-                  className="object-cover group-hover:scale-105 transition duration-500"
-                />
-              </div>
+  return (
+    <Link
+      key={product._id}
+      href={`/city/${city}/products/${product.slug}`}
+      className="group block border border-gray-100 rounded-2xl overflow-hidden bg-white hover:shadow-2xl hover:-translate-y-1 transition duration-300"
+    >
 
-              {/* Product Content */}
-              <div className="p-5 space-y-4">
+      {/* Product Image */}
+      <div className="relative h-52 w-full overflow-hidden">
+        <Image
+          src={product.images?.[0] || "/placeholder.jpg"}
+          alt={product.title}
+          fill
+          className="object-fill group-hover:scale-105 transition duration-500"
+        />
+      </div>
 
-                <h4 className="font-semibold text-gray-900 leading-snug line-clamp-2">
-                  {product.title}
-                </h4>
+      {/* Product Content */}
+      <div className="p-5 space-y-4">
 
-                {/* Price + CTA */}
-                <div className="flex items-end justify-between">
+        <h4 className="font-semibold text-gray-900 leading-snug line-clamp-2">
+          {product.title}
+        </h4>
 
-                  <div>
-                    <p className="text-xs text-gray-500">
-                      Starting From
-                    </p>
-                    <p className="text-2xl font-bold text-black">
-                      ₹{product.price}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {product.unit}
-                    </p>
-                  </div>
+        {/* Price */}
+        <div>
+          <p className="text-xs text-gray-500">
+            Starting From
+          </p>
 
-                  <button className="bg-black text-white px-4 py-2 rounded-xl text-sm font-medium hover:scale-105 transition">
-                    Rent Now
-                  </button>
+          <p className="text-2xl font-bold text-black">
+            ₹{price}
+          </p>
 
-                </div>
+          <p className="text-xs text-gray-500">
+            per {product.pricing?.unit}
+          </p>
+        </div>
 
-              </div>
+      </div>
 
-            </div>
-          ))}
+    </Link>
+  );
+})}
+
 
         </div>
       </div>
@@ -322,7 +314,7 @@ function RightSidebar({ service }) {
 
         {/* Highlight Trust Badge */}
         <div className="bg-gray-50 border rounded-xl p-4 text-center">
-          <p className="text-xs text-gray-500">Trusted by 500+ Clients</p>
+          <p className="text-xs text-gray-500">Trusted by Clients</p>
           <p className="text-sm font-semibold text-gray-900">
             Verified Event Professionals
           </p>
