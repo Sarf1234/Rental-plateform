@@ -44,14 +44,29 @@ try {
   return (
     <div className="min-h-screen mt-16">
       <HeroCarousel images={imagesLink} contents={carouselContent} />
-      <Services />
+      <Services city={slug}/>
       <ProductCategories
           categories={categories}
           citySlug={slug}
         />
-      <Servicecards data={featured} title="🔥 Featured Services" />
-      <Servicecards data={top} title="⭐ Top Services" />
-      <Servicecards data={best} title="🏆 Best Services" />
+      <Servicecards
+  data={featured}
+  title="Featured Wedding Rentals in Patna"
+  subtitle="Handpicked decoration and event rental services trusted by 500+ customers."
+/>
+
+<Servicecards
+  data={top}
+  title="Most Booked Rental Services"
+  subtitle="Our top-performing and highest-rated rental packages."
+/>
+
+<Servicecards
+  data={best}
+  title="Premium & Luxury Rental Packages"
+  subtitle="Exclusive high-end event setups for weddings, corporate events, and special occasions."
+/>
+
 
       {/* HERO */}
       {/* <section className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-20 px-6 text-center">

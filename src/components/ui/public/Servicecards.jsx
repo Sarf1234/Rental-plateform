@@ -1,15 +1,20 @@
 import ServiceCard from "./ServiceProductCard";
 
-export default function Servicecards({ data = [], title = "Hot Deals" }) {
+export default function Servicecards({ data = [], title = "Hot Deals", subtitle="" }) {
 
   return (
     <section className="max-w-7xl mx-auto py-10">
       <div className="px-4">
 
         {/* Section Header */}
-        <div className="border-b-4 border-[#003459] inline-block pb-2 mb-6">
+        <div className="border-b-4 border-[#003459] inline-block pb-2 mb-1">
           <h2 className="text-xl font-semibold">{title}</h2>
         </div>
+         {subtitle && (
+            <p className="text-gray-600 mt-2 max-w-2xl mb-4">
+              {subtitle}
+            </p>
+          )}
 
         {/* Grid */}
         {data.length > 0 ? (

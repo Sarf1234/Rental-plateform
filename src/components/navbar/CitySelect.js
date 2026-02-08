@@ -62,8 +62,9 @@ export default function CitySelect() {
     <Select
       value={city?.slug || ""}
       onValueChange={handleChange}
+      className="w-[200px] h-10 px-4 border border-gray-300 rounded-lg"
     >
-      <SelectTrigger className="w-[200px] h-10">
+      <SelectTrigger className="w-[200px] h-10 px-4 border border-gray-300 rounded-lg">
         <SelectValue placeholder="Select City" />
       </SelectTrigger>
 
