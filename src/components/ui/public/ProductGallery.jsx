@@ -18,7 +18,7 @@ export default function ProductGallery({ images = [], title }) {
           alt={title}
           fill
           priority
-          className="object-cover"
+          className="object-contain"
         />
       </div>
 
@@ -29,14 +29,14 @@ export default function ProductGallery({ images = [], title }) {
             key={i}
             onClick={() => setActiveImage(img)}
             className={`relative h-20 w-24 rounded-xl overflow-hidden border cursor-pointer transition ${
-              activeImage === img ? "ring-2 ring-black" : ""
+              activeImage === img ? "ring-1 ring-blue-200" : ""
             }`}
           >
             <Image
               src={img}
               alt="thumb"
               fill
-              className="object-cover"
+              className="object-contain"
             />
           </div>
         ))}

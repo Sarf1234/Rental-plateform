@@ -11,7 +11,7 @@ export default async function ServiceDetailsPage({params}) {
      
        try {
          const res = await apiRequest(
-           `${process.env.NEXT_PUBLIC_API_URL}/api/service/${serviceSlug}`
+           `${process.env.NEXT_PUBLIC_API_URL}/api/service/${serviceSlug}?city=${slug}`
          );
          featured = res.data || [];
          

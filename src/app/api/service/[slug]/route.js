@@ -9,20 +9,38 @@ import { createSlug } from "@/utils/createSlug";
 import { requireAdmin } from "@/lib/protectRoute";
 
 /* ================= PUBLIC DETAIL ================= */
-export async function GET(req, { params }) {
+export async function GET(req, context) {
   try {
     await connectDB();
 
+    const { params } = await context;
     const { slug } = await params;
 
-    const service = await Service.findOne({
-      slug,
-    //   status: "published",
-    })
+    // Await searchParams in Next 16
+    const { searchParams } = new URL(req.url);
+    const citySlug = searchParams.get("city");
+
+    let city = null;
+
+    if (citySlug) {
+      city = await City.findOne({ slug: citySlug }).lean();
+    }
+
+    const service = await Service.findOne({ slug })
       .populate("category", "name slug images")
-      .populate("providers", "name slug phone")
-      .populate("products", "title slug images pricing highlights status")
       .populate("serviceAreas", "name slug")
+      .populate({
+        path: "products",
+        match: { status: "published" },
+        select: "title slug images pricing highlights status"
+      })
+      .populate({
+        path: "providers",
+        match: city
+          ? { serviceAreas: city._id, status: "active" }
+          : { status: "active" },
+        select: "name slug phone serviceAreas isVerified"
+      })
       .lean();
 
     if (!service) {
@@ -42,6 +60,7 @@ export async function GET(req, { params }) {
     );
   }
 }
+
 
 /* ================= UPDATE (ADMIN) ================= */
 /* ================= UPDATE (ADMIN) ================= */

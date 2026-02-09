@@ -128,7 +128,7 @@ export default function Navbar() {
             />
             <input
               type="text"
-              placeholder="Search services or products..."
+              placeholder="Search rental products..."
               className="w-full h-10 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -160,7 +160,7 @@ export default function Navbar() {
           {/* ===== Desktop Login ===== */}
           <div className="hidden lg:flex items-center ml-4">
             <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-              <User size={18} />
+              <Phone size={18} />
               <span className="text-sm font-medium">Login</span>
             </button>
           </div>
@@ -214,22 +214,39 @@ export default function Navbar() {
           </div>
 
           {/* Mobile Nav Links */}
-          <div className="flex-1 overflow-y-auto p-4">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.slug}
-                href={buildHref(item.slug)}
-                onClick={() => setOpen(false)}
-                className={`block px-4 py-3 rounded-lg transition ${
-                  isActive(item.slug)
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-              >
-                {item.name}
-              </Link>
-            ))}
-          </div>
+          <div className="flex flex-col h-full">
+
+  {/* MENU ITEMS */}
+  <div className="flex-1 overflow-y-auto p-4 space-y-1">
+    {NAV_ITEMS.map((item) => (
+      <Link
+        key={item.slug}
+        href={buildHref(item.slug)}
+        onClick={() => setOpen(false)}
+        className={`block px-4 py-3 rounded-lg transition ${
+          isActive(item.slug)
+            ? "bg-blue-50 text-blue-600"
+            : "text-gray-700 hover:bg-gray-100"
+        }`}
+      >
+        {item.name}
+      </Link>
+    ))}
+  </div>
+
+  {/* CALL BUTTON SECTION */}
+  <div className="p-4 border-t bg-white">
+    <a
+      href="tel:8839931558"
+      onClick={() => setOpen(false)}
+      className="flex items-center justify-center gap-2 w-full bg-blue-800 text-white py-3 rounded-xl font-medium shadow-md hover:scale-[1.02] transition duration-200"
+    >
+      <Phone size={18} />
+      Call Us
+    </a>
+  </div>
+
+</div>
 
           {/* Footer */}
           <div className="border-t p-4 text-center text-sm text-gray-500">
