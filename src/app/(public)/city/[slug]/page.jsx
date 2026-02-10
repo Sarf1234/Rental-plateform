@@ -129,7 +129,7 @@ export default async function CityHome({ params }) {
       <Services
         city={cityName}
         subAreas={subAreas}
-        totalServices={totalServices}
+        totalServices={10}
       />
 
       {/* FEATURED */}

@@ -10,17 +10,21 @@ import { createSlug } from "@/utils/createSlug";
 /* =======================
    GET PRODUCT BY SLUG
 ======================= */
+
+
 export async function GET(req, { params }) {
   try {
     await connectDB();
+
     const { slug } = await params;
 
     const { searchParams } = new URL(req.url);
+    const citySlug = searchParams.get("city");
     const isAdminPreview = searchParams.get("admin") === "true";
 
     const filter = { slug };
 
-    // Public safety
+    // Future public safety
     // if (!isAdminPreview) {
     //   filter.status = "published";
     // }
@@ -38,10 +42,39 @@ export async function GET(req, { params }) {
       );
     }
 
+    let city = null;
+
+    if (citySlug) {
+      city = await City.findOne({ slug: citySlug, isActive: true })
+        .select("name slug subAreas")
+        .lean();
+
+      if (!city) {
+        return NextResponse.json(
+          { success: false, message: "City not found" },
+          { status: 404 }
+        );
+      }
+
+      // ✅ Ensure product available in that city
+      const isAvailableInCity = product.serviceAreas?.some(
+        (area) => area.slug === citySlug
+      );
+
+      if (!isAvailableInCity && !isAdminPreview) {
+        return NextResponse.json(
+          { success: false, message: "Product not available in this city" },
+          { status: 404 }
+        );
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: product,
+      city: city || null,
     });
+
   } catch (err) {
     console.error("GET /api/products/[slug] error:", err);
     return NextResponse.json(
@@ -50,6 +83,7 @@ export async function GET(req, { params }) {
     );
   }
 }
+
 
 /* =======================
    UPDATE PRODUCT (ADMIN)

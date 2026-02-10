@@ -12,25 +12,40 @@ export const dynamic = "force-dynamic";
    SEO METADATA
 ========================= */
 export async function generateMetadata({ params }) {
-  const { citySlug, productSlug } = await params;
+  const { slug, productSlug } = await params;
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productSlug}`,
-    { cache: "no-store" },
+    `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productSlug}?city=${slug}`,
+    { cache: "no-store" }
   );
 
   if (!res.ok) return {};
 
   const data = await res.json();
   const product = data?.data;
+  const city = data?.city;
 
   if (!product) return {};
 
+  const cityName = city?.name || slug;
+
   return {
-    title: product.seo?.metaTitle || product.title,
-    description: product.seo?.metaDescription || "",
+    title:
+      product.seo?.metaTitle
+        ? `${product.seo.metaTitle} in ${cityName}`
+        : `${product.title} in ${cityName}`,
+
+    description:
+      product.seo?.metaDescription
+        ? `${product.seo.metaDescription} Available in ${cityName}.`
+        : `Rent ${product.title} in ${cityName} at affordable pricing.`,
+
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_BASE_URL}/city/${slug}/products/${productSlug}`,
+    },
   };
 }
+
 
 /* =========================
    PRODUCT PAGE
@@ -39,7 +54,7 @@ export default async function ProductPage({ params }) {
   const { slug, productSlug } = await params;
 
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productSlug}`,
+    `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productSlug}?city=${slug}`,
     { cache: "no-store" },
   );
 
@@ -47,6 +62,7 @@ export default async function ProductPage({ params }) {
 
   const data = await res.json();
   const product = data?.data;
+
 
   if (!product) return notFound();
 
@@ -75,7 +91,12 @@ export default async function ProductPage({ params }) {
               citySlug={slug}
             />
           </div>
-          <ProductDescription description={description} />
+          <ProductDescription
+            description={description}
+            title={title}
+            cityData={data?.city}
+            pricing={pricing}
+          />
           <ProductFAQ faqs={faqs} />
           <ProductTerms terms={termsAndConditions} />
         </div>

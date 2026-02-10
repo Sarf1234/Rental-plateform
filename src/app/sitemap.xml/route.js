@@ -7,6 +7,7 @@ import Category from "@/models/Category";
 import Tag from "@/models/Tag";
 import City from "@/models/CityModels";
 import Service from "@/models/Serviceproduct";
+import Product from "@/models/Product"; // ✅ Added Product Model
 
 export async function GET() {
   try {
@@ -18,12 +19,17 @@ export async function GET() {
       tags,
       cities,
       services,
+      products, // ✅ Fetch products
     ] = await Promise.all([
       Post.find({}, "slug updatedAt").lean(),
       Category.find({}, "slug").lean(),
       Tag.find({}, "slug").lean(),
       City.find({ isActive: true }, "slug updatedAt").lean(),
       Service.find(
+        { status: "published" },
+        "slug serviceAreas updatedAt seo"
+      ).lean(),
+      Product.find(
         { status: "published" },
         "slug serviceAreas updatedAt seo"
       ).lean(),
@@ -34,18 +40,26 @@ export async function GET() {
       "https://yourdomain.com";
 
     const urls = [];
+    const addedUrls = new Set(); // ✅ Prevent duplicates
+
+    const pushUrl = (urlObj) => {
+      if (!addedUrls.has(urlObj.loc)) {
+        addedUrls.add(urlObj.loc);
+        urls.push(urlObj);
+      }
+    };
 
     // =========================
     // STATIC PAGES
     // =========================
-    urls.push({ loc: `${baseUrl}/` });
-    urls.push({ loc: `${baseUrl}/blog` });
+    pushUrl({ loc: `${baseUrl}/` });
+    pushUrl({ loc: `${baseUrl}/blog` });
 
     // =========================
     // BLOG
     // =========================
     posts.forEach((p) => {
-      urls.push({
+      pushUrl({
         loc: `${baseUrl}/blog/${p.slug}`,
         lastmod: p.updatedAt
           ? new Date(p.updatedAt).toISOString()
@@ -54,13 +68,13 @@ export async function GET() {
     });
 
     categories.forEach((c) => {
-      urls.push({
+      pushUrl({
         loc: `${baseUrl}/category/${c.slug}`,
       });
     });
 
     tags.forEach((t) => {
-      urls.push({
+      pushUrl({
         loc: `${baseUrl}/tag/${t.slug}`,
       });
     });
@@ -69,11 +83,16 @@ export async function GET() {
     // CITY PAGES
     // =========================
     cities.forEach((city) => {
-      urls.push({
+      pushUrl({
         loc: `${baseUrl}/city/${city.slug}`,
         lastmod: city.updatedAt
           ? new Date(city.updatedAt).toISOString()
           : null,
+      });
+
+      // ✅ City Products Listing Page
+      pushUrl({
+        loc: `${baseUrl}/city/${city.slug}/products`,
       });
     });
 
@@ -81,23 +100,44 @@ export async function GET() {
     // SERVICE PAGES (CITY-WISE)
     // =========================
     services.forEach((service) => {
-      if (service.seo && service.seo.noIndex) return;
+      if (service.seo?.noIndex) return;
 
-      service.serviceAreas &&
-        service.serviceAreas.forEach((cityId) => {
-          const city = cities.find(
-            (c) => c._id.toString() === cityId.toString()
-          );
+      service.serviceAreas?.forEach((cityId) => {
+        const city = cities.find(
+          (c) => c._id.toString() === cityId.toString()
+        );
 
-          if (city) {
-            urls.push({
-              loc: `${baseUrl}/city/${city.slug}/${service.slug}`,
-              lastmod: service.updatedAt
-                ? new Date(service.updatedAt).toISOString()
-                : null,
-            });
-          }
-        });
+        if (city) {
+          pushUrl({
+            loc: `${baseUrl}/city/${city.slug}/${service.slug}`,
+            lastmod: service.updatedAt
+              ? new Date(service.updatedAt).toISOString()
+              : null,
+          });
+        }
+      });
+    });
+
+    // =========================
+    // PRODUCT PAGES (CITY-WISE)
+    // =========================
+    products.forEach((product) => {
+      if (product.seo?.noIndex) return;
+
+      product.serviceAreas?.forEach((cityId) => {
+        const city = cities.find(
+          (c) => c._id.toString() === cityId.toString()
+        );
+
+        if (city) {
+          pushUrl({
+            loc: `${baseUrl}/city/${city.slug}/products/${product.slug}`,
+            lastmod: product.updatedAt
+              ? new Date(product.updatedAt).toISOString()
+              : null,
+          });
+        }
+      });
     });
 
     // =========================
