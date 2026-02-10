@@ -1,40 +1,56 @@
 import { Truck, Headset, ShoppingCart, RefreshCw } from "lucide-react";
 
-export default function Services({ city = "Patna" }) {
+export default function Services({
+  city = "Patna",
+  subAreas = [],
+  totalServices = 0,
+}) {
+  // Pick top 2 subareas (priority-based data already sorted from backend recommended)
+  const topAreas = subAreas.slice(0, 2).map((area) => area.name);
+
+  const areasText =
+    topAreas.length > 0
+      ? topAreas.join(" and ")
+      : `major locations in ${city}`;
+
   const services = [
     {
       icon: <Truck className="w-8 h-8 text-[#003459]" />,
       title: "On-Time Rental Delivery",
-      description: `We ensure timely delivery and professional setup of your rental products anywhere in ${city}. No delays, no last-minute surprises.`,
+      description: `We ensure timely delivery and professional setup of rental products across ${areasText}, ${city}. Our local team guarantees punctual service without last-minute surprises.`,
     },
     {
       icon: <Headset className="w-8 h-8 text-[#003459]" />,
-      title: "24/7 Customer & Event Support",
-      description:
-        "Our dedicated support team is available before, during, and after your event to assist with customization and urgent requirements.",
+      title: `Dedicated ${city} Event Support`,
+      description: `Our support team in ${city} understands local venue requirements and event logistics, ensuring smooth coordination before, during, and after your booking.`,
     },
     {
       icon: <ShoppingCart className="w-8 h-8 text-[#003459]" />,
       title: "Simple & Flexible Booking",
-      description:
-        "Book your rental items in just a few clicks with transparent pricing and flexible rental duration options.",
+      description: `Choose from ${totalServices}+ rental options available in ${city}. Book instantly with transparent pricing and flexible rental durations tailored for events in ${areasText}.`,
     },
     {
       icon: <RefreshCw className="w-8 h-8 text-[#003459]" />,
       title: "Hassle-Free Pickup & Returns",
-      description:
-        "Once your event is complete, our team handles pickup efficiently without hidden charges or unnecessary paperwork.",
+      description: `Once your event in ${city} is complete, our professional team handles pickup efficiently across ${areasText} without hidden charges or unnecessary paperwork.`,
     },
   ];
 
   return (
     <section className="py-12 md:py-16 lg:py-20 bg-gray-50">
       <div className="container mx-auto px-4">
-        
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-10">
-          Why Choose Our Services in {city}?
+
+        {/* Section Heading */}
+        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-4">
+          Why We’re Trusted for Event Rentals in {city}
         </h2>
 
+        <p className="text-center text-gray-600 max-w-2xl mx-auto mb-10">
+          Delivering reliable rental services across {areasText}, our team ensures
+          seamless event execution with professional support and transparent pricing.
+        </p>
+
+        {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
           {services.map((service, index) => (
             <div

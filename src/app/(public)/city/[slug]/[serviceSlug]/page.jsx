@@ -2,11 +2,99 @@ import Image from "next/image";
 import { apiRequest } from '@/lib/api';
 import Link from "next/link";
 
+
+export async function generateMetadata({ params }) {
+  const { serviceSlug, slug } = await params;
+
+  try {
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/service/${serviceSlug}?city=${slug}`,
+      { next: { revalidate: 3600 } }
+    );
+
+    const result = await res.json();
+
+    if (!result?.data) {
+      return {
+        title: "Service Not Found",
+        robots: { index: false, follow: false },
+      };
+    }
+
+    const service = result.data;
+    const city = result.city;
+
+    const cityName = city?.name || "";
+    const brandName = "YourBrandName"; // replace later
+
+    // Base meta from backend
+    const baseTitle =
+      service.seo?.metaTitle || service.title;
+
+    const baseDescription =
+      service.seo?.metaDescription ||
+      service.description?.replace(/<[^>]+>/g, "").slice(0, 140);
+
+    const title = `${baseTitle} in ${cityName} | ${brandName}`;
+
+    const description = `${baseDescription} Available across ${cityName}${
+      city?.subAreas?.length
+        ? ` including ${city.subAreas.slice(0, 3).map(a => a.name).join(", ")}`
+        : ""
+    }.`;
+
+    const image =
+      service.seo?.ogImage ||
+      service.images?.[0] ||
+      "/default-og.jpg";
+
+    const url = `${process.env.NEXT_PUBLIC_SITE_URL}/city/${slug}/${serviceSlug}`;
+
+    return {
+      title,
+      description,
+      alternates: {
+        canonical: url,
+      },
+      openGraph: {
+        title,
+        description,
+        url,
+        type: "website",
+        images: [
+          {
+            url: image,
+            width: 1200,
+            height: 630,
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [image],
+      },
+      robots: {
+        index: service.seo?.noIndex ? false : true,
+        follow: true,
+      },
+    };
+  } catch (error) {
+    return {
+      title: "Service",
+      description: "Rental services",
+    };
+  }
+}
+
+
 export default async function ServiceDetailsPage({params}) {
   
 
   const { serviceSlug, slug } = await params;
      let featured = [];
+     let cityData  = []
  
      
        try {
@@ -14,6 +102,8 @@ export default async function ServiceDetailsPage({params}) {
            `${process.env.NEXT_PUBLIC_API_URL}/api/service/${serviceSlug}?city=${slug}`
          );
          featured = res.data || [];
+         cityData = res.city;
+
          
     
        } catch (err) {
@@ -24,6 +114,7 @@ export default async function ServiceDetailsPage({params}) {
 
   if (!featured) return <div className="p-10">Loading...</div>;
 
+  
   return (
     <div className="min-h-screen bg-gray-50 mt-16">
 
@@ -34,12 +125,12 @@ export default async function ServiceDetailsPage({params}) {
 
           {/* LEFT SIDEBAR */}
           <div className="lg:col-span-3">
-            <LeftSidebar service={featured} />
+            <LeftSidebar service={featured} cityData={cityData} />
           </div>
 
           {/* CENTER CONTENT */}
           <div className="lg:col-span-6">
-            <CenterContent service={featured}  city={slug}/>
+            <CenterContent service={featured}  city={slug} cityData={cityData}/>
           </div>
 
           {/* RIGHT SIDEBAR */}
@@ -54,7 +145,7 @@ export default async function ServiceDetailsPage({params}) {
 }
 
 
-function LeftSidebar({ service }) {
+function LeftSidebar({ service, cityData }) {
   return (
     <div className="lg:sticky lg:top-20 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-6">
 
@@ -85,11 +176,11 @@ function LeftSidebar({ service }) {
       {/* Service Areas */}
       <div>
         <h4 className="text-sm font-semibold text-gray-800 mb-3 uppercase tracking-wide">
-          Available In
+           Available Across
         </h4>
 
         <div className="flex flex-wrap gap-2">
-          {service.serviceAreas.map(area => (
+          {cityData.subAreas.map(area => (
             <span
               key={area._id}
               className="px-3 py-1 text-xs bg-gray-100 text-gray-700 rounded-full hover:bg-black hover:text-white transition cursor-pointer"
@@ -134,7 +225,14 @@ function LeftSidebar({ service }) {
 
 
 
-function CenterContent({ service, city}) {
+function CenterContent({ service, city, cityData}) {
+  const dynamicFaq = {
+      question: `Is ${service.title} available in ${cityData?.name}?`,
+      answer: `Yes, we provide ${service.title} services across ${cityData?.name}, including ${cityData?.subAreas?.slice(0,3).map(a=>a.name).join(", ")}.`
+    };
+
+     const cityName = cityData?.name;
+  const topAreas = cityData?.subAreas?.slice(0,3).map(a => a.name).join(", ");
 
   
 
@@ -150,7 +248,7 @@ function CenterContent({ service, city}) {
           <div className="relative col-span-2 rounded-xl overflow-hidden group">
             <Image
               src={service.images[0]}
-              alt="service"
+              alt={`${service.title} setup in ${cityData?.name}`}
               fill
               className="object-cover group-hover:scale-105 transition duration-500"
             />
@@ -173,6 +271,36 @@ function CenterContent({ service, city}) {
             ))}
           </div>
         </div>
+      </div>
+
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+
+        <h1 className="text-3xl font-bold text-gray-900">
+          {service.title} in {cityName}
+        </h1>
+
+        <p className="mt-4 text-gray-600 leading-relaxed">
+          Looking for professional {service.title.toLowerCase()} in {cityName}? 
+          We provide customized and reliable setups across major areas like {topAreas}. 
+          Packages start from ₹{service.pricing?.amount}.
+        </p>
+
+      </div>
+
+      {/* ===== ORIGINAL DESCRIPTION FROM BACKEND ===== */}
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+
+        <div
+          className="prose max-w-none text-gray-700"
+          dangerouslySetInnerHTML={{ __html: service.description }}
+        />
+
+        {/* ===== CITY CLOSING CONTEXT ===== */}
+        <p className="mt-6 text-gray-600">
+          Our team ensures timely setup and professional execution across {cityName}, 
+          making your event stress-free and memorable.
+        </p>
+
       </div>
 
 
@@ -284,7 +412,7 @@ function CenterContent({ service, city}) {
           Frequently Asked Questions
         </h3>
 
-        <FAQSection faqs={service.faqs} />
+        <FAQSection faqs={[dynamicFaq, ...service.faqs]} />
 
       </div>
 

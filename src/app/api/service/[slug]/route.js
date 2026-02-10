@@ -50,7 +50,19 @@ export async function GET(req, context) {
       );
     }
 
-    return NextResponse.json({ success: true, data: service });
+    return  NextResponse.json({
+  success: true,
+  data: service,
+  city: city
+    ? {
+        name: city.name,
+        slug: city.slug,
+        subAreas: city.subAreas
+          .filter(a => a.isActive)
+          .sort((a, b) => a.priority - b.priority),
+      }
+    : null,
+});
 
   } catch (err) {
     console.error("GET /api/service/[slug]", err);
