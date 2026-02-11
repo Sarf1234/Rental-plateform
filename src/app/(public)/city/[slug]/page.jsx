@@ -72,6 +72,8 @@ export async function generateMetadata({ params }) {
 export default async function CityHome({ params }) {
   const { slug } = await params;
 
+  const baseUrl = "https://yourdomain.com";
+
   let featured = [];
   let top = [];
   let best = [];
@@ -101,6 +103,7 @@ export default async function CityHome({ params }) {
     const res = await apiRequest(
       `${process.env.NEXT_PUBLIC_API_URL}/api/service?city=${slug}&page=1&limit=10`
     );
+    console.log(res.all.length)
     featured = res.featured || [];
     top = res.top || [];
     best = res.best || [];
@@ -116,9 +119,136 @@ export default async function CityHome({ params }) {
   const cityName = cityData.name;
   const subAreas = cityData.subAreas || [];
   const totalServices = all.length;
+   
+  // ==========================
+  // 🔥 SCHEMA SECTION
+  // ==========================
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      // 🔹 Organization
+      {
+        "@type": "Organization",
+        name: "YourBrand Rentals",
+        url: baseUrl,
+        logo: `${baseUrl}/logo.png`,
+        contactPoint: {
+          "@type": "ContactPoint",
+          telephone: "+91-8839931558",
+          contactType: "customer service",
+          areaServed: "IN",
+          availableLanguage: ["English", "Hindi"],
+        },
+      },
+
+      // 🔹 LocalBusiness
+      {
+        "@type": "LocalBusiness",
+        name: `Event & Wedding Rentals in ${cityName}`,
+        image: `${baseUrl}/logo.png`,
+        url: `${baseUrl}/city/${slug}`,
+        telephone: "+91-8839931558",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: cityName,
+          addressCountry: "IN",
+        },
+        areaServed: {
+          "@type": "City",
+          name: cityName,
+        },
+        priceRange: "₹10,000 - ₹2,00,000",
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: "4.6",
+          reviewCount: "128",
+        },
+      },
+
+      // 🔹 Breadcrumb
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: baseUrl,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: cityName,
+            item: `${baseUrl}/city/${slug}`,
+          },
+        ],
+      },
+
+      // 🔹 Services List
+      {
+        "@type": "ItemList",
+        name: `Rental Services in ${cityName}`,
+        itemListElement: all?.data?.slice(0, 15).map((service, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          url: `${baseUrl}/city/${slug}/${service.slug}`,
+          name: service.name,
+        })),
+      },
+
+      // 🔹 Categories List
+      {
+        "@type": "ItemList",
+        name: `Product Categories in ${cityName}`,
+        itemListElement: categories.slice(0, 10).map((cat, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          url: `${baseUrl}/city/${slug}/category/${cat.slug}`,
+          name: cat.name,
+        })),
+      },
+
+      // 🔹 FAQ
+      {
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: `What are the best rental services available in ${cityName}?`,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: `We provide wedding decoration, tent house, catering, lighting and complete event rental services across ${cityName}.`,
+            },
+          },
+          {
+            "@type": "Question",
+            name: `How much does event rental cost in ${cityName}?`,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: `Pricing depends on event size and package. Basic packages start from ₹10,000 and premium setups go higher.`,
+            },
+          },
+        ],
+      },
+    ],
+  };
+
+
+  // =========================
+  // 🔥 SCHEMA SECTION END
+  // =========================
 
   return (
     <div className="min-h-screen mt-16">
+
+      {/* 🔥 JSON-LD Injection */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
 
       {/* HERO */}
       <HeroCarousel images={imagesLink} contents={carouselContent} />

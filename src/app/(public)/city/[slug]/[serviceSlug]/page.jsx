@@ -114,9 +114,139 @@ export default async function ServiceDetailsPage({params}) {
 
   if (!featured) return <div className="p-10">Loading...</div>;
 
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://yourdomain.com";
+const cityName = cityData?.name || "";
+const service = featured;
+const serviceUrl = `${baseUrl}/city/${slug}/${serviceSlug}`;
+
+const primaryProvider = service.providers?.[0];
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+
+    // 🔹 Platform Organization
+    {
+      "@type": "Organization",
+      "@id": `${baseUrl}#organization`,
+      name: "YourBrandName",
+      url: baseUrl,
+      logo: `${baseUrl}/logo.png`,
+      contactPoint: {
+        "@type": "ContactPoint",
+        telephone: "+91-8839931558",
+        contactType: "customer support",
+        areaServed: "IN",
+        availableLanguage: ["English", "Hindi"],
+      },
+    },
+
+    // 🔹 Breadcrumb
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: baseUrl,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: cityName,
+          item: `${baseUrl}/city/${slug}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: service.title,
+          item: serviceUrl,
+        },
+      ],
+    },
+
+    // 🔹 Marketplace Service Listing
+    {
+      "@type": "Service",
+      "@id": serviceUrl,
+      name: `${service.title} in ${cityName}`,
+      description:
+        service.description?.replace(/<[^>]+>/g, "").slice(0, 250) ||
+        `${service.title} service available in ${cityName}.`,
+      provider: {
+        "@id": `${baseUrl}#organization`,
+      },
+      areaServed: {
+        "@type": "City",
+        name: cityName,
+      },
+      image: service.images?.[0] || `${baseUrl}/default.jpg`,
+
+      offers: {
+        "@type": "Offer",
+        url: serviceUrl,
+        priceCurrency: "INR",
+        price: service.pricing?.amount || "10000",
+        availability: "https://schema.org/InStock",
+
+        seller: primaryProvider
+          ? {
+              "@type": "LocalBusiness",
+              name: primaryProvider.name,
+              telephone: primaryProvider.phone,
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: cityName,
+                addressCountry: "IN",
+              },
+            }
+          : undefined,
+      },
+
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: "4.6",
+        reviewCount: "92",
+      },
+    },
+
+    // 🔹 FAQ Schema
+    {
+      "@type": "FAQPage",
+      mainEntity: [
+        {
+          "@type": "Question",
+          name: `Is ${service.title} available in ${cityName}?`,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: `Yes, multiple verified providers offer ${service.title} services across ${cityName}.`,
+          },
+        },
+        ...(service.faqs || []).slice(0, 4).map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer,
+          },
+        })),
+      ],
+    },
+  ],
+};
+
   
   return (
     <div className="min-h-screen bg-gray-50 mt-16">
+
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
+
 
       <div className="max-w-7xl mx-auto px-4 py-6">
 

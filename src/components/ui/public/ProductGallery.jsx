@@ -9,37 +9,60 @@ export default function ProductGallery({ images = [], title }) {
   if (!images?.length) return null;
 
   return (
-    <div className="space-y-4">
+    <div className="w-full space-y-4">
 
-      {/* Main Image */}
-      <div className="relative h-[450px] rounded-2xl overflow-hidden border">
+      {/* ================= MAIN IMAGE ================= */}
+      <div className="relative w-full aspect-square md:aspect-[4/3] rounded-2xl overflow-hidden border bg-white">
+
         <Image
           src={activeImage}
           alt={title}
           fill
           priority
+          sizes="(max-width: 768px) 100vw, 60vw"
           className="object-contain"
         />
       </div>
 
-      {/* Thumbnails */}
-      <div className="flex gap-3 overflow-x-auto pb-2">
-        {images.map((img, i) => (
-          <div
-            key={i}
-            onClick={() => setActiveImage(img)}
-            className={`relative h-20 w-24 rounded-xl overflow-hidden border cursor-pointer transition ${
-              activeImage === img ? "ring-1 ring-blue-200" : ""
-            }`}
-          >
-            <Image
-              src={img}
-              alt="thumb"
-              fill
-              className="object-contain"
-            />
-          </div>
-        ))}
+      {/* ================= THUMBNAILS ================= */}
+      <div className="w-full overflow-hidden">
+
+        <div
+          className="
+            flex w-full
+            gap-2
+            overflow-x-auto
+            no-scrollbar
+          "
+        >
+          {images.map((img, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveImage(img)}
+              className={`
+                relative flex-shrink-0
+                w-[22%] min-w-[70px] max-w-[90px]
+                aspect-square
+                rounded-xl overflow-hidden border
+                transition
+                ${
+                  activeImage === img
+                    ? "ring-2 ring-black"
+                    : "opacity-80 hover:opacity-100"
+                }
+              `}
+            >
+              <Image
+                src={img}
+                alt={`${title} thumbnail ${i + 1}`}
+                fill
+                sizes="80px"
+                className="object-contain"
+              />
+            </button>
+          ))}
+        </div>
+
       </div>
 
     </div>

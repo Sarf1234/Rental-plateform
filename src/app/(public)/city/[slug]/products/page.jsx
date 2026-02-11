@@ -126,8 +126,92 @@ export default async function CityProductsPage({ params }) {
 
   const totalProducts = all.length;
 
+  const baseUrl =
+  process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com";
+
+const productUrl = `${baseUrl}/city/${slug}/products`;
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+
+    // 🔹 Organization (Marketplace Platform)
+    {
+      "@type": "Organization",
+      "@id": `${baseUrl}#organization`,
+      name: "YourBrandName",
+      url: baseUrl,
+      logo: `${baseUrl}/logo.png`,
+      contactPoint: {
+        "@type": "ContactPoint",
+        telephone: "+91-8839931558",
+        contactType: "customer support",
+        areaServed: "IN",
+        availableLanguage: ["English", "Hindi"],
+      },
+    },
+
+    // 🔹 Breadcrumb
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: baseUrl,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: cityName,
+          item: `${baseUrl}/city/${slug}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: "Rental Products",
+          item: productUrl,
+        },
+      ],
+    },
+
+    // 🔹 Collection Page
+    {
+      "@type": "CollectionPage",
+      "@id": productUrl,
+      name: `Rental Products in ${cityName}`,
+      description: `Explore premium rental products in ${cityName} including furniture, lighting, decor and more.`,
+      url: productUrl,
+      isPartOf: {
+        "@id": `${baseUrl}#organization`,
+      },
+    },
+
+    // 🔹 ItemList (All Products)
+    {
+      "@type": "ItemList",
+      name: `Rental Products in ${cityName}`,
+      itemListElement: all?.data.slice(0, 20).map((product, index) => ({
+        "@type": "ListItem",
+        position: index + 1,
+        url: `${baseUrl}/city/${slug}/products/${product.slug}`,
+        name: product.title,
+      })),
+    },
+  ],
+};
+
+
   return (
     <div className="min-h-screen mt-16">
+
+      <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+        />
 
       {/* HERO */}
       <HeroCarousel images={imagesLink} contents={carouselContent} />

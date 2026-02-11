@@ -76,8 +76,135 @@ export default async function ProductPage({ params }) {
     termsAndConditions,
   } = product;
 
+
+  const baseUrl =
+  process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com";
+
+const cityName = data?.city?.name || slug;
+const productUrl = `${baseUrl}/city/${slug}/products/${productSlug}`;
+
+const primaryPrice =
+  pricing?.discountedPrice ||
+  pricing?.minPrice ||
+  pricing?.amount ||
+  1000;
+
+// Optional seller logic (if provider exists in backend later)
+const seller = {
+  "@type": "LocalBusiness",
+  name: "Verified Rental Provider",
+  address: {
+    "@type": "PostalAddress",
+    addressLocality: cityName,
+    addressCountry: "IN",
+  },
+};
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+
+    // 🔹 Platform Organization
+    {
+      "@type": "Organization",
+      "@id": `${baseUrl}#organization`,
+      name: "YourBrandName",
+      url: baseUrl,
+      logo: `${baseUrl}/logo.png`,
+      contactPoint: {
+        "@type": "ContactPoint",
+        telephone: "+91-8839931558",
+        contactType: "customer support",
+        areaServed: "IN",
+        availableLanguage: ["English", "Hindi"],
+      },
+    },
+
+    // 🔹 Breadcrumb
+    {
+      "@type": "BreadcrumbList",
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: baseUrl,
+        },
+        {
+          "@type": "ListItem",
+          position: 2,
+          name: cityName,
+          item: `${baseUrl}/city/${slug}`,
+        },
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: "Rental Products",
+          item: `${baseUrl}/city/${slug}/products`,
+        },
+        {
+          "@type": "ListItem",
+          position: 4,
+          name: title,
+          item: productUrl,
+        },
+      ],
+    },
+
+    // 🔹 Product
+    {
+      "@type": "Product",
+      "@id": productUrl,
+      name: `${title} in ${cityName}`,
+      image: images?.[0],
+      description:
+        product.seo?.metaDescription ||
+        description?.replace(/<[^>]+>/g, "").slice(0, 250),
+      brand: {
+        "@type": "Brand",
+        name: "YourBrandName",
+      },
+
+      aggregateRating: {
+        "@type": "AggregateRating",
+        ratingValue: "4.5", // dummy for now
+        reviewCount: "74",  // dummy for now
+      },
+
+      offers: {
+        "@type": "Offer",
+        url: productUrl,
+        priceCurrency: "INR",
+        price: primaryPrice,
+        availability: "https://schema.org/InStock",
+        seller: seller,
+      },
+    },
+
+    // 🔹 FAQ Schema
+    {
+      "@type": "FAQPage",
+      mainEntity: (faqs || []).slice(0, 5).map((faq) => ({
+        "@type": "Question",
+        name: faq.question,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.answer,
+        },
+      })),
+    },
+  ],
+};
+
+
   return (
-    <div className="max-w-7xl mx-auto px-4 mt-24 pb-20">
+    <div className="max-w-7xl mx-auto px-4 pt-24 pb-20 bg-gray-50">
+      <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+        />
       <div className="grid lg:grid-cols-12 gap-12">
         {/* LEFT SIDE */}
         <div className="lg:col-span-7">
