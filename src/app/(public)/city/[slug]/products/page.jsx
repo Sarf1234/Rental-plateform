@@ -3,6 +3,7 @@ import { imagesLink, carouselContent } from "../../../../../utils/seedData";
 import HeroCarousel from "@/components/layout/HeroCrousel";
 import { apiRequest } from "@/lib/api";
 import FlagsCards from "@/components/ui/public/FlagsCards";
+import ProductCategories from "@/components/ui/public/ProductCategories";
 
 export const revalidate = 3600;
 
@@ -94,6 +95,16 @@ export default async function CityProductsPage({ params }) {
   let all = [];
   let newProduct = [];
   let cityData = null;
+  let categories = [];
+
+  try {
+      const catRes = await apiRequest(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products/categories`
+      );
+      categories = catRes?.data || [];
+    } catch (err) {
+      console.error("Failed to fetch product categories:", err);
+    }
 
   try {
     const res = await apiRequest(
@@ -188,6 +199,18 @@ const structuredData = {
       },
     },
 
+     // 🔹 Categories List
+      {
+        "@type": "ItemList",
+        name: `Product Categories in ${cityName}`,
+        itemListElement: categories.slice(0, 10).map((cat, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          url: `${baseUrl}/city/${slug}/category/${cat.slug}`,
+          name: cat.name,
+        })),
+      },
+
     // 🔹 ItemList (All Products)
     {
       "@type": "ItemList",
@@ -239,6 +262,8 @@ const structuredData = {
           citySlug={slug}
         />
       )}
+
+      <ProductCategories categories={categories} citySlug={slug} />
 
       {/* WHY SECTION */}
       <Services

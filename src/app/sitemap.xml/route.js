@@ -7,7 +7,9 @@ import Category from "@/models/Category";
 import Tag from "@/models/Tag";
 import City from "@/models/CityModels";
 import Service from "@/models/Serviceproduct";
-import Product from "@/models/Product"; // ✅ Added Product Model
+import Product from "@/models/Product";
+import ServiceCategory from "@/models/ServiceCategory"; // ✅ NEW
+import ProductCategory from "@/models/ProductCategory"; // ✅ NEW
 
 export async function GET() {
   try {
@@ -15,11 +17,13 @@ export async function GET() {
 
     const [
       posts,
-      categories,
+      blogCategories,
       tags,
       cities,
       services,
-      products, // ✅ Fetch products
+      products,
+      serviceCategories,
+      productCategories,
     ] = await Promise.all([
       Post.find({}, "slug updatedAt").lean(),
       Category.find({}, "slug").lean(),
@@ -33,6 +37,8 @@ export async function GET() {
         { status: "published" },
         "slug serviceAreas updatedAt seo"
       ).lean(),
+      ServiceCategory.find({ isActive: true }, "slug").lean(), // ✅
+      ProductCategory.find({ isActive: true }, "slug").lean(), // ✅
     ]);
 
     const baseUrl =
@@ -40,20 +46,34 @@ export async function GET() {
       "https://yourdomain.com";
 
     const urls = [];
-    const addedUrls = new Set(); // ✅ Prevent duplicates
+    const addedUrls = new Set();
 
-    const pushUrl = (urlObj) => {
-      if (!addedUrls.has(urlObj.loc)) {
-        addedUrls.add(urlObj.loc);
-        urls.push(urlObj);
+    const pushUrl = ({
+      loc,
+      lastmod = null,
+      priority = "0.5",
+      changefreq = "monthly",
+    }) => {
+      if (!addedUrls.has(loc)) {
+        addedUrls.add(loc);
+        urls.push({ loc, lastmod, priority, changefreq });
       }
     };
 
     // =========================
     // STATIC PAGES
     // =========================
-    pushUrl({ loc: `${baseUrl}/` });
-    pushUrl({ loc: `${baseUrl}/blog` });
+    pushUrl({
+      loc: `${baseUrl}/`,
+      priority: "1.0",
+      changefreq: "daily",
+    });
+
+    pushUrl({
+      loc: `${baseUrl}/blog`,
+      priority: "0.7",
+      changefreq: "weekly",
+    });
 
     // =========================
     // BLOG
@@ -64,18 +84,24 @@ export async function GET() {
         lastmod: p.updatedAt
           ? new Date(p.updatedAt).toISOString()
           : null,
+        priority: "0.6",
+        changefreq: "monthly",
       });
     });
 
-    categories.forEach((c) => {
+    blogCategories.forEach((c) => {
       pushUrl({
         loc: `${baseUrl}/category/${c.slug}`,
+        priority: "0.5",
+        changefreq: "monthly",
       });
     });
 
     tags.forEach((t) => {
       pushUrl({
         loc: `${baseUrl}/tag/${t.slug}`,
+        priority: "0.5",
+        changefreq: "monthly",
       });
     });
 
@@ -88,16 +114,19 @@ export async function GET() {
         lastmod: city.updatedAt
           ? new Date(city.updatedAt).toISOString()
           : null,
+        priority: "0.9",
+        changefreq: "weekly",
       });
 
-      // ✅ City Products Listing Page
       pushUrl({
         loc: `${baseUrl}/city/${city.slug}/products`,
+        priority: "0.7",
+        changefreq: "weekly",
       });
     });
 
     // =========================
-    // SERVICE PAGES (CITY-WISE)
+    // SERVICE PAGES
     // =========================
     services.forEach((service) => {
       if (service.seo?.noIndex) return;
@@ -113,13 +142,15 @@ export async function GET() {
             lastmod: service.updatedAt
               ? new Date(service.updatedAt).toISOString()
               : null,
+            priority: "0.8",
+            changefreq: "weekly",
           });
         }
       });
     });
 
     // =========================
-    // PRODUCT PAGES (CITY-WISE)
+    // PRODUCT PAGES
     // =========================
     products.forEach((product) => {
       if (product.seo?.noIndex) return;
@@ -135,8 +166,36 @@ export async function GET() {
             lastmod: product.updatedAt
               ? new Date(product.updatedAt).toISOString()
               : null,
+            priority: "0.8",
+            changefreq: "weekly",
           });
         }
+      });
+    });
+
+    // =========================
+    // SERVICE CATEGORY PAGES (CITY-WISE) ✅ NEW
+    // =========================
+    cities.forEach((city) => {
+      serviceCategories.forEach((cat) => {
+        pushUrl({
+          loc: `${baseUrl}/city/${city.slug}/service-categories/${cat.slug}`,
+          priority: "0.7",
+          changefreq: "weekly",
+        });
+      });
+    });
+
+    // =========================
+    // PRODUCT CATEGORY PAGES (CITY-WISE) ✅ NEW
+    // =========================
+    cities.forEach((city) => {
+      productCategories.forEach((cat) => {
+        pushUrl({
+          loc: `${baseUrl}/city/${city.slug}/categories/${cat.slug}`,
+          priority: "0.7",
+          changefreq: "weekly",
+        });
       });
     });
 
@@ -151,6 +210,8 @@ ${urls
   <url>
     <loc>${url.loc}</loc>
     ${url.lastmod ? `<lastmod>${url.lastmod}</lastmod>` : ""}
+    <changefreq>${url.changefreq}</changefreq>
+    <priority>${url.priority}</priority>
   </url>`
   )
   .join("")}

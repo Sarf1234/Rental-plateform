@@ -5,6 +5,7 @@ import Servicecards from "@/components/ui/public/Servicecards";
 import { apiRequest } from "@/lib/api";
 import ProductCategories from "@/components/ui/public/ProductCategories";
 import RelatedBlogs from "@/components/layout/RelatedBlogs";
+import ServiceCategories from "@/components/ui/public/ServiceCategories";
 
 export const revalidate = 3600; // ISR (1 hour)
 
@@ -81,6 +82,18 @@ export default async function CityHome({ params }) {
   let all = [];
   let categories = [];
   let cityData = null;
+
+  let serviceCategories = [];
+
+    try {
+      const serviceCatRes = await apiRequest(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/service-categories`
+      );
+      serviceCategories = serviceCatRes?.data || [];
+    } catch (err) {
+      console.error("Failed to fetch service categories:", err);
+    }
+
 
   try {
     const cityRes = await apiRequest(
@@ -198,17 +211,18 @@ export default async function CityHome({ params }) {
         })),
       },
 
-      // 🔹 Categories List
       {
         "@type": "ItemList",
-        name: `Product Categories in ${cityName}`,
-        itemListElement: categories.slice(0, 10).map((cat, index) => ({
-          "@type": "ListItem",
-          position: index + 1,
-          url: `${baseUrl}/city/${slug}/category/${cat.slug}`,
-          name: cat.name,
-        })),
-      },
+          name: `Service Categories in ${cityName}`,
+          itemListElement: serviceCategories.slice(0, 10).map((cat, index) => ({
+            "@type": "ListItem",
+            position: index + 1,
+            url: `${baseUrl}/city/${slug}/service-categories/${cat.slug}`,
+            name: cat.name,
+          })),
+        },
+
+      
 
       // 🔹 FAQ
       {
@@ -271,8 +285,13 @@ export default async function CityHome({ params }) {
         citySlug={slug}
       />
 
+      <ServiceCategories
+        categories={serviceCategories}
+        citySlug={slug}
+      />
+
       {/* PRODUCT CATEGORIES */}
-      <ProductCategories categories={categories} citySlug={slug} />
+      {/* <ProductCategories categories={categories} citySlug={slug} /> */}
 
       
 
