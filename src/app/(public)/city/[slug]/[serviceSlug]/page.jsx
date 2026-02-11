@@ -204,11 +204,6 @@ const structuredData = {
           : undefined,
       },
 
-      aggregateRating: {
-        "@type": "AggregateRating",
-        ratingValue: "4.6",
-        reviewCount: "92",
-      },
     },
 
     // 🔹 FAQ Schema
