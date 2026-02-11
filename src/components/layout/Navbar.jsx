@@ -21,7 +21,7 @@ import { useCity } from "@/context/CityContext";
 const NAV_ITEMS = [
   { name: "Home", slug: "/" },
   { name: "Products", slug: "/products" },
-  { name: "Blogs", slug: "/blogs" },
+  { name: "Blogs", slug: "/blog" },
   { name: "Contact Us", slug: "/contact" },
 ];
 

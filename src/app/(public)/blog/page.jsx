@@ -4,15 +4,19 @@ import { apiRequest } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
-/* ✅ SEO Metadata */
+/* =========================
+   SEO METADATA
+========================= */
 export const metadata = {
-  title: "AI Blogs & Guides for Beginners – Tools, Tutorials & News | IndiaAIMag",
+  title:
+    "Event & Wedding Rental Guides, Ideas & Planning Tips | YourBrandName",
   description:
-    "Browse AI blogs, beginner guides, tool tutorials, automation ideas, and the latest AI news. IndiaAIMag explains AI in simple language — practical, tested, and safe.",
+    "Explore expert guides on wedding planning, tent house rentals, decor ideas, catering costs, event checklists and budgeting tips. YourBrandName helps you plan events smarter across Indian cities.",
   openGraph: {
-    title: "AI Blogs & Guides for Beginners | IndiaAIMag",
+    title:
+      "Event & Wedding Rental Guides & Planning Tips | YourBrandName",
     description:
-      "Practical AI guides, tutorials, tools, and real-world use cases. Learn how to use AI effectively — no coding required.",
+      "Wedding planning tips, tent house cost guides, decor trends, catering budgeting and complete event rental insights for Indian cities.",
     url: "/blog",
     type: "website",
   },
@@ -30,29 +34,86 @@ export default async function AllPostsPage() {
     console.error("SSR posts fetch failed:", err);
   }
 
+  const baseUrl =
+    process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com";
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${baseUrl}#organization`,
+        name: "YourBrandName",
+        url: baseUrl,
+        logo: `${baseUrl}/logo.png`,
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: baseUrl,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Blog",
+            item: `${baseUrl}/blog`,
+          },
+        ],
+      },
+      {
+        "@type": "CollectionPage",
+        "@id": `${baseUrl}/blog`,
+        name: "Event & Wedding Rental Blog",
+        description:
+          "Planning guides, rental pricing insights, decor trends, catering cost breakdowns and city-specific event planning resources.",
+      },
+      {
+        "@type": "ItemList",
+        name: "Event Planning & Rental Guides",
+        itemListElement: posts.slice(0, 20).map((post, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          url: `${baseUrl}/blog/${post.slug}`,
+          name: post.title,
+        })),
+      },
+    ],
+  };
+
   return (
     <section className="relative bg-slate-50 overflow-hidden">
-      {/* ✅ Soft AI glow */}
-      <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top,_rgba(99,102,241,0.07),_transparent_65%)]" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-12 py-20">
+      {/* JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
 
-        {/* ✅ PRIMARY SEO H1 */}
-        <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-gray-900 mb-4">
-          AI Blogs, Guides & Practical Tutorials
+      <div className="max-w-7xl mx-auto px-4  py-20">
+
+        {/* PRIMARY SEO H1 */}
+        <h1 className="text-lg sm:text-xl text-center mt-8 lg:text-2xl font-extrabold text-gray-900 mb-4">
+          Event & Wedding Rental Guides, Ideas & Planning Tips
         </h1>
 
-        {/* ✅ Supporting SEO paragraph */}
-        <p className="text-gray-600 max-w-3xl mb-12 text-base sm:text-lg">
-          Discover beginner-friendly AI guides, step-by-step tutorials, tool reviews,
-          automation ideas, and the latest AI news. IndiaAIMag helps you understand
-          how to use AI in real life — safely and practically.
+        {/* Supporting SEO paragraph */}
+        <p className="text-gray-600 max-w-3xl text-center m-auto mb-12 text-base sm:text-lg">
+          Discover expert wedding planning tips, tent house rental cost
+          breakdowns, decor inspiration, catering budgeting guides, and
+          practical event checklists. Our marketplace connects you with
+          verified rental providers across cities while helping you plan
+          smarter and save more.
         </p>
 
-        {/* ❌ Empty state */}
         {posts.length === 0 ? (
           <p className="text-center text-gray-500 mt-10">
-            No AI articles available right now.
+            No event planning articles available right now.
           </p>
         ) : (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
@@ -61,12 +122,11 @@ export default async function AllPostsPage() {
               <Link
                 key={post._id}
                 href={`/blog/${post.slug}`}
-                prefetch
                 className="
                   group rounded-3xl overflow-hidden
                   bg-white
                   border border-gray-200
-                  hover:border-indigo-300
+                  hover:border-black
                   hover:shadow-xl
                   transition-all duration-300
                 "
@@ -91,7 +151,7 @@ export default async function AllPostsPage() {
                         key={cat._id}
                         className="
                           text-[11px] px-3 py-1 rounded-full
-                          bg-indigo-50 text-indigo-600 font-medium
+                          bg-gray-100 text-gray-700 font-medium
                         "
                       >
                         {cat.name}
@@ -102,7 +162,7 @@ export default async function AllPostsPage() {
                   {/* Title */}
                   <h2 className="
                     text-lg font-semibold text-gray-900 leading-snug
-                    group-hover:text-indigo-600 transition
+                    group-hover:text-black transition
                   ">
                     {post.title}
                   </h2>

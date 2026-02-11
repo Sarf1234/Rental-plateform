@@ -4,6 +4,7 @@ import HeroCarousel from "@/components/layout/HeroCrousel";
 import Servicecards from "@/components/ui/public/Servicecards";
 import { apiRequest } from "@/lib/api";
 import ProductCategories from "@/components/ui/public/ProductCategories";
+import RelatedBlogs from "@/components/layout/RelatedBlogs";
 
 export const revalidate = 3600; // ISR (1 hour)
 
@@ -313,7 +314,12 @@ export default async function CityHome({ params }) {
         citySlug={slug}
       />
 
-      {/* SUB AREAS FOOTER BLOCK */}
+      <RelatedBlogs
+        title="Wedding & Event Planning Guides"
+        subtitle="Explore helpful articles to plan your event smarter."
+      />
+
+       {/* SUB AREAS FOOTER BLOCK */}
       {subAreas.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 py-10">
           <h2 className="text-xl font-semibold mb-4">
