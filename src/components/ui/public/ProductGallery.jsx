@@ -12,29 +12,36 @@ export default function ProductGallery({ images = [], title }) {
     <div className="w-full space-y-4">
 
       {/* ================= MAIN IMAGE ================= */}
-      <div className="relative w-full aspect-square md:aspect-[4/3] rounded-2xl overflow-hidden border bg-white">
-
-        <Image
-          src={activeImage}
-          alt={title}
-          fill
-          priority
-          sizes="(max-width: 768px) 100vw, 60vw"
-          className="object-contain"
-        />
+      <div className="flex justify-center">
+        <div className="
+          relative 
+          w-full 
+          max-w-[500px] 
+          md:max-w-[600px] 
+          lg:max-w-full
+          aspect-square 
+          md:aspect-[5/3]
+          rounded-2xl 
+          overflow-hidden 
+          border 
+          bg-white
+        ">
+          <Image
+            src={activeImage}
+            alt={title}
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, 600px"
+            className="object-contain"
+          />
+        </div>
       </div>
 
       {/* ================= THUMBNAILS ================= */}
       <div className="w-full overflow-hidden">
 
-        <div
-          className="
-            flex w-full
-            gap-2
-            overflow-x-auto
-            no-scrollbar
-          "
-        >
+        <div className="flex gap-2 overflow-x-auto no-scrollbar">
+
           {images.map((img, i) => (
             <button
               key={i}
@@ -47,7 +54,7 @@ export default function ProductGallery({ images = [], title }) {
                 transition
                 ${
                   activeImage === img
-                    ? "ring-2 ring-black"
+                    ? "ring-2 ring-blue-50"
                     : "opacity-80 hover:opacity-100"
                 }
               `}
@@ -61,8 +68,8 @@ export default function ProductGallery({ images = [], title }) {
               />
             </button>
           ))}
-        </div>
 
+        </div>
       </div>
 
     </div>

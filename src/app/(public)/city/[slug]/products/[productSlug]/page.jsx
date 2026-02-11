@@ -198,7 +198,8 @@ const structuredData = {
 
 
   return (
-    <div className="max-w-7xl mx-auto px-4 pt-24 pb-20 bg-gray-50">
+    <div className="bg-gray-50">
+    <div className="max-w-7xl mx-auto px-4 pt-24 pb-20">
       <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -241,6 +242,7 @@ const structuredData = {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

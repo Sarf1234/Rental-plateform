@@ -24,11 +24,11 @@ export default function ProductInfo({
           {title}
         </h1>
 
-        {productdescription && (
+        {/* {productdescription && (
           <p className="text-sm text-gray-600 mt-3 leading-relaxed">
             {productdescription}
           </p>
-        )}
+        )} */}
 
         <div className="flex flex-wrap gap-2 mt-4">
           {highlights?.isFeatured && (
