@@ -28,7 +28,7 @@ export default async function CategoryPage({ params, searchParams }) {
 
   let products = [];
   let pagination = {};
-  console.log(`${process.env.NEXT_PUBLIC_API_URL}/api/products?city=${slug}&category=${categorySlug}&page=1&limit=12`)
+  
 
   try {
     const res = await apiRequest(

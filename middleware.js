@@ -3,14 +3,13 @@ import { verifyToken } from "./src/lib/auth";
 
 export function middleware(req) {
   const token = req.cookies.get("token")?.value || null;
-  console.log("Pathname:", req.nextUrl.pathname);
-  console.log("Token:", token);
+ 
 
   const protectedRoutes = ["/dashboard", "/admin"];
   const isProtected = protectedRoutes.some((route) =>
     req.nextUrl.pathname.startsWith(route)
   );
-  console.log("Is protected:", isProtected);
+
 
   if (!isProtected) return NextResponse.next();
 

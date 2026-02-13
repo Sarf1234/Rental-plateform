@@ -29,7 +29,7 @@ export default async function TagsSection() {
     );
     tags = res.data || [];
   } catch (err) {
-    console.log(`${process.env.NEXT_PUBLIC_API_URL}/api/categories`)
+    
     console.error("Failed to fetch tags:", err);
   }
 

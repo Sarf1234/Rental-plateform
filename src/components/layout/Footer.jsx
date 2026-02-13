@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { Facebook, Instagram, Linkedin, Phone, Mail } from "lucide-react";
+import FooterServiceCategories from "./FooterServiceCategories";
 
 export default function Footer() {
   return (
@@ -38,19 +39,12 @@ export default function Footer() {
 
           {/* Categories */}
           <div>
-            <h4 className="font-semibold text-gray-900 mb-4 uppercase tracking-wide text-sm">
-              Rental Categories
-            </h4>
+              <h4 className="font-semibold text-gray-900 mb-4 uppercase tracking-wide text-sm">
+                Rental Categories
+              </h4>
 
-            <ul className="space-y-2 text-gray-600">
-              <li><Link href="#" className="hover:text-black transition">Decor</Link></li>
-              <li><Link href="#" className="hover:text-black transition">Sound Systems</Link></li>
-              <li><Link href="#" className="hover:text-black transition">Lighting</Link></li>
-              <li><Link href="#" className="hover:text-black transition">Wedding Setup</Link></li>
-              <li><Link href="#" className="hover:text-black transition">Corporate Events</Link></li>
-            </ul>
-          </div>
-
+              <FooterServiceCategories />
+            </div>
           {/* Quick Links */}
           <div>
             <h4 className="font-semibold text-gray-900 mb-4 uppercase tracking-wide text-sm">
@@ -58,9 +52,9 @@ export default function Footer() {
             </h4>
 
             <ul className="space-y-2 text-gray-600">
-              <li><Link href="/contact" className="hover:text-black transition">Contact Us</Link></li>
+              {/* <li><Link href="/contact" className="hover:text-black transition">Contact Us</Link></li> */}
               <li><Link href="/about" className="hover:text-black transition">About Us</Link></li>
-              <li><Link href="/city" className="hover:text-black transition">Browse Cities</Link></li>
+              {/* <li><Link href="/city" className="hover:text-black transition">Browse Cities</Link></li> */}
               <li><Link href="/faq" className="hover:text-black transition">FAQs</Link></li>
             </ul>
           </div>
@@ -85,7 +79,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center justify-center md:justify-start gap-2">
                 <Phone size={16} />
-                <span>+91 98765 43210</span>
+                <span>+91 8839931558</span>
               </div>
             </div>
           </div>

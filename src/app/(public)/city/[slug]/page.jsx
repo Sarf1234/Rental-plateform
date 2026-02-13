@@ -117,7 +117,7 @@ export default async function CityHome({ params }) {
     const res = await apiRequest(
       `${process.env.NEXT_PUBLIC_API_URL}/api/service?city=${slug}&page=1&limit=10`
     );
-    console.log(res.all.length)
+    
     featured = res.featured || [];
     top = res.top || [];
     best = res.best || [];
@@ -267,35 +267,7 @@ export default async function CityHome({ params }) {
 
       {/* HERO */}
       <HeroCarousel images={imagesLink} contents={carouselContent} />
-
-      
-
-      {/* WHY CHOOSE US */}
-      <Services
-        city={cityName}
-        subAreas={subAreas}
-        totalServices={10}
-      />
-
-      {/* FEATURED */}
-      <Servicecards
-        data={featured}
-        title={`Featured Rental Services in ${cityName}`}
-        subtitle={`Handpicked decoration and event rental services trusted by customers in ${cityName}.`}
-        citySlug={slug}
-      />
-
-      <ServiceCategories
-        categories={serviceCategories}
-        citySlug={slug}
-      />
-
-      {/* PRODUCT CATEGORIES */}
-      {/* <ProductCategories categories={categories} citySlug={slug} /> */}
-
-      
-
-      {/* SEO H1 + SHORT INTRO */}
+       {/* SEO H1 + SHORT INTRO */}
       <section className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-2xl text-center md:text-3xl font-bold text-gray-900">
           Event & Wedding Rental Services in {cityName}
@@ -317,6 +289,34 @@ export default async function CityHome({ params }) {
         </p>
       </section>
 
+      
+
+
+
+      {/* FEATURED */}
+      <Servicecards
+        data={featured}
+        title={`Featured Rental Services in ${cityName}`}
+        subtitle={`Handpicked decoration and event rental services trusted by customers in ${cityName}.`}
+        citySlug={slug}
+      />
+
+
+
+            {/* WHY CHOOSE US */}
+      <Services
+        city={cityName}
+        subAreas={subAreas}
+        totalServices={10}
+      />
+
+      {/* PRODUCT CATEGORIES */}
+      {/* <ProductCategories categories={categories} citySlug={slug} /> */}
+
+      
+
+     
+
       {/* TOP BOOKED */}
       <Servicecards
         data={top}
@@ -330,6 +330,11 @@ export default async function CityHome({ params }) {
         data={best}
         title={`Premium & Luxury Rentals in ${cityName}`}
         subtitle={`Exclusive high-end event setups for weddings, corporate events, and special occasions in ${cityName}.`}
+        citySlug={slug}
+      />
+
+      <ServiceCategories
+        categories={serviceCategories}
         citySlug={slug}
       />
 
