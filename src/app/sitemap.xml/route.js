@@ -31,19 +31,17 @@ export async function GET() {
       City.find({ isActive: true }, "slug updatedAt").lean(),
       Service.find(
         { status: "published" },
-        "slug serviceAreas updatedAt seo"
+        "slug serviceAreas updatedAt seo",
       ).lean(),
       Product.find(
         { status: "published" },
-        "slug serviceAreas updatedAt seo"
+        "slug serviceAreas updatedAt seo",
       ).lean(),
       ServiceCategory.find({ isActive: true }, "slug").lean(), // ✅
       ProductCategory.find({ isActive: true }, "slug").lean(), // ✅
     ]);
 
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BASE_URL ||
-      "https://yourdomain.com";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://kiraynow.com";
 
     const urls = [];
     const addedUrls = new Set();
@@ -75,15 +73,44 @@ export async function GET() {
       changefreq: "weekly",
     });
 
+    // Informational Pages
+    pushUrl({
+      loc: `${baseUrl}/about`,
+      priority: "0.6",
+      changefreq: "yearly",
+    });
+
+    pushUrl({
+      loc: `${baseUrl}/terms-and-conditions`,
+      priority: "0.3",
+      changefreq: "yearly",
+    });
+
+    pushUrl({
+      loc: `${baseUrl}/privacy-policy`,
+      priority: "0.3",
+      changefreq: "yearly",
+    });
+
+    pushUrl({
+      loc: `${baseUrl}/return-policy`,
+      priority: "0.3",
+      changefreq: "yearly",
+    });
+
+    pushUrl({
+      loc: `${baseUrl}/faq`,
+      priority: "0.4",
+      changefreq: "monthly",
+    });
+
     // =========================
     // BLOG
     // =========================
     posts.forEach((p) => {
       pushUrl({
         loc: `${baseUrl}/blog/${p.slug}`,
-        lastmod: p.updatedAt
-          ? new Date(p.updatedAt).toISOString()
-          : null,
+        lastmod: p.updatedAt ? new Date(p.updatedAt).toISOString() : null,
         priority: "0.6",
         changefreq: "monthly",
       });
@@ -111,9 +138,7 @@ export async function GET() {
     cities.forEach((city) => {
       pushUrl({
         loc: `${baseUrl}/city/${city.slug}`,
-        lastmod: city.updatedAt
-          ? new Date(city.updatedAt).toISOString()
-          : null,
+        lastmod: city.updatedAt ? new Date(city.updatedAt).toISOString() : null,
         priority: "0.9",
         changefreq: "weekly",
       });
@@ -132,9 +157,7 @@ export async function GET() {
       if (service.seo?.noIndex) return;
 
       service.serviceAreas?.forEach((cityId) => {
-        const city = cities.find(
-          (c) => c._id.toString() === cityId.toString()
-        );
+        const city = cities.find((c) => c._id.toString() === cityId.toString());
 
         if (city) {
           pushUrl({
@@ -156,9 +179,7 @@ export async function GET() {
       if (product.seo?.noIndex) return;
 
       product.serviceAreas?.forEach((cityId) => {
-        const city = cities.find(
-          (c) => c._id.toString() === cityId.toString()
-        );
+        const city = cities.find((c) => c._id.toString() === cityId.toString());
 
         if (city) {
           pushUrl({
@@ -212,7 +233,7 @@ ${urls
     ${url.lastmod ? `<lastmod>${url.lastmod}</lastmod>` : ""}
     <changefreq>${url.changefreq}</changefreq>
     <priority>${url.priority}</priority>
-  </url>`
+  </url>`,
   )
   .join("")}
 </urlset>`;
@@ -226,7 +247,7 @@ ${urls
     console.error("Failed to generate sitemap", err);
     return NextResponse.json(
       { error: "Failed to generate sitemap" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
