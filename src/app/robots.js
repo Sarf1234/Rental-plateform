@@ -8,6 +8,6 @@ export default function robots() {
         disallow: ["/admin/", "/login", "/sign-up"],
       },
     ],
-    sitemap: "https://indiaaimag.com/sitemap.xml",
+    sitemap: "https://kiraynow.com/sitemap.xml",
   };
 }
