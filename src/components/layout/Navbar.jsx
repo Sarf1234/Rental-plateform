@@ -23,7 +23,7 @@ const NAV_ITEMS = [
   { name: "Home", slug: "/" },
   { name: "Products", slug: "/products" },
   { name: "Blogs", slug: "/blog" },
-  { name: "Contact Us", slug: "/contact" },
+  // { name: "Contact Us", slug: "/contact" },
 ];
 
 export default function Navbar() {
