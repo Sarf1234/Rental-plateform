@@ -241,6 +241,7 @@ ${urls
     return new NextResponse(sitemap, {
       headers: {
         "Content-Type": "application/xml",
+        "Cache-Control": "no-store",
       },
     });
   } catch (err) {
