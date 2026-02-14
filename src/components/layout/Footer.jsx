@@ -68,7 +68,7 @@ export default function Footer() {
             <ul className="space-y-2 text-gray-600 mb-6">
               <li><Link href="/terms-and-conditions" className="hover:text-black transition">Terms & Conditions</Link></li>
               <li><Link href="/privacy-policy" className="hover:text-black transition">Privacy Policy</Link></li>
-              <li><Link href="/refund-policy" className="hover:text-black transition">Refund Policy</Link></li>
+              {/* <li><Link href="/refund-policy" className="hover:text-black transition">Refund Policy</Link></li> */}
             </ul>
 
             {/* Contact Info */}
