@@ -24,13 +24,11 @@ export async function generateMetadata({ params }) {
     const subAreasText =
       city.subAreas?.slice(0, 2).map((a) => a.name).join(", ") || "";
 
-    const title = `Event & Wedding Rentals in ${city.name} | YourBrand`;
-    const description = `Book trusted event and wedding rental services in ${
-      city.name
-    }${subAreasText ? ` including ${subAreasText}` : ""}. Affordable pricing, verified vendors and professional event support.`;
+    const title = `Event & Wedding Rentals in ${city.name} | Tent, Decoration & Catering | KirayNow`;
+    const description = `Book trusted event and wedding rental services in ${city.name}${subAreasText ? ` including ${subAreasText}` : ""}. Tent house, decoration, catering, lighting and party setup at affordable prices.`;
 
-    const url = `https://yourdomain.com/city/${city.slug}`;
-    const ogImage = `https://yourdomain.com/og-${city.slug}.jpg`; 
+    const url = `https://kiraynow.com/city/${city.slug}`;
+    const ogImage = "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp"; 
     // Replace with your real OG generator or image
 
     return {
@@ -270,23 +268,20 @@ export default async function CityHome({ params }) {
        {/* SEO H1 + SHORT INTRO */}
       <section className="max-w-7xl mx-auto px-4 py-8">
         <h1 className="text-2xl text-center md:text-3xl font-bold text-gray-900">
-          Event & Wedding Rental Services in {cityName}
+           Event, Wedding & Party Rental Services in {cityName}
         </h1>
-        <p className="mt-3 text-gray-600 text-center m-auto max-w-3xl">
-          Book trusted rental services in {cityName}
-          {subAreas.length > 0 && (
-            <>
-              {" "}including{" "}
-              {subAreas.slice(0, 3).map((area, i) => (
-                <span key={area._id}>
-                  {area.name}
-                  {i < Math.min(2, subAreas.length - 1) ? ", " : ""}
-                </span>
-              ))}
-            </>
-          )}
-          . Explore {totalServices}+ verified service options with transparent pricing and professional event support.
-        </p>
+       <p className="mt-3 text-gray-600 text-center m-auto ">
+Planning a wedding, birthday party or corporate event in {cityName}? 
+KirayNow provides complete event and wedding rental services including decoration, tent house, catering, lighting and stage setup across {cityName}
+{subAreas.length > 0 && (
+  <> including {subAreas.slice(0,3).map((a,i)=>(
+    <span key={a._id}>{a.name}{i<2?", ":""}</span>
+  ))}</>
+)}.
+We also offer furniture, appliances and equipment rentals for homes and businesses.
+Explore 20+ verified rental options with transparent pricing and professional support.
+</p>
+
       </section>
 
       

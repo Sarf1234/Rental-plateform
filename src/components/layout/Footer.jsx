@@ -15,7 +15,7 @@ export default function Footer() {
           {/* Brand Section */}
           <div className="flex flex-col items-center md:items-start">
             <h3 className="text-2xl font-bold text-gray-900">
-              Rent<span className="text-black">Platform</span>
+              Kiray<span className="text-black">Now</span>
             </h3>
 
             <p className="mt-4 text-gray-600 leading-relaxed max-w-xs">
@@ -24,7 +24,7 @@ export default function Footer() {
             </p>
 
             {/* Social Icons */}
-            <div className="flex gap-4 mt-6 justify-center md:justify-start">
+            {/* <div className="flex gap-4 mt-6 justify-center md:justify-start">
               <Link href="#" className="p-2 rounded-full bg-white shadow-sm hover:shadow-md transition">
                 <Instagram size={18} />
               </Link>
@@ -34,7 +34,7 @@ export default function Footer() {
               <Link href="#" className="p-2 rounded-full bg-white shadow-sm hover:shadow-md transition">
                 <Linkedin size={18} />
               </Link>
-            </div>
+            </div> */}
           </div>
 
           {/* Categories */}

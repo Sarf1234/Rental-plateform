@@ -1,0 +1,23 @@
+{
+  "name": "KirayNow - Find Rentals Near You",
+  "short_name": "KirayNow",
+  "description": "Find rental products, services and equipment near your city with KirayNow.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [
+    {
+      "src": "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
+      "sizes": "192x192",
+      "type": "image/webp"
+    },
+    {
+      "src": "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
+      "sizes": "512x512",
+      "type": "image/webp"
+    }
+  ]
+}

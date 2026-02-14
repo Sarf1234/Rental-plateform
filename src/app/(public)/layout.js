@@ -16,71 +16,58 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata = {
-  metadataBase: new URL("https://indiaaimag.com"),
+  metadataBase: new URL("https://kiraynow.com"),
 
   title: {
-    default: "IndiaAIMag – AI Tools, Guides & Prompts for Beginners in India",
-    template: "%s | IndiaAIMag",
+    default: "KirayNow – Rent Furniture, Appliances & Equipment in Your City",
+    template: "%s | KirayNow",
   },
 
   description:
-    "IndiaAIMag ek Hinglish AI platform hai jahan aapko milte hain practical AI tools, ChatGPT prompts, image generator tips aur automation guides — beginners aur Indian users ke liye simple language me.",
+    "KirayNow is a trusted rental platform where you can rent furniture, home appliances, electronics, and equipment in your city at affordable prices. Fast delivery, flexible rental plans, and reliable service.",
 
   keywords: [
-    "indiaaimag",
-    "india ai mag",
-    "ai tools india",
-    "ai guides for beginners",
-    "chatgpt prompts india",
-    "ai prompts hinglish",
-    "ai automation india",
-    "learn ai hinglish",
-    "ai blog india",
+    "kiraynow",
+    "rent furniture online",
+    "appliances on rent",
+    "equipment rental near me",
+    "furniture on rent in india",
+    "home appliances rental",
+    "rent products online india",
+    "rental services in india",
   ],
 
   alternates: {
-    canonical: "https://indiaaimag.com",
+    canonical: "https://kiraynow.com",
   },
 
   openGraph: {
-    title: "IndiaAIMag – AI Tools, Guides & Prompts for India",
+    title: "KirayNow – Rent Furniture, Appliances & Equipment",
     description:
-      "AI tools, ChatGPT prompts aur automation guides Hinglish me. IndiaAIMag helps beginners and Indian users use AI practically.",
-    url: "https://indiaaimag.com",
-    siteName: "IndiaAIMag",
+      "Affordable furniture, appliances, and equipment rental in your city. Book online with KirayNow.",
+    url: "https://kiraynow.com",
+    siteName: "KirayNow",
     type: "website",
     images: [
       {
-        url: "https://res.cloudinary.com/dsc5aznps/image/upload/v1767975434/posts/tbyj0t1ch4xn0enetlij.png",
+        url: "https://kiraynow.com/og-image.jpg",
         width: 1200,
         height: 630,
-        alt: "IndiaAIMag – AI Tools, Guides & Prompts for Beginners",
+        alt: "KirayNow Rental Platform",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "IndiaAIMag – AI Tools & Prompts in Hinglish",
+    title: "KirayNow – Rent Products in Your City",
     description:
-      "AI tools, ChatGPT prompts aur automation guides Hinglish me. Learn practical AI with IndiaAIMag.",
-    images: [
-      "https://res.cloudinary.com/dsc5aznps/image/upload/v1767975434/posts/tbyj0t1ch4xn0enetlij.png",
-    ],
-    creator: "@indiaaimag",
+      "Rent furniture, appliances and equipment easily with KirayNow.",
+    images: ["https://kiraynow.com/og-image.jpg"],
   },
 
   icons: {
-  icon: "/favicon.ico",
-  shortcut: "/favicon.ico",
-  apple: "/favicon.ico",
-},
-
-  manifest: "/manifest.json",
-
-  verification: {
-    google: "YOUR_GOOGLE_VERIFICATION_CODE",
-    bing: "YOUR_BING_VERIFICATION_CODE",
+    icon: "/favicon.ico",
   },
 
   robots: {
@@ -88,6 +75,7 @@ export const metadata = {
     follow: true,
   },
 };
+
 
 export default function RootLayout({ children }) {
   return (
