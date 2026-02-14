@@ -34,12 +34,17 @@ export async function generateMetadata({ params }) {
     ?.replace(/<[^>]+>/g, "")
     .slice(0, 160);
 
-  const title = `${product.title} in ${cityName} | KirayNow`;
+  const title = product.seo?.metaTitle
+    ? `${product.seo.metaTitle} in ${cityName}`
+    : `${product.title} in ${cityName}`;
 
-  const description = cleanDescription
-  ? `${cleanDescription} Available for rent in ${cityName}.`
-  : `Rent ${product.title} in ${cityName} at affordable pricing. Starting from ₹${primaryPrice}.`;
-
+  const description = product.seo?.metaDescription
+    ? `${product.seo.metaDescription} Available in ${cityName}.`
+    : cleanDescription
+    ? `${cleanDescription} Available for rent in ${cityName}.`
+    : `Rent ${product.title} in ${cityName} at affordable pricing. ${
+        primaryPrice ? `Starting from ₹${primaryPrice}.` : ""
+      }`;
 
   const image =
     product.images?.[0] ||

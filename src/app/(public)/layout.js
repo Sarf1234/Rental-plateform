@@ -19,7 +19,7 @@ export const metadata = {
 
   title: {
     default:
-      "KirayNow – Birthday, Wedding & Event Rentals in Your City",
+      "KirayNow – India's Event Rental Marketplace",
     template: "%s | KirayNow",
   },
 
