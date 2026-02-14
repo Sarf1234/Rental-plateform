@@ -162,7 +162,7 @@ export default async function CityProductsPage({ params }) {
       // 🔹 Organization (Marketplace Platform)
       {
         "@type": "Organization",
-        "@id": `${baseUrl}#organization`,
+        "@id": `${baseUrl}/#organization`,
         name: "KirayNow",
         logo: "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
         url: baseUrl,
@@ -233,7 +233,7 @@ export default async function CityProductsPage({ params }) {
           "@type": "ListItem",
           position: index + 1,
           url: `${baseUrl}/city/${slug}/products/${product.slug}`,
-          name: product.title,
+          name: product.name,
         })),
       },
 
