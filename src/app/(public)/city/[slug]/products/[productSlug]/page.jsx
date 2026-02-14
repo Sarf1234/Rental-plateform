@@ -36,7 +36,10 @@ export async function generateMetadata({ params }) {
 
   const title = `${product.title} in ${cityName} | KirayNow`;
 
-  const description = `Rent ${product.title} in ${cityName}. Starting from ₹${product.pricing?.minPrice || product.pricing?.amount}.`;
+  const description = cleanDescription
+  ? `${cleanDescription} Available for rent in ${cityName}.`
+  : `Rent ${product.title} in ${cityName} at affordable pricing. Starting from ₹${primaryPrice}.`;
+
 
   const image =
     product.images?.[0] ||
@@ -97,7 +100,7 @@ export default async function ProductPage({ params }) {
     termsAndConditions,
   } = product;
 
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://kiraynow.com";
 
   const cityName = data?.city?.name || slug;
   const productUrl = `${baseUrl}/city/${slug}/products/${productSlug}`;
