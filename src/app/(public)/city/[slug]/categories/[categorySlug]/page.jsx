@@ -13,7 +13,7 @@ export async function generateMetadata({ params }) {
   const categoryName = categorySlug.replace("-", " ");
 
   return {
-    title: `${categoryName} Rental in ${cityName} | YourBrand`,
+    title: `${categoryName} Rental in ${cityName} | kiraynow`,
     description: `Book ${categoryName} rental services in ${cityName}. Affordable pricing, fast delivery and professional setup.`,
   };
 }

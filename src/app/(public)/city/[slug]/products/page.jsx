@@ -7,17 +7,15 @@ import ProductCategories from "@/components/ui/public/ProductCategories";
 
 export const revalidate = 3600;
 
-
 export async function generateMetadata({ params }) {
   const { slug } = await params;
 
   try {
-    const baseUrl =
-      process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com";
+    const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://kiraynow.com";
 
     const cityRes = await fetch(
       `${process.env.NEXT_PUBLIC_API_URL}/api/cities/${slug}`,
-      { next: { revalidate: 3600 } }
+      { next: { revalidate: 3600 } },
     );
 
     const cityData = await cityRes.json();
@@ -35,19 +33,23 @@ export async function generateMetadata({ params }) {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
 
-    const brandName = "YourBrandName"; // replace later
+    const brandName = "KirayNow"; // replace later
 
     const title = `Rental Products in ${cityName} | Event Items on Rent | ${brandName}`;
 
     const description = `Explore premium rental products in ${cityName} including event furniture, lighting, sound systems, decor items and more. Affordable pricing and verified providers available across ${
       city?.subAreas?.length
-        ? city.subAreas.slice(0, 3).map((a) => a.name).join(", ")
+        ? city.subAreas
+            .slice(0, 3)
+            .map((a) => a.name)
+            .join(", ")
         : cityName
     }.`;
 
     const url = `${baseUrl}/city/${slug}/products`;
 
     return {
+      metadataBase: new URL("https://kiraynow.com"),
       title,
       description,
       alternates: {
@@ -60,7 +62,7 @@ export async function generateMetadata({ params }) {
         type: "website",
         images: [
           {
-            url: `${baseUrl}/default-product-og.jpg`, // replace later
+            url: "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp", // replace later
             width: 1200,
             height: 630,
           },
@@ -70,7 +72,9 @@ export async function generateMetadata({ params }) {
         card: "summary_large_image",
         title,
         description,
-        images: [`${baseUrl}/default-product-og.jpg`],
+        images: [
+          "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
+        ],
       },
       robots: {
         index: true,
@@ -85,7 +89,6 @@ export async function generateMetadata({ params }) {
   }
 }
 
-
 export default async function CityProductsPage({ params }) {
   const { slug } = await params;
 
@@ -98,17 +101,17 @@ export default async function CityProductsPage({ params }) {
   let categories = [];
 
   try {
-      const catRes = await apiRequest(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/products/categories`
-      );
-      categories = catRes?.data || [];
-    } catch (err) {
-      console.error("Failed to fetch product categories:", err);
-    }
+    const catRes = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/products/categories`,
+    );
+    categories = catRes?.data || [];
+  } catch (err) {
+    console.error("Failed to fetch product categories:", err);
+  }
 
   try {
     const res = await apiRequest(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/products?city=${slug}&page=1&limit=10`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/products?city=${slug}&page=1&limit=10`,
     );
 
     featured = res?.featured || [];
@@ -122,7 +125,7 @@ export default async function CityProductsPage({ params }) {
 
   try {
     const cityRes = await apiRequest(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/cities/${slug}`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/cities/${slug}`,
     );
     cityData = cityRes?.data || null;
   } catch (err) {
@@ -137,69 +140,80 @@ export default async function CityProductsPage({ params }) {
 
   const totalProducts = all.length;
 
-  const baseUrl =
-  process.env.NEXT_PUBLIC_BASE_URL || "https://yourdomain.com";
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://kiraynow.com";
 
-const productUrl = `${baseUrl}/city/${slug}/products`;
+  const productUrl = `${baseUrl}/city/${slug}/products`;
 
-const structuredData = {
-  "@context": "https://schema.org",
-  "@graph": [
-
-    // 🔹 Organization (Marketplace Platform)
-    {
-      "@type": "Organization",
-      "@id": `${baseUrl}#organization`,
-      name: "YourBrandName",
-      url: baseUrl,
-      logo: `${baseUrl}/logo.png`,
-      contactPoint: {
-        "@type": "ContactPoint",
-        telephone: "+91-8839931558",
-        contactType: "customer support",
-        areaServed: "IN",
-        availableLanguage: ["English", "Hindi"],
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${baseUrl}/#website`,
+        url: baseUrl,
+        name: "KirayNow",
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${baseUrl}/search?q={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
       },
-    },
 
-    // 🔹 Breadcrumb
-    {
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        {
-          "@type": "ListItem",
-          position: 1,
-          name: "Home",
-          item: baseUrl,
-        },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: cityName,
-          item: `${baseUrl}/city/${slug}`,
-        },
-        {
-          "@type": "ListItem",
-          position: 3,
-          name: "Rental Products",
-          item: productUrl,
-        },
-      ],
-    },
-
-    // 🔹 Collection Page
-    {
-      "@type": "CollectionPage",
-      "@id": productUrl,
-      name: `Rental Products in ${cityName}`,
-      description: `Explore premium rental products in ${cityName} including furniture, lighting, decor and more.`,
-      url: productUrl,
-      isPartOf: {
+      // 🔹 Organization (Marketplace Platform)
+      {
+        "@type": "Organization",
         "@id": `${baseUrl}#organization`,
+        name: "KirayNow",
+        logo: "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
+        url: baseUrl,
+        contactPoint: {
+          "@type": "ContactPoint",
+          telephone: "+91-8839931558",
+          contactType: "customer support",
+          areaServed: "IN",
+          availableLanguage: ["English", "Hindi"],
+        },
       },
-    },
 
-     // 🔹 Categories List
+      // 🔹 Breadcrumb
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${productUrl}#breadcrumb`,
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: baseUrl,
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: cityName,
+            item: `${baseUrl}/city/${slug}`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: "Rental Products",
+            item: productUrl,
+          },
+        ],
+      },
+
+      // 🔹 Collection Page
+      {
+        "@type": "CollectionPage",
+        "@id": productUrl,
+        name: `Rental Products in ${cityName}`,
+        description: `Explore premium rental products in ${cityName} including furniture, lighting, decor and more.`,
+        url: productUrl,
+        isPartOf: {
+          "@id": `${baseUrl}#website`,
+        },
+      },
+
+      // 🔹 Categories List
       {
         "@type": "ItemList",
         name: `Product Categories in ${cityName}`,
@@ -211,30 +225,42 @@ const structuredData = {
         })),
       },
 
-    // 🔹 ItemList (All Products)
-    {
-      "@type": "ItemList",
-      name: `Rental Products in ${cityName}`,
-      itemListElement: all?.data.slice(0, 20).map((product, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        url: `${baseUrl}/city/${slug}/products/${product.slug}`,
-        name: product.title,
-      })),
-    },
-  ],
-};
+      // 🔹 ItemList (All Products)
+      {
+        "@type": "ItemList",
+        name: `Rental Products in ${cityName}`,
+        itemListElement: all?.data.slice(0, 20).map((product, index) => ({
+          "@type": "ListItem",
+          position: index + 1,
+          url: `${baseUrl}/city/${slug}/products/${product.slug}`,
+          name: product.title,
+        })),
+      },
 
+      {
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: `What rental products are available in ${cityName}?`,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: `You can rent event furniture, lighting, decor items and more in ${cityName} through KirayNow.`,
+            },
+          },
+        ],
+      },
+    ],
+  };
 
   return (
     <div className="min-h-screen mt-16">
-
       <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(structuredData),
-          }}
-        />
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(structuredData),
+        }}
+      />
 
       {/* HERO */}
       <HeroCarousel images={imagesLink} contents={carouselContent} />
@@ -246,13 +272,11 @@ const structuredData = {
         </h1>
 
         <p className="mt-3 text-gray-600 max-w-3xl mx-auto">
-          Explore {totalProducts}+ rental products available in {cityName}. 
-          From event furniture and lighting to sound systems and decor, 
-          find reliable and affordable rental options for your celebration.
+          Explore {totalProducts}+ rental products available in {cityName}. From
+          event furniture and lighting to sound systems and decor, find reliable
+          and affordable rental options for your celebration.
         </p>
       </section>
-
-      
 
       {/* FEATURED */}
       {featured.length > 0 && (
@@ -305,7 +329,6 @@ const structuredData = {
           No rental products available in {cityName} yet.
         </div>
       )}
-
     </div>
   );
 }

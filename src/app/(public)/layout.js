@@ -2,7 +2,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { GoogleTagManager } from '@next/third-parties/google'
 import { CityProvider } from "@/context/CityContext";
 
 const geistSans = Geist({
@@ -19,56 +18,55 @@ export const metadata = {
   metadataBase: new URL("https://kiraynow.com"),
 
   title: {
-    default: "KirayNow – Rent Furniture, Appliances & Equipment in Your City",
+    default:
+      "KirayNow – Birthday, Wedding & Event Rentals in Your City",
     template: "%s | KirayNow",
   },
 
   description:
-    "KirayNow is a trusted rental platform where you can rent furniture, home appliances, electronics, and equipment in your city at affordable prices. Fast delivery, flexible rental plans, and reliable service.",
-
-  keywords: [
-    "kiraynow",
-    "rent furniture online",
-    "appliances on rent",
-    "equipment rental near me",
-    "furniture on rent in india",
-    "home appliances rental",
-    "rent products online india",
-    "rental services in india",
-  ],
+    "KirayNow is a trusted event rental marketplace offering birthday decoration, wedding setups, party rentals and celebration services across multiple cities in India. Book verified professionals with transparent pricing.",
 
   alternates: {
     canonical: "https://kiraynow.com",
   },
 
   openGraph: {
-    title: "KirayNow – Rent Furniture, Appliances & Equipment",
+    title:
+      "KirayNow – Birthday, Wedding & Event Rentals in Your City",
     description:
-      "Affordable furniture, appliances, and equipment rental in your city. Book online with KirayNow.",
+      "Book trusted birthday decoration, wedding setups and party rental services near you with KirayNow.",
     url: "https://kiraynow.com",
     siteName: "KirayNow",
+    locale: "en_IN",
     type: "website",
     images: [
       {
-        url: "https://kiraynow.com/og-image.jpg",
+        url: "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
         width: 1200,
         height: 630,
-        alt: "KirayNow Rental Platform",
+        alt: "KirayNow Event Rental Platform",
       },
     ],
   },
 
   twitter: {
     card: "summary_large_image",
-    title: "KirayNow – Rent Products in Your City",
+    title:
+      "KirayNow – Birthday, Wedding & Event Rentals",
     description:
-      "Rent furniture, appliances and equipment easily with KirayNow.",
-    images: ["https://kiraynow.com/og-image.jpg"],
+      "Find trusted event professionals for birthday, wedding and party rentals with KirayNow.",
+    images: [
+      "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
+    ],
   },
 
   icons: {
     icon: "/favicon.ico",
   },
+
+  manifest: "/manifest.json",
+
+  themeColor: "#ffffff",
 
   robots: {
     index: true,
@@ -76,14 +74,58 @@ export const metadata = {
   },
 };
 
-
 export default function RootLayout({ children }) {
+  const baseUrl = "https://kiraynow.com";
+
+  const structuredData = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${baseUrl}/#website`,
+        url: baseUrl,
+        name: "KirayNow",
+        publisher: {
+          "@id": `${baseUrl}/#organization`,
+        },
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${baseUrl}/search?q={search_term_string}`,
+          "query-input": "required name=search_term_string",
+        },
+      },
+      {
+        "@type": "Organization",
+        "@id": `${baseUrl}/#organization`,
+        name: "KirayNow",
+        url: baseUrl,
+        logo: "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
+        description:
+          "KirayNow is a trusted event rental marketplace offering birthday decoration, wedding setups and party rental services across multiple cities in India.",
+        contactPoint: {
+          "@type": "ContactPoint",
+          telephone: "+91-8839931558",
+          contactType: "customer support",
+          areaServed: "IN",
+          availableLanguage: ["English", "Hindi"],
+        },
+      },
+    ],
+  };
+
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white text-slate-900`}
       >
-        {/* <GoogleTagManager gtmId="GTM-KL3PXFC4" /> */}
+        {/* Global Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(structuredData),
+          }}
+        />
+
         <CityProvider>
           <Navbar />
           <main>{children}</main>
