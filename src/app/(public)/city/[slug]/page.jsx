@@ -204,7 +204,7 @@ export default async function CityHome({ params }) {
       {
         "@type": "ItemList",
         name: `Rental Services in ${cityName}`,
-        itemListElement: all?.data?.slice(0, 15).map((service, index) => ({
+        itemListElement: all?.data?.slice(0, 2).map((service, index) => ({
           "@type": "ListItem",
           position: index + 1,
           url: `${baseUrl}/city/${slug}/${service.slug}`,
@@ -212,16 +212,16 @@ export default async function CityHome({ params }) {
         })),
       },
 
-      {
-        "@type": "ItemList",
-          name: `Service Categories in ${cityName}`,
-          itemListElement: serviceCategories.slice(0, 10).map((cat, index) => ({
-            "@type": "ListItem",
-            position: index + 1,
-            url: `${baseUrl}/city/${slug}/service-categories/${cat.slug}`,
-            name: cat.name,
-          })),
-        },
+      // {
+      //   "@type": "ItemList",
+      //     name: `Service Categories in ${cityName}`,
+      //     itemListElement: serviceCategories.slice(0, 10).map((cat, index) => ({
+      //       "@type": "ListItem",
+      //       position: index + 1,
+      //       url: `${baseUrl}/city/${slug}/service-categories/${cat.slug}`,
+      //       name: cat.name,
+      //     })),
+      //   },
 
       
 
