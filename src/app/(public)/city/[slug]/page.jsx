@@ -130,6 +130,7 @@ export default async function CityHome({ params }) {
     return <div className="mt-20 text-center">City not found</div>;
   }
 
+
   const cityName = cityData.name;
   const subAreas = cityData.subAreas || [];
   const totalServices = all.length;
@@ -203,11 +204,11 @@ export default async function CityHome({ params }) {
       {
         "@type": "ItemList",
         name: `Rental Services in ${cityName}`,
-        itemListElement: all?.slice(0, 15).map((service, index) => ({
+        itemListElement: all?.data?.slice(0, 15).map((service, index) => ({
           "@type": "ListItem",
           position: index + 1,
           url: `${baseUrl}/city/${slug}/${service.slug}`,
-          name: service.name,
+          name: service.title,
         })),
       },
 

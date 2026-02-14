@@ -75,7 +75,7 @@ export default function Footer() {
             <div className="space-y-3 text-gray-600 text-center md:text-left">
               <div className="flex items-center justify-center md:justify-start gap-2">
                 <Mail size={16} />
-                <span>support@rentplatform.com</span>
+                <span>support@kiraynow.com</span>
               </div>
               <div className="flex items-center justify-center md:justify-start gap-2">
                 <Phone size={16} />
