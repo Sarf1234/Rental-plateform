@@ -110,22 +110,22 @@ export default function Navbar() {
         {/* ================= LOGO ================= */}
         <Link
           href={buildHref("/")}
-          className="flex items-center gap-2 flex-shrink-0 bg-gray-50"
+          className="flex items-center gap-2 flex-shrink-0"
         >
-          {/* <div className="bg-blue-600 text-white p-2 rounded-lg">
+          <div className="bg-blue-600 text-white p-2 rounded-lg">
             <Home size={22} />
           </div>
           <span className="text-xl font-bold text-gray-900 hidden sm:block">
-            Rent<span className="text-blue-600">Ease</span>
-          </span> */}
-          <Image
+            Kiray<span className="text-blue-600">Now</span>
+          </span>
+          {/* <Image
     src="https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp" // 👉 change this
     alt="KirayNow Logo"
     width={60}
     height={20}
     priority
     className="object-contain"
-  />
+  /> */}
           {/* <Image src='https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp' className="w-10 h-10" /> */}
         </Link>
 
