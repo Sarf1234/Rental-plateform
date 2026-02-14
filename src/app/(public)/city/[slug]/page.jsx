@@ -203,7 +203,7 @@ export default async function CityHome({ params }) {
       {
         "@type": "ItemList",
         name: `Rental Services in ${cityName}`,
-        itemListElement: all?.data?.slice(0, 15).map((service, index) => ({
+        itemListElement: all?.slice(0, 15).map((service, index) => ({
           "@type": "ListItem",
           position: index + 1,
           url: `${baseUrl}/city/${slug}/${service.slug}`,
