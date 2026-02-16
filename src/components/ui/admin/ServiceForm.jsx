@@ -360,7 +360,7 @@ export default function ServiceForm({
           await Promise.all([
             apiRequest("/api/cities"),
             apiRequest("/api/business"),
-            apiRequest("/api/products"),
+            apiRequest("/api/products/admin?page=1&limit=50"),
             apiRequest("/api/service-categories"),
           ]);
 
