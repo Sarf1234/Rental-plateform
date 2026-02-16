@@ -27,7 +27,7 @@ export async function generateMetadata({ params }) {
         .map((a) => a.name)
         .join(", ") || "";
 
-    const title = `Affordable Birthday, Wedding & Party Rentals in ${city.name} | KirayNow`;
+    const title = `Affordable Birthday, Wedding & Party Rentals in ${city.name}`;
     const description = `Planning a celebration in ${city.name}? KirayNow helps you book trusted birthday decoration, wedding setups and party rental services${
       subAreasText ? ` across ${subAreasText}` : ""
     }. Compare packages, view transparent pricing and hire verified professionals for a hassle-free event experience.`;
