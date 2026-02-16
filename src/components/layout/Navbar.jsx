@@ -51,12 +51,12 @@ export default function Navbar() {
     if (!ready) return "#";
 
     if (slug === "/") {
-      return citySlug ? `/city/${citySlug}` : "/";
+      return citySlug ? `/${citySlug}` : "/";
     }
 
     if (slug === "/products") {
       return citySlug
-        ? `/city/${citySlug}/products`
+        ? `/${citySlug}/products`
         : "/products";
     }
 
@@ -70,13 +70,13 @@ export default function Navbar() {
 
     if (slug === "/") {
       return citySlug
-        ? pathname === `/city/${citySlug}`
+        ? pathname === `/${citySlug}`
         : pathname === "/";
     }
 
     if (slug === "/products") {
       return citySlug
-        ? pathname === `/city/${citySlug}/products`
+        ? pathname === `/${citySlug}/products`
         : pathname === "/products";
     }
 

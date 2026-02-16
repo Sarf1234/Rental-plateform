@@ -50,7 +50,7 @@ export async function generateMetadata({ params }) {
       "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp";
 
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kiraynow.com";
-    const url = `${baseUrl}/city/${slug}/${serviceSlug}`;
+    const url = `${baseUrl}/${slug}/${serviceSlug}`;
 
     return {
       metadataBase: new URL("https://kiraynow.com"),
@@ -113,7 +113,7 @@ export default async function ServiceDetailsPage({ params }) {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kiraynow.com";
   const cityName = cityData?.name || "";
   const service = featured;
-  const serviceUrl = `${baseUrl}/city/${slug}/${serviceSlug}`;
+  const serviceUrl = `${baseUrl}/${slug}/${serviceSlug}`;
 
   const primaryProvider = service.providers?.[0];
 
@@ -143,7 +143,7 @@ export default async function ServiceDetailsPage({ params }) {
             "@type": "ListItem",
             position: 2,
             name: cityName,
-            item: `${baseUrl}/city/${slug}`,
+            item: `${baseUrl}/${slug}`,
           },
           {
             "@type": "ListItem",
@@ -415,7 +415,7 @@ function CenterContent({ service, city, cityData }) {
             return (
               <Link
                 key={product._id}
-                href={`/city/${city}/products/${product.slug}`}
+                href={`/${city}/products/${product.slug}`}
                 className="group block border border-gray-100 rounded-2xl overflow-hidden bg-white hover:shadow-2xl hover:-translate-y-1 transition duration-300"
               >
                 {/* Product Image */}

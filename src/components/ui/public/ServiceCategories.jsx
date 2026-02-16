@@ -19,7 +19,7 @@ export default function ServiceCategories({ categories = [], citySlug }) {
         {categories.map((category) => (
           <Link
             key={category._id}
-            href={`/city/${citySlug}/service-categories/${category.slug}`}
+            href={`/${citySlug}/service-categories/${category.slug}`}
             className="group border rounded-2xl p-6 bg-white hover:shadow-xl hover:-translate-y-1 transition duration-300"
           >
             <div className="flex flex-col justify-between h-full">

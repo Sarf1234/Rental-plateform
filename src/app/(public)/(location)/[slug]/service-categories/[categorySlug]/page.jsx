@@ -34,7 +34,7 @@ export async function generateMetadata({ params }) {
 
     const description = `Book verified ${category.name.toLowerCase()} services in ${city.name} for weddings, birthdays, corporate events and celebrations. Transparent pricing, professional setup and reliable service providers available across the city.`;
 
-    const url = `${baseUrl}/city/${slug}/service-categories/${categorySlug}`;
+    const url = `${baseUrl}/${slug}/service-categories/${categorySlug}`;
 
     const image =
       category.image ||
@@ -106,7 +106,7 @@ export default async function ServiceCategoryPage({ params }) {
   );
   const services = servicesRes?.data || [];
 
-  const categoryUrl = `${baseUrl}/city/${slug}/service-categories/${categorySlug}`;
+  const categoryUrl = `${baseUrl}/${slug}/service-categories/${categorySlug}`;
 
   /* ===============================
      🔥 Structured Data
@@ -153,7 +153,7 @@ export default async function ServiceCategoryPage({ params }) {
             "@type": "ListItem",
             position: 2,
             name: city.name,
-            item: `${baseUrl}/city/${slug}`,
+            item: `${baseUrl}/${slug}`,
           },
           {
             "@type": "ListItem",
@@ -183,7 +183,7 @@ export default async function ServiceCategoryPage({ params }) {
         itemListElement: services.slice(0, 20).map((service, index) => ({
           "@type": "ListItem",
           position: index + 1,
-          url: `${baseUrl}/city/${slug}/${service.slug}`,
+          url: `${baseUrl}/${slug}/${service.slug}`,
           name: service.title,
         })),
       },

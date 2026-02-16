@@ -81,7 +81,7 @@ export default function ServiceCard({ service = {}, citySlug }) {
 
       {/* Image */}
       <Link
-        href={`/city/${citySlug}/${slug}`}
+        href={`/${citySlug}/${slug}`}
         className="relative block aspect-[4/3] overflow-hidden"
       >
         <Image
@@ -97,7 +97,7 @@ export default function ServiceCard({ service = {}, citySlug }) {
       <div className="p-5 space-y-3">
 
         {/* Title */}
-        <Link href={`/city/${citySlug}/${slug}`}>
+        <Link href={`/${citySlug}/${slug}`}>
           <h3 className="font-semibold text-base line-clamp-2 group-hover:text-blue-600 transition">
             {title}
           </h3>

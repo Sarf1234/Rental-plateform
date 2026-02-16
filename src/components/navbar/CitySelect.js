@@ -51,7 +51,7 @@ export default function CitySelect() {
     router.push(newPath);
   } else {
     // If not inside city route
-    router.push(`/city/${selectedCity.slug}`);
+    router.push(`/${selectedCity.slug}`);
   }
 }
 

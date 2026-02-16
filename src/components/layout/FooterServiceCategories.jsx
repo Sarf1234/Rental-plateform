@@ -35,7 +35,7 @@ export default function FooterServiceCategories() {
           <Link
             href={
               citySlug
-                ? `/city/${citySlug}/service-categories/${cat.slug}`
+                ? `/${citySlug}/service-categories/${cat.slug}`
                 : `/service-categories/${cat.slug}`
             }
             className="hover:text-black transition"

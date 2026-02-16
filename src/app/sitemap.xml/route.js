@@ -137,14 +137,14 @@ export async function GET() {
     // =========================
     cities.forEach((city) => {
       pushUrl({
-        loc: `${baseUrl}/city/${city.slug}`,
+        loc: `${baseUrl}/${city.slug}`,
         lastmod: city.updatedAt ? new Date(city.updatedAt).toISOString() : null,
         priority: "0.9",
         changefreq: "weekly",
       });
 
       pushUrl({
-        loc: `${baseUrl}/city/${city.slug}/products`,
+        loc: `${baseUrl}/${city.slug}/products`,
         priority: "0.7",
         changefreq: "weekly",
       });
@@ -161,7 +161,7 @@ export async function GET() {
 
         if (city) {
           pushUrl({
-            loc: `${baseUrl}/city/${city.slug}/${service.slug}`,
+            loc: `${baseUrl}/${city.slug}/${service.slug}`,
             lastmod: service.updatedAt
               ? new Date(service.updatedAt).toISOString()
               : null,
@@ -183,7 +183,7 @@ export async function GET() {
 
         if (city) {
           pushUrl({
-            loc: `${baseUrl}/city/${city.slug}/products/${product.slug}`,
+            loc: `${baseUrl}/${city.slug}/products/${product.slug}`,
             lastmod: product.updatedAt
               ? new Date(product.updatedAt).toISOString()
               : null,
@@ -200,7 +200,7 @@ export async function GET() {
     cities.forEach((city) => {
       serviceCategories.forEach((cat) => {
         pushUrl({
-          loc: `${baseUrl}/city/${city.slug}/service-categories/${cat.slug}`,
+          loc: `${baseUrl}/${city.slug}/service-categories/${cat.slug}`,
           priority: "0.7",
           changefreq: "weekly",
         });
@@ -213,7 +213,7 @@ export async function GET() {
     cities.forEach((city) => {
       productCategories.forEach((cat) => {
         pushUrl({
-          loc: `${baseUrl}/city/${city.slug}/categories/${cat.slug}`,
+          loc: `${baseUrl}/${city.slug}/categories/${cat.slug}`,
           priority: "0.7",
           changefreq: "weekly",
         });

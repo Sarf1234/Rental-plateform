@@ -25,7 +25,7 @@ export async function generateMetadata({ params }) {
 
   const description = `Rent ${categoryName.toLowerCase()} in ${cityName} at affordable pricing. Verified vendors, fast delivery and professional event setup available across the city.`;
 
-  const canonicalUrl = `${baseUrl}/city/${slug}/categories/${categorySlug}`;
+  const canonicalUrl = `${baseUrl}/${slug}/categories/${categorySlug}`;
 
   const ogImage =
     "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp";
@@ -96,7 +96,7 @@ export default async function CategoryPage({ params }) {
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
 
-  const categoryUrl = `${baseUrl}/city/${slug}/categories/${categorySlug}`;
+  const categoryUrl = `${baseUrl}/${slug}/categories/${categorySlug}`;
 
   /* ==========================
      STRUCTURED DATA
@@ -141,7 +141,7 @@ export default async function CategoryPage({ params }) {
             "@type": "ListItem",
             position: 2,
             name: cityName,
-            item: `${baseUrl}/city/${slug}`,
+            item: `${baseUrl}/${slug}`,
           },
           {
             "@type": "ListItem",
@@ -169,7 +169,7 @@ export default async function CategoryPage({ params }) {
         itemListElement: products.slice(0, 20).map((product, index) => ({
           "@type": "ListItem",
           position: index + 1,
-          url: `${baseUrl}/city/${slug}/products/${product.slug}`,
+          url: `${baseUrl}/${slug}/products/${product.slug}`,
           name: product.title,
         })),
       },

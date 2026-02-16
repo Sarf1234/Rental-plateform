@@ -32,7 +32,7 @@ export async function generateMetadata({ params }) {
       subAreasText ? ` across ${subAreasText}` : ""
     }. Compare packages, view transparent pricing and hire verified professionals for a hassle-free event experience.`;
 
-    const url = `https://kiraynow.com/city/${city.slug}`;
+    const url = `https://kiraynow.com/${city.slug}`;
     const ogImage =
       "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp";
     // Replace with your real OG generator or image
@@ -181,7 +181,7 @@ export default async function CityHome({ params }) {
       // 🔹 LocalBusiness
       {
         "@type": "Service",
-        "@id": `${baseUrl}/city/${slug}#service`,
+        "@id": `${baseUrl}/${slug}#service`,
         name: `Birthday, Wedding & Party Rentals in ${cityName}`,
         provider: {
           "@id": `${baseUrl}/#organization`,
@@ -190,7 +190,7 @@ export default async function CityHome({ params }) {
           "@type": "City",
           name: cityName,
         },
-        url: `${baseUrl}/city/${slug}`,
+        url: `${baseUrl}/${slug}`,
         image:
           "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
       },
@@ -198,7 +198,7 @@ export default async function CityHome({ params }) {
       // 🔹 Breadcrumb
       {
         "@type": "BreadcrumbList",
-        "@id": `${baseUrl}/city/${slug}#breadcrumb`,
+        "@id": `${baseUrl}/${slug}#breadcrumb`,
         itemListElement: [
           {
             "@type": "ListItem",
@@ -210,7 +210,7 @@ export default async function CityHome({ params }) {
             "@type": "ListItem",
             position: 2,
             name: cityName,
-            item: `${baseUrl}/city/${slug}`,
+            item: `${baseUrl}/${slug}`,
           },
         ],
       },
@@ -222,7 +222,7 @@ export default async function CityHome({ params }) {
         itemListElement: all?.data?.slice(0, 10).map((service, index) => ({
           "@type": "ListItem",
           position: index + 1,
-          url: `${baseUrl}/city/${slug}/${service.slug}`,
+          url: `${baseUrl}/${slug}/${service.slug}`,
           name: service.title,
         })),
       },
@@ -233,7 +233,7 @@ export default async function CityHome({ params }) {
       //     itemListElement: serviceCategories.slice(0, 10).map((cat, index) => ({
       //       "@type": "ListItem",
       //       position: index + 1,
-      //       url: `${baseUrl}/city/${slug}/service-categories/${cat.slug}`,
+      //       url: `${baseUrl}/${slug}/service-categories/${cat.slug}`,
       //       name: cat.name,
       //     })),
       //   },

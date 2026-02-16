@@ -29,7 +29,7 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/city/patna', // YAHAN APNA DEFAULT CITY DAAL DO
+        destination: '/patna', 
         permanent: true, // 308 permanent redirect (SEO ke liye best)
       }
     ]

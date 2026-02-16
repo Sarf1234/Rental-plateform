@@ -46,7 +46,7 @@ export async function generateMetadata({ params }) {
         : cityName
     }.`;
 
-    const url = `${baseUrl}/city/${slug}/products`;
+    const url = `${baseUrl}/${slug}/products`;
 
     return {
       metadataBase: new URL("https://kiraynow.com"),
@@ -142,7 +142,7 @@ export default async function CityProductsPage({ params }) {
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://kiraynow.com";
 
-  const productUrl = `${baseUrl}/city/${slug}/products`;
+  const productUrl = `${baseUrl}/${slug}/products`;
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -190,7 +190,7 @@ export default async function CityProductsPage({ params }) {
             "@type": "ListItem",
             position: 2,
             name: cityName,
-            item: `${baseUrl}/city/${slug}`,
+            item: `${baseUrl}/${slug}`,
           },
           {
             "@type": "ListItem",
@@ -220,7 +220,7 @@ export default async function CityProductsPage({ params }) {
         itemListElement: categories.slice(0, 10).map((cat, index) => ({
           "@type": "ListItem",
           position: index + 1,
-          url: `${baseUrl}/city/${slug}/category/${cat.slug}`,
+          url: `${baseUrl}/${slug}/category/${cat.slug}`,
           name: cat.name,
         })),
       },
@@ -232,7 +232,7 @@ export default async function CityProductsPage({ params }) {
         itemListElement: all?.data.slice(0, 20).map((product, index) => ({
           "@type": "ListItem",
           position: index + 1,
-          url: `${baseUrl}/city/${slug}/products/${product.slug}`,
+          url: `${baseUrl}/${slug}/products/${product.slug}`,
           name: product.name,
         })),
       },

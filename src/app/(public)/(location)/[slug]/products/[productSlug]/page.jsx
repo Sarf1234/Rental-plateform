@@ -50,7 +50,7 @@ export async function generateMetadata({ params }) {
     product.images?.[0] ||
     "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp";
 
-  const url = `${baseUrl}/city/${slug}/products/${productSlug}`;
+  const url = `${baseUrl}/${slug}/products/${productSlug}`;
 
   return {
     metadataBase: new URL(baseUrl),
@@ -108,7 +108,7 @@ export default async function ProductPage({ params }) {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://kiraynow.com";
 
   const cityName = data?.city?.name || slug;
-  const productUrl = `${baseUrl}/city/${slug}/products/${productSlug}`;
+  const productUrl = `${baseUrl}/${slug}/products/${productSlug}`;
 
   const primaryPrice =
     pricing?.discountedPrice || pricing?.minPrice || pricing?.amount || 1000;
@@ -140,8 +140,8 @@ export default async function ProductPage({ params }) {
       "@id": `${productUrl}#breadcrumb`,
       itemListElement: [
         { "@type": "ListItem", position: 1, name: "Home", item: baseUrl },
-        { "@type": "ListItem", position: 2, name: cityName, item: `${baseUrl}/city/${slug}` },
-        { "@type": "ListItem", position: 3, name: "Rental Products", item: `${baseUrl}/city/${slug}/products` },
+        { "@type": "ListItem", position: 2, name: cityName, item: `${baseUrl}/${slug}` },
+        { "@type": "ListItem", position: 3, name: "Rental Products", item: `${baseUrl}/${slug}/products` },
         { "@type": "ListItem", position: 4, name: title, item: productUrl },
       ],
     },

@@ -21,7 +21,7 @@ export default function ProductCard({ product, citySlug }) {
   const hasDiscount =
     discountedPrice && discountedPrice < minPrice;
 
-  const productUrl = `/city/${citySlug}/products/${product.slug}`
+  const productUrl = `/${citySlug}/products/${product.slug}`
    
 
   return (
