@@ -26,7 +26,7 @@ export async function GET(req) {
     const sort = searchParams.get("sort");
 
     const page = parseInt(searchParams.get("page")) || 1;
-    const limit = parseInt(searchParams.get("limit")) || 12;
+    const limit = parseInt(searchParams.get("limit")) || 50;
     const skip = (page - 1) * limit;
 
     let city = null;
