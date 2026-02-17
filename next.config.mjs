@@ -30,6 +30,11 @@ const nextConfig = {
       {
         source: '/',
         destination: '/patna', 
+        permanent: false, // 308 permanent redirect (SEO ke liye best)
+      },
+      {
+        source: '/city/patna',
+        destination: '/patna', 
         permanent: true, // 308 permanent redirect (SEO ke liye best)
       }
     ]
