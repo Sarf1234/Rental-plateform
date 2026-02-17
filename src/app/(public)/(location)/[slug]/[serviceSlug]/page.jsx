@@ -33,7 +33,7 @@ export async function generateMetadata({ params }) {
       service.seo?.metaDescription ||
       service.description?.replace(/<[^>]+>/g, "").slice(0, 140);
 
-    const title = `${baseTitle} in ${cityName} | ${brandName}`;
+    const title = `${baseTitle} in ${cityName} `;
 
     const description = `${baseDescription} Available across ${cityName}${
       city?.subAreas?.length

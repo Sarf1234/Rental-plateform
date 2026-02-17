@@ -21,7 +21,7 @@ export async function generateMetadata({ params }) {
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
 
-  const title = `${categoryName} Rental in ${cityName} | KirayNow`;
+  const title = `${categoryName} Rental in ${cityName}`;
 
   const description = `Rent ${categoryName.toLowerCase()} in ${cityName} at affordable pricing. Verified vendors, fast delivery and professional event setup available across the city.`;
 
