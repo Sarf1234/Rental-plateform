@@ -54,12 +54,12 @@ export default function ProductInfo({
 
           <div className="flex items-end gap-3">
             <p className="text-3xl font-bold text-black">
-              ₹{price}
+               ₹{pricing.minPrice}
             </p>
 
             {pricing?.discountedPrice && pricing?.minPrice && (
               <span className="text-sm text-gray-400 line-through">
-                ₹{pricing.minPrice}
+                ₹{price}
               </span>
             )}
           </div>

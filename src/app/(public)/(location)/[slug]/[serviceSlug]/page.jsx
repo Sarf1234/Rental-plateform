@@ -114,6 +114,7 @@ export default async function ServiceDetailsPage({ params }) {
   const cityName = cityData?.name || "";
   const service = featured;
   const serviceUrl = `${baseUrl}/${slug}/${serviceSlug}`;
+  console.log(service.description)
 
   const primaryProvider = service.providers?.[0];
 
@@ -245,7 +246,7 @@ export default async function ServiceDetailsPage({ params }) {
 
           {/* RIGHT SIDEBAR */}
           <div className="lg:col-span-3">
-            <RightSidebar service={featured} />
+            <RightSidebar service={featured} cityData={slug} />
           </div>
         </div>
       </div>
@@ -375,6 +376,10 @@ function CenterContent({ service, city, cityData }) {
         </div>
       </div>
 
+      <div className="lg:hidden">
+        <ContactCTA service={service} citySlug={city} />
+      </div>
+
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <h1 className="text-3xl font-bold text-gray-900">
           {service.title} in {cityName}
@@ -393,6 +398,18 @@ function CenterContent({ service, city, cityData }) {
           className="prose max-w-none text-gray-700"
           dangerouslySetInnerHTML={{ __html: service.description }}
         />
+        <div className="mt-8">
+            <h2 className="text-xl font-semibold">
+              {service.title} Service in {cityName}
+            </h2>
+
+            <p className="text-gray-600 mt-2">
+              Our {service.title.toLowerCase()} services are frequently booked in{" "}
+              {topAreas}. We customize setup according to venue size,
+              guest capacity, and event type in {cityName}.
+            </p>
+          </div>
+
 
         {/* ===== CITY CLOSING CONTEXT ===== */}
         <p className="mt-6 text-gray-600">
@@ -409,8 +426,7 @@ function CenterContent({ service, city, cityData }) {
 
         <div className="grid md:grid-cols-2 gap-8">
           {service.products?.map((product) => {
-            const price =
-              product.pricing?.discountedPrice || product.pricing?.minPrice;
+            const price = product.pricing?.minPrice || product.pricing?.discountedPrice 
 
             return (
               <Link
@@ -495,53 +511,38 @@ function CenterContent({ service, city, cityData }) {
   );
 }
 
-function RightSidebar({ service }) {
+function RightSidebar({ service, cityData }) {
+
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://kiraynow.com";
+
+  // ⚡ Generate dynamic WhatsApp message
+  const message = `
+Hi KirayNow Team 
+
+I'm interested in *${service.title}*.
+
+Starting Price: ₹${service.pricing?.amount}
+
+Please share details, availability & best quotation.
+
+Service Link:
+${baseUrl}/${cityData}/${service.slug}
+
+Thank you!
+  `;
+
+  const encodedMessage = encodeURIComponent(message.trim());
+
+  const whatsappUrl = `https://wa.me/${service.whatsappNumber}?text=${encodedMessage}`;
+
+
   return (
     <div className="lg:sticky lg:top-20 space-y-6">
       {/* ========== CONTACT / CTA CARD ========== */}
-      <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 space-y-5">
-        {/* Title */}
-        <div>
-          <h3 className="text-xl font-semibold text-gray-900">
-            Get a Free Quote
-          </h3>
-          <p className="text-sm text-gray-500 mt-1">
-            Quick response within 30 minutes
-          </p>
-        </div>
-
-        {/* Highlight Trust Badge */}
-        <div className="bg-gray-50 border rounded-xl p-4 text-center">
-          <p className="text-xs text-gray-500">Trusted by Clients</p>
-          <p className="text-sm font-semibold text-gray-900">
-            Verified Event Professionals
-          </p>
-        </div>
-
-        {/* CTA Buttons */}
-        <div className="space-y-3">
-          <a
-            href={`tel:${service.callNumber}`}
-            className="block w-full text-center bg-black text-white py-3 rounded-xl font-medium hover:scale-[1.02] transition duration-200"
-          >
-            Call Now
-          </a>
-
-          <a
-            href={`https://wa.me/${service.whatsappNumber}`}
-            target="_blank"
-            className="block w-full text-center bg-green-500 text-white py-3 rounded-xl font-medium hover:bg-green-600 transition duration-200"
-          >
-            WhatsApp Now
-          </a>
-        </div>
-
-        {/* Sub Info */}
-        <p className="text-xs text-gray-400 text-center">
-          No booking fee • Instant support
-        </p>
-      </div>
-
+      <div className="hidden lg:block">
+         <ContactCTA service={service} citySlug={cityData} />
+       </div>
       {/* ========== PROVIDERS CARD ========== */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <h3 className="text-lg font-semibold text-gray-900 mb-5">
@@ -604,3 +605,71 @@ function FAQSection({ faqs }) {
     </div>
   );
 }
+
+
+
+function ContactCTA({ service, citySlug }) {
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://kiraynow.com";
+
+  const message = `
+Hi KirayNow Team 👋
+
+I'm interested in *${service.title}*.
+
+💰 Starting Price: ₹${service.pricing?.amount}
+
+Please share details, availability & best quotation.
+
+Service Link:
+${baseUrl}/${citySlug}/${service.slug}
+
+Thank you!
+  `;
+
+  const encodedMessage = encodeURIComponent(message.trim());
+  const whatsappUrl = `https://wa.me/${service.whatsappNumber}?text=${encodedMessage}`;
+
+  return (
+    <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 space-y-5">
+      <div>
+        <h3 className="text-xl font-semibold text-gray-900">
+          Get a Free Quote
+        </h3>
+        <p className="text-sm text-gray-500 mt-1">
+          Quick response within 30 minutes
+        </p>
+      </div>
+
+      <div className="bg-gray-50 border rounded-xl p-4 text-center">
+        <p className="text-xs text-gray-500">Trusted by Clients</p>
+        <p className="text-sm font-semibold text-gray-900">
+          Verified Event Professionals
+        </p>
+      </div>
+
+      <div className="space-y-3">
+        <a
+          href={`tel:${service.callNumber}`}
+          className="block w-full text-center bg-black text-white py-3 rounded-xl font-medium hover:scale-[1.02] transition duration-200"
+        >
+          Call Now
+        </a>
+
+        <a
+          href={whatsappUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="block w-full text-center bg-green-500 text-white py-3 rounded-xl font-medium hover:bg-green-600 transition duration-200"
+        >
+          Get Quote on WhatsApp
+        </a>
+      </div>
+
+      <p className="text-xs text-gray-400 text-center">
+        No booking fee • Instant support
+      </p>
+    </div>
+  );
+}
+

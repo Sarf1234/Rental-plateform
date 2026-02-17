@@ -90,7 +90,7 @@ export default function Footer() {
         <div className="mt-14 border-t border-gray-200 pt-6 text-center text-xs text-gray-500">
           © {new Date().getFullYear()}{" "}
           <span className="font-medium text-gray-700">
-            RentPlatform
+            KirayNow
           </span>. All rights reserved.
         </div>
 
