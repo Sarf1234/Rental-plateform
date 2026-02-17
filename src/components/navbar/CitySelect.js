@@ -59,13 +59,23 @@ export default function CitySelect() {
   if (!ready) return null;
 
   return (
+  <div className="flex-shrink-0">
     <Select
       value={city?.slug || ""}
       onValueChange={handleChange}
-      className="w-[200px] h-10 px-4 border border-gray-300 rounded-lg"
     >
-      <SelectTrigger className="w-[200px] h-10 px-4 border border-gray-300 rounded-lg">
-        <SelectValue placeholder="Select City" />
+      <SelectTrigger className="
+        w-auto
+        min-w-[120px]
+        max-w-[160px]
+        h-10
+        px-3
+        border
+        border-gray-300
+        
+        text-sm
+      ">
+        <SelectValue placeholder="City" />
       </SelectTrigger>
 
       <SelectContent>
@@ -76,5 +86,7 @@ export default function CitySelect() {
         ))}
       </SelectContent>
     </Select>
-  );
+  </div>
+);
+
 }
