@@ -26,9 +26,6 @@ export const metadata = {
   description:
     "KirayNow is a trusted event rental marketplace offering birthday decoration, wedding setups, party rentals and celebration services across multiple cities in India. Book verified professionals with transparent pricing.",
 
-  alternates: {
-    canonical: "https://kiraynow.com",
-  },
 
   openGraph: {
     title:

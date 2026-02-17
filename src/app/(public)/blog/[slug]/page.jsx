@@ -29,7 +29,7 @@ export async function generateMetadata({ params }) {
     post.excerpt ||
     "Read practical AI guides, tutorials, tools and real-world use cases on IndiaAIMag.";
 
-  const canonicalUrl = `https://indiaaimag.com/blog/${post.slug}`;
+  const canonicalUrl = `https://kiraynow.com/blog/${post.slug}`;
 
   return {
     title,
