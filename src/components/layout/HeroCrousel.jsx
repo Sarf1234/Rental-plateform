@@ -60,13 +60,13 @@ export default function HeroCarousel({ images, contents }) {
                   {contents[i].desc}
                 </p>
 
-                <a
+                {/* <a
                   href={contents[i].link}
                   target="_blank"
                   className="mt-6 px-6 md:block hidden py-3 bg-[#E8B44C] text-white font-semibold rounded-lg shadow-lg hover:bg-yellow-400 transition"
                 >
                   {contents[i].cta}
-                </a>
+                </a> */}
 
               </div>
             </div>
