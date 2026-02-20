@@ -80,7 +80,7 @@ export default function CitySelect() {
       <SelectContent>
         {cities.map((c) => (
           <SelectItem key={c.slug} value={c.slug}>
-            {c.name}, {c.state}
+            {c.name}
           </SelectItem>
         ))}
       </SelectContent>

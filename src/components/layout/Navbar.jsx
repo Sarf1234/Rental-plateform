@@ -190,8 +190,14 @@ export default function Navbar() {
               onClick={() => setOpen(false)}
               className="flex items-center gap-2"
             >
-              <Home size={20} />
-              <span className="font-bold">RentEase</span>
+              <Image
+            src="https://res.cloudinary.com/dlwcvgox7/image/upload/v1771352145/posts/hjrudbleo4u5omzm3ami.png"
+            alt="KirayNow Logo"
+            width={120}
+            height={32}
+            priority
+            className="object-contain h-8 w-auto"
+          />
             </Link>
 
             <button onClick={() => setOpen(false)}>
@@ -253,7 +259,7 @@ export default function Navbar() {
 
           {/* Footer */}
           <div className="border-t p-4 text-center text-sm text-gray-500">
-            © {new Date().getFullYear()} RentEase. All rights reserved.
+            © {new Date().getFullYear()} KirayNow. All rights reserved.
           </div>
         </div>
       )}
