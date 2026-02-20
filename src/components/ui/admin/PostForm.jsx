@@ -39,7 +39,13 @@ function Chip({ children, onRemove }) {
   );
 }
 
-function MultiSelect({ label, options = [], value = [], onChange, placeholder = "Select..." }) {
+function MultiSelect({
+  label,
+  options = [],
+  value = [],
+  onChange,
+  placeholder = "Select...",
+}) {
   const [open, setOpen] = useState(false);
   const [q, setQ] = useState("");
   const ref = useRef(null);
@@ -54,7 +60,7 @@ function MultiSelect({ label, options = [], value = [], onChange, placeholder = 
   }, []);
 
   const filtered = options.filter((o) =>
-    (o.name || o).toString().toLowerCase().includes(q.toLowerCase())
+    (o.name || o.title || "").toString().toLowerCase().includes(q.toLowerCase()),
   );
 
   function toggle(id) {
@@ -64,7 +70,9 @@ function MultiSelect({ label, options = [], value = [], onChange, placeholder = 
 
   return (
     <div className="relative" ref={ref}>
-      <Label className="block text-sm font-medium text-rose-700 mb-1">{label}</Label>
+      <Label className="block text-sm font-medium text-rose-700 mb-1">
+        {label}
+      </Label>
       <button
         type="button"
         onClick={() => setOpen((s) => !s)}
@@ -76,8 +84,10 @@ function MultiSelect({ label, options = [], value = [], onChange, placeholder = 
         ) : (
           <div className="flex gap-2 flex-wrap">
             {value.map((id) => {
-              const opt = options.find((o) => o._id === id || o.slug === id || o.name === id);
-              return <Chip key={id}>{opt ? opt.name : id}</Chip>;
+              const opt = options.find(
+                (o) => o._id === id || o.slug === id || o.name === id,
+              );
+              return <Chip key={id}>{opt ? (opt.name || opt.title) : id}</Chip>;
             })}
           </div>
         )}
@@ -97,7 +107,10 @@ function MultiSelect({ label, options = [], value = [], onChange, placeholder = 
               const id = opt._id || opt.slug || opt.name;
               const checked = value.includes(id);
               return (
-                <label key={id} className="flex items-center gap-2 px-2 py-2 rounded hover:bg-rose-50 cursor-pointer">
+                <label
+                  key={id}
+                  className="flex items-center gap-2 px-2 py-2 rounded hover:bg-rose-50 cursor-pointer"
+                >
                   <input
                     type="checkbox"
                     checked={checked}
@@ -105,13 +118,17 @@ function MultiSelect({ label, options = [], value = [], onChange, placeholder = 
                     className="w-4 h-4 accent-rose-600"
                   />
                   <div className="text-sm">
-                    <div className="font-medium text-rose-700">{opt.name}</div>
-                    {opt.slug && <div className="text-xs text-gray-400">{opt.slug}</div>}
+                    <div className="font-medium text-rose-700">{opt.name || opt.title}</div>
+                    {opt.slug && (
+                      <div className="text-xs text-gray-400">{opt.slug}</div>
+                    )}
                   </div>
                 </label>
               );
             })}
-            {filtered.length === 0 && <div className="text-sm text-gray-400 px-2 py-2">No results</div>}
+            {filtered.length === 0 && (
+              <div className="text-sm text-gray-400 px-2 py-2">No results</div>
+            )}
           </div>
         </div>
       )}
@@ -122,13 +139,13 @@ function MultiSelect({ label, options = [], value = [], onChange, placeholder = 
 function InternalLinksSelect({ options, value, onChange, loading }) {
   const [q, setQ] = useState("");
 
-  const filtered = options.filter(l =>
-    l.title.toLowerCase().includes(q.toLowerCase())
+  const filtered = options.filter((l) =>
+    l.title.toLowerCase().includes(q.toLowerCase()),
   );
 
   function toggle(link) {
-    const exists = value.some(v => v.url === link.url);
-    if (exists) onChange(value.filter(v => v.url !== link.url));
+    const exists = value.some((v) => v.url === link.url);
+    if (exists) onChange(value.filter((v) => v.url !== link.url));
     else onChange([...value, link]);
   }
 
@@ -148,35 +165,33 @@ function InternalLinksSelect({ options, value, onChange, loading }) {
       <div className="border rounded-md max-h-48 overflow-auto p-2">
         {loading && <div className="text-sm text-gray-400">Loading…</div>}
 
-        {!loading && filtered.map(link => {
-          const checked = value.some(v => v.url === link.url);
-          return (
-            <label
-              key={link.url}
-              className="flex gap-2 px-2 py-2 hover:bg-rose-50 cursor-pointer"
-            >
-              <input
-                type="checkbox"
-                checked={checked}
-                onChange={() => toggle(link)}
-                className="accent-rose-600"
-              />
-              <div>
-                <div className="text-sm font-medium text-rose-700">
-                  {link.title}
+        {!loading &&
+          filtered.map((link) => {
+            const checked = value.some((v) => v.url === link.url);
+            return (
+              <label
+                key={link.url}
+                className="flex gap-2 px-2 py-2 hover:bg-rose-50 cursor-pointer"
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={() => toggle(link)}
+                  className="accent-rose-600"
+                />
+                <div>
+                  <div className="text-sm font-medium text-rose-700">
+                    {link.title}
+                  </div>
+                  <div className="text-xs text-gray-400">{link.url}</div>
                 </div>
-                <div className="text-xs text-gray-400">
-                  {link.url}
-                </div>
-              </div>
-            </label>
-          );
-        })}
+              </label>
+            );
+          })}
       </div>
     </div>
   );
 }
-
 
 export default function PostForm({
   initialData = {},
@@ -190,18 +205,49 @@ export default function PostForm({
   const [excerpt, setExcerpt] = useState(initialData.excerpt || "");
   const [content, setContent] = useState(initialData.content || "");
   const [coverImage, setCoverImage] = useState(initialData.coverImage || "");
-  const [categories, setCategories] = useState((initialData.categories || []).map(c => c._id || c));
-  const [tags, setTags] = useState((initialData.tags || []).map(t => t._id || t));
+  const [categories, setCategories] = useState(
+    (initialData.categories || []).map((c) => c._id || c),
+  );
+  const [tags, setTags] = useState(
+    (initialData.tags || []).map((t) => t._id || t),
+  );
   const [isFeatured, setIsFeatured] = useState(!!initialData.isFeatured);
   const [isTrending, setIsTrending] = useState(!!initialData.isTrending);
   const [published, setPublished] = useState(initialData.published ?? true);
   const [metaTitle, setMetaTitle] = useState(initialData.metaTitle || "");
-  const [metaDescription, setMetaDescription] = useState(initialData.metaDescription || "");
-  const [metaKeywords, setMetaKeywords] = useState((initialData.metaKeywords || []).join(", "));
+  const [metaDescription, setMetaDescription] = useState(
+    initialData.metaDescription || "",
+  );
+  const [metaKeywords, setMetaKeywords] = useState(
+    (initialData.metaKeywords || []).join(", "),
+  );
   const [allCategories, setAllCategories] = useState([]);
   const [allTags, setAllTags] = useState([]);
-  const [selectedInternalLinks, setSelectedInternalLinks] = useState(initialData.internalLinks || []);
+  const [selectedInternalLinks, setSelectedInternalLinks] = useState(
+    initialData.internalLinks || [],
+  );
   const editorRef = useRef(null);
+  // NEW STATES
+  const [relatedServices, setRelatedServices] = useState(
+    (initialData.relatedServices || []).map((s) => s._id || s),
+  );
+
+  const [relatedProducts, setRelatedProducts] = useState(
+    (initialData.relatedProducts || []).map((p) => p._id || p),
+  );
+
+  const [faqs, setFaqs] = useState(initialData.faqs || []);
+
+  const [seoAdvanced, setSeoAdvanced] = useState({
+    canonicalUrl: initialData.seo?.canonicalUrl || "",
+    noIndex: initialData.seo?.noIndex || false,
+    ogTitle: initialData.seo?.ogTitle || "",
+    ogDescription: initialData.seo?.ogDescription || "",
+    ogImage: initialData.seo?.ogImage || "",
+  });
+
+  const [allServices, setAllServices] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
 
   const joditConfig = {
     readonly: false,
@@ -210,13 +256,26 @@ export default function PostForm({
     enableDragAndDropFileToEditor: true,
     uploader: { insertImageAsBase64URI: false },
     buttons: [
-      "bold","italic","underline","strikethrough","eraser",
-      "ul","ol","outdent","indent",
-      "align","font","fontsize","brush",
-      "paragraph","image","link","source"
+      "bold",
+      "italic",
+      "underline",
+      "strikethrough",
+      "eraser",
+      "ul",
+      "ol",
+      "outdent",
+      "indent",
+      "align",
+      "font",
+      "fontsize",
+      "brush",
+      "paragraph",
+      "image",
+      "link",
+      "source",
     ],
-      allowClasses: true,             // ✅ Allow class attributes
-      allowedAttributes: ["class"], 
+    allowClasses: true, // ✅ Allow class attributes
+    allowedAttributes: ["class"],
   };
 
   useEffect(() => {
@@ -225,9 +284,22 @@ export default function PostForm({
       try {
         const cats = await apiRequest("/api/categories");
         const tgs = await apiRequest("/api/tags");
+        const services = await apiRequest(
+          "/api/service/admin?page=1&limit=100",
+        );
+
+        const products = await apiRequest(
+          "/api/products/admin?page=1&limit=100",
+        );
+
         if (!mounted) return;
         setAllCategories(cats.data || cats || []);
         setAllTags(tgs.data || tgs || []);
+        setAllServices(services.data || []);
+        setAllProducts(products.data || []);
+        console.clear()
+        console.log(services)
+        console.log(products)
       } catch (err) {
         toast.error("Failed to load categories/tags");
       }
@@ -256,8 +328,10 @@ export default function PostForm({
   async function handleCoverFile(e) {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.type.startsWith("image/")) return toast.error("Only images allowed");
-    if (file.size > 5 * 1024 * 1024) return toast.error("Image > 5MB not allowed");
+    if (!file.type.startsWith("image/"))
+      return toast.error("Only images allowed");
+    if (file.size > 5 * 1024 * 1024)
+      return toast.error("Image > 5MB not allowed");
     try {
       const url = await handleUploadImage(file);
       setCoverImage(url);
@@ -270,7 +344,8 @@ export default function PostForm({
   async function handleSubmit(e) {
     e?.preventDefault?.();
     if (!title.trim()) return toast.error("Title is required");
-    if (!content || content.trim().length < 20) return toast.error("Content is too short");
+    if (!content || content.trim().length < 20)
+      return toast.error("Content is too short");
     if (!categories.length) return toast.error("Choose at least one category");
 
     const payload = {
@@ -285,9 +360,21 @@ export default function PostForm({
       isTrending,
       published,
       metaTitle: metaTitle || title,
-      metaDescription: metaDescription || excerpt || content.replace(/<[^>]+>/g, "").slice(0, 160),
-      metaKeywords: metaKeywords ? metaKeywords.split(",").map(k => k.trim()).filter(Boolean) : [],
+      metaDescription:
+        metaDescription ||
+        excerpt ||
+        content.replace(/<[^>]+>/g, "").slice(0, 160),
+      metaKeywords: metaKeywords
+        ? metaKeywords
+            .split(",")
+            .map((k) => k.trim())
+            .filter(Boolean)
+        : [],
       internalLinks: selectedInternalLinks,
+      relatedServices,
+      relatedProducts,
+      faqs,
+      seo: seoAdvanced,
     };
 
     try {
@@ -315,40 +402,70 @@ export default function PostForm({
               placeholder="Write an attention grabbing title..."
               className="mt-2"
             />
-            <div className="text-xs text-gray-400 mt-1">SEO-friendly titles perform better</div>
+            <div className="text-xs text-gray-400 mt-1">
+              SEO-friendly titles perform better
+            </div>
           </div>
 
           <div>
-            <Label className="text-sm font-medium text-rose-700">Slug (editable)</Label>
+            <Label className="text-sm font-medium text-rose-700">
+              Slug (editable)
+            </Label>
             <Input
               name="slug"
               value={slug}
               onChange={(e) => setSlug(createSlug(e.target.value))}
               className="mt-2"
             />
-            <div className="text-xs text-gray-400 mt-1">URL friendly - letters, numbers and hyphens only</div>
+            <div className="text-xs text-gray-400 mt-1">
+              URL friendly - letters, numbers and hyphens only
+            </div>
           </div>
 
           <div>
-            <Label className="text-sm font-medium text-rose-700">Cover Image</Label>
+            <Label className="text-sm font-medium text-rose-700">
+              Cover Image
+            </Label>
             <div className="mt-2 flex items-center gap-3">
               {coverImage ? (
                 <>
-                  <img src={coverImage} alt="cover" className="w-36 h-24 object-cover rounded-md border" />
+                  <img
+                    src={coverImage}
+                    alt="cover"
+                    className="w-36 h-24 object-cover rounded-md border"
+                  />
                   <div className="flex flex-col gap-2">
-                    <Button variant="outline" onClick={() => setCoverImage("")}>Remove</Button>
+                    <Button variant="outline" onClick={() => setCoverImage("")}>
+                      Remove
+                    </Button>
                     <label className="text-sm text-gray-500">
-                      <input type="file" accept="image/*" onChange={handleCoverFile} className="sr-only" />
-                      <span className="text-rose-600 underline cursor-pointer">Replace cover</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleCoverFile}
+                        className="sr-only"
+                      />
+                      <span className="text-rose-600 underline cursor-pointer">
+                        Replace cover
+                      </span>
                     </label>
                   </div>
                 </>
               ) : (
                 <label className="w-full flex items-center justify-center border border-dashed border-rose-200 rounded-md p-6 bg-rose-50 text-center cursor-pointer">
                   <div>
-                    <div className="text-rose-600 font-medium">Upload cover image</div>
-                    <div className="text-xs text-gray-500 mt-1">PNG/JPG, max 5MB</div>
-                    <input type="file" accept="image/*" onChange={handleCoverFile} className="sr-only" />
+                    <div className="text-rose-600 font-medium">
+                      Upload cover image
+                    </div>
+                    <div className="text-xs text-gray-500 mt-1">
+                      PNG/JPG, max 5MB
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleCoverFile}
+                      className="sr-only"
+                    />
                   </div>
                 </label>
               )}
@@ -357,8 +474,53 @@ export default function PostForm({
 
           <div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <MultiSelect label="Categories" options={allCategories} value={categories} onChange={setCategories} placeholder="Choose categories" />
-              <MultiSelect label="Tags" options={allTags} value={tags} onChange={setTags} placeholder="Choose tags" />
+              <MultiSelect
+                label="Categories"
+                options={allCategories}
+                value={categories}
+                onChange={setCategories}
+                placeholder="Choose categories"
+              />
+              <MultiSelect
+                label="Tags"
+                options={allTags}
+                value={tags}
+                onChange={setTags}
+                placeholder="Choose tags"
+              />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <MultiSelect
+                label="Related Services"
+                options={allServices}
+                value={relatedServices}
+                onChange={setRelatedServices}
+                placeholder="Select related services"
+              />
+
+              <MultiSelect
+                label="Related Products"
+                options={allProducts}
+                value={relatedProducts}
+                onChange={setRelatedProducts}
+                placeholder="Select related products"
+              />
+            </div>
+          </div>
+
+          <div>
+            <Label className="text-sm font-medium text-rose-700">Excerpt</Label>
+            <Textarea
+              value={excerpt}
+              onChange={(e) => setExcerpt(e.target.value)}
+              rows={3}
+              className="mt-2"
+            />
+            <div className="text-xs text-gray-400 mt-1">
+              Short summary used for meta description and cards (max ~160 chars)
+            </div>
+            <div className="text-xs text-gray-400 mt-1">
+              Characters: {(excerpt || "").length}
             </div>
           </div>
 
@@ -373,53 +535,129 @@ export default function PostForm({
                   onBlur={(newContent) => setContent(newContent)}
                 />
               ) : (
-                <Textarea value={content} onChange={(e) => setContent(e.target.value)} rows={10} />
+                <Textarea
+                  value={content}
+                  onChange={(e) => setContent(e.target.value)}
+                  rows={10}
+                />
               )}
             </div>
-            <div className="text-xs text-gray-400 mt-1">Tip: write clear headings and short paragraphs for readability.</div>
+            <div className="text-xs text-gray-400 mt-1">
+              Tip: write clear headings and short paragraphs for readability.
+            </div>
           </div>
 
           <div>
-            <Label className="text-sm font-medium text-rose-700">Excerpt</Label>
-            <Textarea value={excerpt} onChange={(e) => setExcerpt(e.target.value)} rows={3} className="mt-2" />
-            <div className="text-xs text-gray-400 mt-1">Short summary used for meta description and cards (max ~160 chars)</div>
-            <div className="text-xs text-gray-400 mt-1">Characters: { (excerpt || "").length }</div>
+            <div className="flex justify-between items-center mb-2">
+              <Label className="text-sm font-medium text-rose-700">FAQs</Label>
+              <button
+                type="button"
+                onClick={() => setFaqs([...faqs, { question: "", answer: "" }])}
+                className="text-sm text-rose-600 hover:underline"
+              >
+                + Add FAQ
+              </button>
+            </div>
+
+            {faqs.map((faq, i) => (
+              <div key={i} className="border rounded-md p-3 mb-3 space-y-2">
+                <Input
+                  placeholder="Question"
+                  value={faq.question}
+                  onChange={(e) => {
+                    const copy = [...faqs];
+                    copy[i].question = e.target.value;
+                    setFaqs(copy);
+                  }}
+                />
+                <Textarea
+                  placeholder="Answer"
+                  value={faq.answer}
+                  onChange={(e) => {
+                    const copy = [...faqs];
+                    copy[i].answer = e.target.value;
+                    setFaqs(copy);
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setFaqs(faqs.filter((_, idx) => idx !== i))}
+                >
+                  Remove
+                </Button>
+              </div>
+            ))}
           </div>
+
+          
         </div>
 
         {/* Meta column */}
         <aside className="lg:col-span-1 space-y-4">
+          
           <div className="bg-white border border-rose-50 rounded-md p-4 shadow-sm">
             <div className="flex items-center justify-between mb-3">
               <div>
-                <div className="text-sm font-medium text-rose-700">Visibility</div>
-                <div className="text-xs text-gray-500">Publish or keep as draft</div>
+                <div className="text-sm font-medium text-rose-700">
+                  Visibility
+                </div>
+                <div className="text-xs text-gray-500">
+                  Publish or keep as draft
+                </div>
               </div>
             </div>
 
             <div className="space-y-3">
               <label className="flex items-center justify-between gap-3">
                 <div>
-                  <div className="text-sm font-medium text-gray-700">Published</div>
-                  <div className="text-xs text-gray-400">Visible to everyone</div>
+                  <div className="text-sm font-medium text-gray-700">
+                    Published
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    Visible to everyone
+                  </div>
                 </div>
-                <input type="checkbox" checked={published} onChange={(e)=>setPublished(e.target.checked)} className="w-5 h-5 accent-rose-600" />
+                <input
+                  type="checkbox"
+                  checked={published}
+                  onChange={(e) => setPublished(e.target.checked)}
+                  className="w-5 h-5 accent-rose-600"
+                />
               </label>
 
               <label className="flex items-center justify-between gap-3">
                 <div>
-                  <div className="text-sm font-medium text-gray-700">Featured</div>
-                  <div className="text-xs text-gray-400">Show in homepage slider</div>
+                  <div className="text-sm font-medium text-gray-700">
+                    Featured
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    Show in homepage slider
+                  </div>
                 </div>
-                <input type="checkbox" checked={isFeatured} onChange={(e)=>setIsFeatured(e.target.checked)} className="w-5 h-5 accent-rose-600" />
+                <input
+                  type="checkbox"
+                  checked={isFeatured}
+                  onChange={(e) => setIsFeatured(e.target.checked)}
+                  className="w-5 h-5 accent-rose-600"
+                />
               </label>
 
               <label className="flex items-center justify-between gap-3">
                 <div>
-                  <div className="text-sm font-medium text-gray-700">Trending</div>
-                  <div className="text-xs text-gray-400">Highlight in trending section</div>
+                  <div className="text-sm font-medium text-gray-700">
+                    Trending
+                  </div>
+                  <div className="text-xs text-gray-400">
+                    Highlight in trending section
+                  </div>
                 </div>
-                <input type="checkbox" checked={isTrending} onChange={(e)=>setIsTrending(e.target.checked)} className="w-5 h-5 accent-rose-600" />
+                <input
+                  type="checkbox"
+                  checked={isTrending}
+                  onChange={(e) => setIsTrending(e.target.checked)}
+                  className="w-5 h-5 accent-rose-600"
+                />
               </label>
             </div>
           </div>
@@ -430,18 +668,35 @@ export default function PostForm({
             <div className="space-y-3">
               <div>
                 <Label className="text-sm">Meta Title</Label>
-                <Input value={metaTitle} onChange={(e)=>setMetaTitle(e.target.value)} className="mt-2" />
+                <Input
+                  value={metaTitle}
+                  onChange={(e) => setMetaTitle(e.target.value)}
+                  className="mt-2"
+                />
               </div>
 
               <div>
                 <Label className="text-sm">Meta Description</Label>
-                <Textarea value={metaDescription} onChange={(e)=>setMetaDescription(e.target.value)} rows={3} className="mt-2" />
-                <div className="text-xs text-gray-400 mt-1">Best: 120–160 characters. Current: { (metaDescription || "").length }</div>
+                <Textarea
+                  value={metaDescription}
+                  onChange={(e) => setMetaDescription(e.target.value)}
+                  rows={3}
+                  className="mt-2"
+                />
+                <div className="text-xs text-gray-400 mt-1">
+                  Best: 120–160 characters. Current:{" "}
+                  {(metaDescription || "").length}
+                </div>
               </div>
 
               <div>
                 <Label className="text-sm">Meta Keywords</Label>
-                <Input value={metaKeywords} onChange={(e)=>setMetaKeywords(e.target.value)} placeholder="comma separated" className="mt-2" />
+                <Input
+                  value={metaKeywords}
+                  onChange={(e) => setMetaKeywords(e.target.value)}
+                  placeholder="comma separated"
+                  className="mt-2"
+                />
               </div>
             </div>
           </div>
@@ -453,8 +708,78 @@ export default function PostForm({
             loading={loadingLinks}
           />
 
+          <div>
+            <Label>Canonical URL</Label>
+            <Input
+              value={seoAdvanced.canonicalUrl}
+              onChange={(e) =>
+                setSeoAdvanced({
+                  ...seoAdvanced,
+                  canonicalUrl: e.target.value,
+                })
+              }
+            />
+          </div>
+
+          <label className="flex items-center gap-2 text-sm mt-2">
+            <input
+              type="checkbox"
+              checked={seoAdvanced.noIndex}
+              onChange={() =>
+                setSeoAdvanced({
+                  ...seoAdvanced,
+                  noIndex: !seoAdvanced.noIndex,
+                })
+              }
+            />
+            No Index
+          </label>
+
+          <div>
+            <Label>OG Title</Label>
+            <Input
+              value={seoAdvanced.ogTitle}
+              onChange={(e) =>
+                setSeoAdvanced({
+                  ...seoAdvanced,
+                  ogTitle: e.target.value,
+                })
+              }
+            />
+          </div>
+
+          <div>
+            <Label>OG Description</Label>
+            <Textarea
+              value={seoAdvanced.ogDescription}
+              onChange={(e) =>
+                setSeoAdvanced({
+                  ...seoAdvanced,
+                  ogDescription: e.target.value,
+                })
+              }
+            />
+          </div>
+
+          <div>
+            <Label>OG Image URL</Label>
+            <Input
+              value={seoAdvanced.ogImage}
+              onChange={(e) =>
+                setSeoAdvanced({
+                  ...seoAdvanced,
+                  ogImage: e.target.value,
+                })
+              }
+            />
+          </div>
+
           <div className="pt-2">
-            <Button type="submit" className="w-full bg-rose-600 hover:bg-rose-700" disabled={loading}>
+            <Button
+              type="submit"
+              className="w-full bg-rose-600 hover:bg-rose-700"
+              disabled={loading}
+            >
               {loading ? "Saving..." : "Save Post"}
             </Button>
           </div>

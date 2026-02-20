@@ -72,7 +72,6 @@ export default function CitySelect() {
         px-3
         border
         border-gray-300
-        
         text-sm
       ">
         <SelectValue placeholder="City" />

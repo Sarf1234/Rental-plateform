@@ -127,16 +127,15 @@ export async function GET(req) {
 */
 
 
+// ADD AT TOP WITH OTHER IMPORTS
+
 export async function POST(req) {
   try {
     await connectDB();
-
-    // permission
-    await requireAdmin(); // throws if not admin
+    await requireAdmin();
 
     const body = await req.json();
 
-    // Basic size limits
     if (!body.title || !body.content) {
       return new Response(
         JSON.stringify({ success: false, message: "Title and content required" }),
@@ -151,7 +150,7 @@ export async function POST(req) {
       );
     }
 
-    // Sanitize content (XSS protection)
+    // ---------------- SANITIZE CONTENT ----------------
     const cleanContent = sanitizeHtml(body.content, {
       allowedTags: sanitizeHtml.defaults.allowedTags.concat([
         "img",
@@ -166,7 +165,7 @@ export async function POST(req) {
       },
     });
 
-    // Validate categories
+    // ---------------- VALIDATE CATEGORIES ----------------
     const categories = Array.isArray(body.categories) ? body.categories : [];
     if (!categories.length) {
       return new Response(
@@ -175,98 +174,127 @@ export async function POST(req) {
       );
     }
 
-    const invalidCategory = categories.some(
-      (id) => !id || !/^[0-9a-fA-F]{24}$/.test(id)
-    );
-    if (invalidCategory) {
-      return new Response(
-        JSON.stringify({ success: false, message: "Invalid category id format" }),
-        { status: 400 }
-      );
-    }
-
     const foundCategories = await Category.find({ _id: { $in: categories } });
     if (foundCategories.length !== categories.length) {
       return new Response(
-        JSON.stringify({ success: false, message: "One or more categories not found" }),
+        JSON.stringify({ success: false, message: "Invalid categories" }),
         { status: 400 }
       );
     }
 
-    // Validate tags (optional)
+    // ---------------- VALIDATE TAGS ----------------
     const tags = Array.isArray(body.tags) ? body.tags : [];
     if (tags.length) {
-      const invalidTag = tags.some(
-        (id) => !id || !/^[0-9a-fA-F]{24}$/.test(id)
-      );
-      if (invalidTag) {
-        return new Response(
-          JSON.stringify({ success: false, message: "Invalid tag id format" }),
-          { status: 400 }
-        );
-      }
-
       const foundTags = await Tag.find({ _id: { $in: tags } });
       if (foundTags.length !== tags.length) {
         return new Response(
-          JSON.stringify({ success: false, message: "One or more tags not found" }),
+          JSON.stringify({ success: false, message: "Invalid tags" }),
           { status: 400 }
         );
       }
     }
 
-    // ✅ Validate internal links (NEW)
-    const internalLinks = Array.isArray(body.internalLinks)
-      ? body.internalLinks
+    // ================= NEW VALIDATIONS =================
+
+    // ---------- RELATED SERVICES ----------
+    const relatedServices = Array.isArray(body.relatedServices)
+      ? body.relatedServices
       : [];
 
-    if (internalLinks.length > 15) {
+    if (relatedServices.length > 10) {
       return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Maximum 15 internal links allowed",
-        }),
+        JSON.stringify({ success: false, message: "Max 10 related services allowed" }),
         { status: 400 }
       );
     }
 
-    const invalidInternalLink = internalLinks.some(
-      (link) =>
-        !link ||
-        typeof link.title !== "string" ||
-        typeof link.url !== "string" ||
-        !link.title.trim() ||
-        !link.url.trim()
+    if (relatedServices.length) {
+      const foundServices = await Service.find({
+        _id: { $in: relatedServices },
+      });
+
+      if (foundServices.length !== relatedServices.length) {
+        return new Response(
+          JSON.stringify({ success: false, message: "Invalid related services" }),
+          { status: 400 }
+        );
+      }
+    }
+
+    // ---------- RELATED PRODUCTS ----------
+    const relatedProducts = Array.isArray(body.relatedProducts)
+      ? body.relatedProducts
+      : [];
+
+    if (relatedProducts.length > 10) {
+      return new Response(
+        JSON.stringify({ success: false, message: "Max 10 related products allowed" }),
+        { status: 400 }
+      );
+    }
+
+    if (relatedProducts.length) {
+      const foundProducts = await Product.find({
+        _id: { $in: relatedProducts },
+      });
+
+      if (foundProducts.length !== relatedProducts.length) {
+        return new Response(
+          JSON.stringify({ success: false, message: "Invalid related products" }),
+          { status: 400 }
+        );
+      }
+    }
+
+    // ---------- FAQ ----------
+    const faqs = Array.isArray(body.faqs) ? body.faqs : [];
+
+    if (faqs.length > 15) {
+      return new Response(
+        JSON.stringify({ success: false, message: "Max 15 FAQs allowed" }),
+        { status: 400 }
+      );
+    }
+
+    const invalidFaq = faqs.some(
+      (f) =>
+        !f.question ||
+        !f.answer ||
+        typeof f.question !== "string" ||
+        typeof f.answer !== "string"
     );
 
-    if (invalidInternalLink) {
+    if (invalidFaq) {
       return new Response(
-        JSON.stringify({
-          success: false,
-          message: "Invalid internal link format",
-        }),
+        JSON.stringify({ success: false, message: "Invalid FAQ format" }),
         { status: 400 }
       );
     }
 
-    // Slug generation + uniqueness
+    // ---------- SEO OBJECT ----------
+    const seo = body.seo || {};
+
+    const safeSeo = {
+      canonicalUrl: seo.canonicalUrl?.trim() || "",
+      noIndex: !!seo.noIndex,
+      ogTitle: seo.ogTitle || "",
+      ogDescription: seo.ogDescription || "",
+      ogImage: seo.ogImage || "",
+    };
+
+    // ---------------- SLUG ----------------
     let slug = body.slug ? createSlug(body.slug) : createSlug(body.title);
     const exists = await Post.findOne({ slug });
     if (exists) slug = `${slug}-${Date.now()}`;
 
-    // Read time
     const readTime = calculateReadTime(cleanContent);
 
-    // Published handling
     const published =
       body.published === undefined ? true : !!body.published;
-    const publishedAt = published
-      ? body.publishedAt
-        ? new Date(body.publishedAt)
-        : new Date()
-      : null;
 
-    // Create post
+    const publishedAt = published ? new Date() : null;
+
+    // ---------------- CREATE POST ----------------
     const postDoc = await Post.create({
       title: body.title,
       slug,
@@ -277,26 +305,28 @@ export async function POST(req) {
       coverImage: body.coverImage || "",
       categories,
       tags,
-
-      // ✅ NEW FIELD
-      internalLinks,
-
+      relatedServices,
+      relatedProducts,
+      faqs,
+      internalLinks: body.internalLinks || [],
       isFeatured: !!body.isFeatured,
       isTrending: !!body.isTrending,
       published,
       publishedAt,
       readTime,
       metaTitle: body.metaTitle || body.title,
-      metaDescription: body.metaDescription || body.excerpt || "",
+      metaDescription: body.metaDescription || "",
       metaKeywords: Array.isArray(body.metaKeywords)
         ? body.metaKeywords
         : [],
+      seo: safeSeo,
     });
 
-    // Populate for response (unchanged behavior)
     const created = await Post.findById(postDoc._id)
       .populate("categories")
-      .populate("tags");
+      .populate("tags")
+      .populate("relatedServices")
+      .populate("relatedProducts");
 
     return new Response(
       JSON.stringify({
@@ -313,7 +343,7 @@ export async function POST(req) {
       return new Response(
         JSON.stringify({
           success: false,
-          message: "Duplicate slug or unique field",
+          message: "Duplicate slug",
         }),
         { status: 409 }
       );

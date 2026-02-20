@@ -1,28 +1,38 @@
 import { connectDB } from "@/lib/db";
 import Post from "@/models/Post";
-import Category from "@/models/Category";
-import Tag from "@/models/Tag";
+import Service from "@/models/Serviceproduct";
+import Product from "@/models/Product";
 
 export async function GET(req, { params }) {
   try {
     await connectDB();
 
     const { slug } = await params;
-    if (!slug)
+
+    if (!slug) {
       return new Response(
         JSON.stringify({ success: false, message: "Slug is required" }),
         { status: 400 }
       );
+    }
 
-    const post = await Post.findOne({ slug })
-      .populate("categories")
-      .populate("tags");
+    // ✅ IMPORTANT: Only published posts visible
+    const post = await Post.findOne({
+      slug,
+      published: true,
+    })
+      .populate("categories", "name slug")
+      .populate("tags", "name slug")
+      .populate("relatedServices")       // NEW
+      .populate("relatedProducts")       // NEW
+      .lean();                           // performance
 
-    if (!post)
+    if (!post) {
       return new Response(
         JSON.stringify({ success: false, message: "Post not found" }),
         { status: 404 }
       );
+    }
 
     return new Response(
       JSON.stringify({ success: true, data: post }),
