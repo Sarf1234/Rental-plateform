@@ -1,4 +1,8 @@
 import mongoose from "mongoose";
+import Category from "./Category";
+import Tag from './Tag'
+import Service from "./Serviceproduct";
+import Product from "./Product";
 
 /* ---------------- FAQ SUB-SCHEMA ---------------- */
 const FAQSchema = new mongoose.Schema(
