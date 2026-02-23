@@ -63,13 +63,16 @@ export const metadata = {
 
   manifest: "/manifest.json",
 
-  themeColor: "#ffffff",
 
   robots: {
     index: true,
     follow: true,
   },
 };
+
+export const viewport = {
+  themeColor: "#fafafa",
+}
 
 export default function RootLayout({ children }) {
   const baseUrl = "https://kiraynow.com";
