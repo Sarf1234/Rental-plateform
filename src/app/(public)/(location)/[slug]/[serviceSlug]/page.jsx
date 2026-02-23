@@ -114,7 +114,7 @@ export default async function ServiceDetailsPage({ params }) {
   const cityName = cityData?.name || "";
   const service = featured;
   const serviceUrl = `${baseUrl}/${slug}/${serviceSlug}`;
-  console.log(service.description)
+  console.log(service.description);
 
   const primaryProvider = service.providers?.[0];
 
@@ -234,23 +234,21 @@ export default async function ServiceDetailsPage({ params }) {
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* 3 Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {/* CENTER FIRST ON MOBILE */}
+          <div className="order-1 lg:order-2 lg:col-span-6">
+            <CenterContent service={featured} city={slug} cityData={cityData} />
+          </div>
 
-  {/* CENTER FIRST ON MOBILE */}
-  <div className="order-1 lg:order-2 lg:col-span-6">
-    <CenterContent service={featured} city={slug} cityData={cityData} />
-  </div>
+          {/* LEFT SECOND ON MOBILE */}
+          <div className="order-2 lg:order-1 lg:col-span-3">
+            <LeftSidebar service={featured} cityData={cityData} />
+          </div>
 
-  {/* LEFT SECOND ON MOBILE */}
-  <div className="order-2 lg:order-1 lg:col-span-3">
-    <LeftSidebar service={featured} cityData={cityData} />
-  </div>
-
-  {/* RIGHT THIRD ON MOBILE */}
-  <div className="order-3 lg:order-3 lg:col-span-3">
-    <RightSidebar service={featured} cityData={slug} />
-  </div>
-
-</div>
+          {/* RIGHT THIRD ON MOBILE */}
+          <div className="order-3 lg:order-3 lg:col-span-3">
+            <RightSidebar service={featured} cityData={slug} />
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -401,17 +399,16 @@ function CenterContent({ service, city, cityData }) {
           dangerouslySetInnerHTML={{ __html: service.description }}
         />
         <div className="mt-8">
-            <h2 className="text-xl font-semibold">
-              {service.title} Service in {cityName}
-            </h2>
+          <h2 className="text-xl font-semibold">
+            {service.title} Service in {cityName}
+          </h2>
 
-            <p className="text-gray-600 mt-2">
-              Our {service.title.toLowerCase()} services are frequently booked in{" "}
-              {topAreas}. We customize setup according to venue size,
-              guest capacity, and event type in {cityName}.
-            </p>
-          </div>
-
+          <p className="text-gray-600 mt-2">
+            Our {service.title.toLowerCase()} services are frequently booked in{" "}
+            {topAreas}. We customize setup according to venue size, guest
+            capacity, and event type in {cityName}.
+          </p>
+        </div>
 
         {/* ===== CITY CLOSING CONTEXT ===== */}
         <p className="mt-6 text-gray-600">
@@ -428,7 +425,8 @@ function CenterContent({ service, city, cityData }) {
 
         <div className="grid md:grid-cols-2 gap-8">
           {service.products?.map((product) => {
-            const price = product.pricing?.minPrice || product.pricing?.discountedPrice 
+            const price =
+              product.pricing?.minPrice || product.pricing?.discountedPrice;
 
             return (
               <Link
@@ -514,9 +512,7 @@ function CenterContent({ service, city, cityData }) {
 }
 
 function RightSidebar({ service, cityData }) {
-
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://kiraynow.com";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kiraynow.com";
 
   // ⚡ Generate dynamic WhatsApp message
   const message = `
@@ -538,13 +534,12 @@ Thank you!
 
   const whatsappUrl = `https://wa.me/${service.whatsappNumber}?text=${encodedMessage}`;
 
-
   return (
     <div className="lg:sticky lg:top-20 space-y-6">
       {/* ========== CONTACT / CTA CARD ========== */}
       <div className="hidden lg:block">
-         <ContactCTA service={service} citySlug={cityData} />
-       </div>
+        <ContactCTA service={service} citySlug={cityData} />
+      </div>
       {/* ========== PROVIDERS CARD ========== */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <h3 className="text-lg font-semibold text-gray-900 mb-5">
@@ -608,11 +603,8 @@ function FAQSection({ faqs }) {
   );
 }
 
-
-
 function ContactCTA({ service, citySlug }) {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://kiraynow.com";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kiraynow.com";
 
   const message = `
 Hi KirayNow Team 👋
@@ -633,71 +625,64 @@ Thank you!
   const whatsappUrl = `https://wa.me/${service.whatsappNumber}?text=${encodedMessage}`;
 
   return (
-   
-<div className="p-6 border rounded-2xl bg-white shadow-sm space-y-4">
+    <div className="p-6 border rounded-2xl bg-white shadow-sm space-y-4">
+      {/* Price Section */}
+      <div>
+        <p className="text-sm text-gray-500">Starting From</p>
 
-  {/* Price Section */}
-  <div>
-    <p className="text-sm text-gray-500">
-      Starting From
-    </p>
+        <div className="flex items-end gap-3">
+          <p className="text-3xl font-bold text-black">
+            ₹{service?.pricing?.amount}
+          </p>
 
-    <div className="flex items-end gap-3">
-      <p className="text-3xl font-bold text-black">
-        ₹{service?.pricing?.amount}
-      </p>
+          {service?.pricing?.originalPrice && (
+            <span className="text-sm text-gray-400 line-through">
+              ₹{service?.pricing?.originalPrice}
+            </span>
+          )}
+        </div>
 
-      {service?.pricing?.originalPrice && (
-        <span className="text-sm text-gray-400 line-through">
-          ₹{service?.pricing?.originalPrice}
-        </span>
-      )}
+        <p className="text-sm text-gray-500">
+          {service?.pricing?.type === "per_event"
+            ? "per event"
+            : service?.pricing?.type === "per_hour"
+              ? "per hour"
+              : ""}
+        </p>
+      </div>
+
+      {/* Divider */}
+      <div className="border-t pt-6 space-y-4">
+        {/* Call Button */}
+        <a
+          href={`tel:${service?.callNumber}`}
+          className="flex items-center justify-center gap-2 w-full bg-black text-white py-3 rounded-xl font-medium hover:scale-[1.02] transition duration-200 shadow-md"
+        >
+          Call to Book Now
+        </a>
+
+        {/* WhatsApp Button */}
+        <a
+          href={`https://wa.me/${service?.whatsappNumber}?text=${encodeURIComponent(
+            `Hi, I'm interested in booking "${service?.title}". Please share full details.`,
+          )}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 w-full bg-green-500 text-white py-3 rounded-xl font-medium hover:bg-green-600 transition duration-200 shadow-md"
+        >
+          Book on WhatsApp
+        </a>
+
+        {/* Trust Section */}
+        <div className="bg-gray-50 border rounded-xl p-4 text-center mt-4">
+          <p className="text-xs text-gray-500">
+            Instant confirmation • No hidden charges
+          </p>
+          <p className="text-sm font-semibold text-gray-900">
+            Verified Event Professionals
+          </p>
+        </div>
+      </div>
     </div>
-
-    <p className="text-sm text-gray-500">
-      {service?.pricing?.type === "per_event"
-        ? "per event"
-        : service?.pricing?.type === "per_hour"
-        ? "per hour"
-        : ""}
-    </p>
-  </div>
-
-  {/* Divider */}
-  <div className="border-t pt-6 space-y-4">
-
-    {/* Call Button */}
-    <a
-      href={`tel:${service?.callNumber}`}
-      className="flex items-center justify-center gap-2 w-full bg-black text-white py-3 rounded-xl font-medium hover:scale-[1.02] transition duration-200 shadow-md"
-    >
-      Call to Book Now
-    </a>
-
-    {/* WhatsApp Button */}
-    <a
-      href={`https://wa.me/${service?.whatsappNumber}?text=${encodeURIComponent(
-        `Hi, I'm interested in booking "${service?.title}". Please share full details.`
-      )}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="flex items-center justify-center gap-2 w-full bg-green-500 text-white py-3 rounded-xl font-medium hover:bg-green-600 transition duration-200 shadow-md"
-    >
-      Book on WhatsApp
-    </a>
-
-    {/* Trust Section */}
-    <div className="bg-gray-50 border rounded-xl p-4 text-center mt-4">
-      <p className="text-xs text-gray-500">
-        Instant confirmation • No hidden charges
-      </p>
-      <p className="text-sm font-semibold text-gray-900">
-        Verified Event Professionals
-      </p>
-    </div>
-
-  </div>
-</div>
   );
 }
-
