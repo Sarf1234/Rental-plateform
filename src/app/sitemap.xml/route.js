@@ -116,21 +116,27 @@ export async function GET() {
       });
     });
 
-    blogCategories.forEach((c) => {
-      pushUrl({
-        loc: `${baseUrl}/category/${c.slug}`,
-        priority: "0.5",
-        changefreq: "monthly",
-      });
-    });
+   // =========================
+// BLOG CATEGORIES (COMMENTED OUT – CONDITIONAL INDEX)
+// =========================
+// blogCategories.forEach((c) => {
+//   pushUrl({
+//     loc: `${baseUrl}/category/${c.slug}`,
+//     priority: "0.5",
+//     changefreq: "monthly",
+//   });
+// });
 
-    tags.forEach((t) => {
-      pushUrl({
-        loc: `${baseUrl}/tag/${t.slug}`,
-        priority: "0.5",
-        changefreq: "monthly",
-      });
-    });
+   // =========================
+// BLOG TAGS (COMMENTED OUT – NOINDEXED)
+// =========================
+// tags.forEach((t) => {
+//   pushUrl({
+//     loc: `${baseUrl}/tag/${t.slug}`,
+//     priority: "0.5",
+//     changefreq: "monthly",
+//   });
+// });
 
     // =========================
     // CITY PAGES
@@ -197,28 +203,28 @@ export async function GET() {
     // =========================
     // SERVICE CATEGORY PAGES (CITY-WISE) ✅ NEW
     // =========================
-    cities.forEach((city) => {
-      serviceCategories.forEach((cat) => {
-        pushUrl({
-          loc: `${baseUrl}/${city.slug}/service-categories/${cat.slug}`,
-          priority: "0.7",
-          changefreq: "weekly",
-        });
-      });
-    });
+    // cities.forEach((city) => {
+    //   serviceCategories.forEach((cat) => {
+    //     pushUrl({
+    //       loc: `${baseUrl}/${city.slug}/service-categories/${cat.slug}`,
+    //       priority: "0.7",
+    //       changefreq: "weekly",
+    //     });
+    //   });
+    // });
 
     // =========================
     // PRODUCT CATEGORY PAGES (CITY-WISE) ✅ NEW
     // =========================
-    cities.forEach((city) => {
-      productCategories.forEach((cat) => {
-        pushUrl({
-          loc: `${baseUrl}/${city.slug}/categories/${cat.slug}`,
-          priority: "0.7",
-          changefreq: "weekly",
-        });
-      });
-    });
+    // cities.forEach((city) => {
+    //   productCategories.forEach((cat) => {
+    //     pushUrl({
+    //       loc: `${baseUrl}/${city.slug}/categories/${cat.slug}`,
+    //       priority: "0.7",
+    //       changefreq: "weekly",
+    //     });
+    //   });
+    // });
 
     // =========================
     // GENERATE XML

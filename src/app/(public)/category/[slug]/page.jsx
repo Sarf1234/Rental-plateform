@@ -4,18 +4,90 @@ import { apiRequest } from "@/lib/api";
 
 export const dynamic = "force-dynamic";
 
-export default async function CategoryPage({ params }) {
-  const { slug } = await params;
+/* =====================================
+   ✅ SEO METADATA (CONDITIONAL INDEX)
+===================================== */
 
-  let posts = [];
-  let category = null;
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
 
   try {
     const res = await apiRequest(
       `${process.env.NEXT_PUBLIC_API_URL}/api/categories/${slug}`
     );
-    category = res.category || res.data;
+
+    const category = res.category;
+    const totalPosts = res.total || 0;
+
+    if (!category) return {};
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+
+    const shouldIndex = totalPosts >= 5; // ✅ Future safe rule
+
+    return {
+      title:
+        category.title ||
+        `${category.name} Blogs & Guides | Latest Articles`,
+
+      description:
+        category.description ||
+        `Explore all blog posts under ${category.name}. Read expert insights, guides and updates.`,
+
+      keywords: category.keywords || [],
+
+      robots: {
+        index: shouldIndex,
+        follow: true,
+      },
+
+      alternates: {
+        canonical: shouldIndex
+          ? `${siteUrl}/blog/category/${slug}`
+          : `${siteUrl}/blog`,
+      },
+
+      openGraph: {
+        title: category.title || `${category.name} Blogs`,
+        description:
+          category.description ||
+          `Browse latest articles in ${category.name}.`,
+        url: `${siteUrl}/blog/category/${slug}`,
+        type: "website",
+      },
+
+      twitter: {
+        card: "summary_large_image",
+        title: category.title || `${category.name} Blogs`,
+        description:
+          category.description ||
+          `Explore blogs under ${category.name}.`,
+      },
+    };
+  } catch (error) {
+    return {};
+  }
+}
+
+/* =====================================
+   ✅ CATEGORY PAGE COMPONENT
+===================================== */
+
+export default async function CategoryPage({ params }) {
+  const { slug } = await params;
+
+  let posts = [];
+  let category = null;
+  let total = 0;
+
+  try {
+    const res = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/categories/${slug}`
+    );
+
+    category = res.category;
     posts = res.data || [];
+    total = res.total || 0;
   } catch (err) {
     console.error("Failed to fetch category posts:", err);
   }
@@ -35,12 +107,17 @@ export default async function CategoryPage({ params }) {
         {/* ✅ HEADER */}
         <header className="text-center mb-14">
           <h1 className="text-3xl sm:text-5xl font-extrabold text-gray-900">
-            {category.name}
+            {category.name} Blogs & Resources
           </h1>
 
-          {category.description && (
-            <p className="mt-4 text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">
-              {category.description}
+          <p className="mt-4 text-gray-600 max-w-2xl mx-auto text-sm sm:text-base">
+            {category.description ||
+              `Explore expert-written blogs and helpful resources under ${category.name}.`}
+          </p>
+
+          {total > 0 && (
+            <p className="mt-3 text-xs text-gray-500">
+              {total} article{total > 1 ? "s" : ""} available
             </p>
           )}
         </header>
@@ -48,7 +125,7 @@ export default async function CategoryPage({ params }) {
         {/* ✅ POSTS GRID */}
         {posts.length === 0 ? (
           <p className="text-center text-gray-500">
-            No articles found in this category
+            No articles found in this category.
           </p>
         ) : (
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -63,7 +140,7 @@ export default async function CategoryPage({ params }) {
                 hover:shadow-lg
                 transition-all duration-300"
               >
-                {/* ✅ Image */}
+                {/* Image */}
                 <div className="relative h-52">
                   <Image
                     src={post.coverImage || "/placeholder.png"}
@@ -73,7 +150,7 @@ export default async function CategoryPage({ params }) {
                   />
                 </div>
 
-                {/* ✅ Content */}
+                {/* Content */}
                 <div className="p-5">
                   {/* Categories */}
                   <div className="flex flex-wrap gap-2 mb-3">

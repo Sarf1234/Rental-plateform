@@ -3,177 +3,136 @@ import { apiRequest } from "@/lib/api";
 
 export const revalidate = 3600;
 
-/* ==========================
-   Dynamic SEO Metadata
-========================== */
+/* =====================================
+   ✅ DYNAMIC SEO METADATA (FINAL FIX)
+===================================== */
 export async function generateMetadata({ params }) {
   const { slug, categorySlug } = await params;
 
-  const baseUrl = "https://kiraynow.com";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://kiraynow.com";
 
-  const cityName = slug
-    .split("-")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
+  try {
+    /* 🔹 Fetch Category SEO (Admin Controlled) */
+    const categoryRes = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/products/categories/${categorySlug}`
+    );
 
-  const categoryName = categorySlug
-    .split("-")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
+    const category = categoryRes?.data;
+    const categorySEO = category?.seo || {};
 
-  const title = `${categoryName} Rental in ${cityName}`;
+    /* 🔹 Fetch City (Optional for name clarity) */
+    const cityRes = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/products?city=${slug}&category=${categorySlug}&page=1&limit=1`
+    );
 
-  const description = `Rent ${categoryName.toLowerCase()} in ${cityName} at affordable pricing. Verified vendors, fast delivery and professional event setup available across the city.`;
+    const city = cityRes?.city;
 
-  const canonicalUrl = `${baseUrl}/${slug}/categories/${categorySlug}`;
+    const cityName = city?.name || slug;
+    const categoryName = category?.name || categorySlug;
 
-  const ogImage =
-    "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp";
+    const canonicalUrl =
+      categorySEO?.canonicalUrl ||
+      `${baseUrl}/${slug}/categories/${categorySlug}`;
 
-  return {
-    metadataBase: new URL(baseUrl),
-    title,
-    description,
-    alternates: {
-      canonical: canonicalUrl,
-    },
-    openGraph: {
-      title,
-      description,
-      url: canonicalUrl,
-      siteName: "KirayNow",
-      type: "website",
-      locale: "en_IN",
-      images: [
-        {
-          url: ogImage,
-          width: 1200,
-          height: 630,
-          alt: `${categoryName} rental in ${cityName}`,
-        },
-      ],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description,
-      images: [ogImage],
-    },
-    robots: {
-      index: true,
-      follow: true,
-    },
-  };
+    /* 🔥 ADMIN CONTROLLED INDEX */
+    const shouldIndex = categorySEO?.noIndex ? false : true;
+
+    return {
+      metadataBase: new URL(baseUrl),
+
+      title:
+        categorySEO?.metaTitle ||
+        `${categoryName} Rental in ${cityName}`,
+
+      description:
+        categorySEO?.metaDescription ||
+        `Rent ${categoryName.toLowerCase()} in ${cityName} at affordable pricing. Verified vendors and professional setup available.`,
+
+      keywords: categorySEO?.metaKeywords || [],
+
+      alternates: {
+        canonical: canonicalUrl,
+      },
+
+      robots: {
+        index: shouldIndex,
+        follow: true,
+      },
+
+      openGraph: {
+        title:
+          categorySEO?.metaTitle ||
+          `${categoryName} Rental in ${cityName}`,
+        description:
+          categorySEO?.metaDescription ||
+          `Browse ${categoryName.toLowerCase()} rental services in ${cityName}.`,
+        url: canonicalUrl,
+        siteName: "KirayNow",
+        type: "website",
+        locale: "en_IN",
+      },
+
+      twitter: {
+        card: "summary_large_image",
+        title:
+          categorySEO?.metaTitle ||
+          `${categoryName} Rental in ${cityName}`,
+        description:
+          categorySEO?.metaDescription ||
+          `Affordable ${categoryName.toLowerCase()} rental in ${cityName}.`,
+      },
+    };
+  } catch (error) {
+    console.error("Metadata error:", error);
+    return {};
+  }
 }
 
-/* ==========================
-   CATEGORY PAGE
-========================== */
+/* =====================================
+   ✅ CATEGORY PAGE COMPONENT
+===================================== */
 export default async function CategoryPage({ params }) {
   const { slug, categorySlug } = await params;
 
-  const baseUrl = "https://kiraynow.com";
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://kiraynow.com";
 
   let products = [];
+  let cityName = slug;
+  let categoryName = categorySlug;
 
   try {
+    /* 🔹 Fetch Products */
     const res = await apiRequest(
       `${process.env.NEXT_PUBLIC_API_URL}/api/products?city=${slug}&category=${categorySlug}&page=1&limit=12`
     );
 
     products = res?.data || [];
+
+    if (res?.city?.name) {
+      cityName = res.city.name;
+    }
+
   } catch (err) {
     console.error("Category Page Error:", err);
   }
 
-  const cityName = slug
-    .split("-")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-
-  const categoryName = categorySlug
+  categoryName = categorySlug
     .split("-")
     .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
     .join(" ");
 
   const categoryUrl = `${baseUrl}/${slug}/categories/${categorySlug}`;
 
-  /* ==========================
+  /* =====================================
      STRUCTURED DATA
-  ========================== */
-
+  ===================================== */
   const structuredData = {
     "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "WebSite",
-        "@id": `${baseUrl}/#website`,
-        url: baseUrl,
-        name: "KirayNow",
-      },
-
-      {
-        "@type": "Organization",
-        "@id": `${baseUrl}/#organization`,
-        name: "KirayNow",
-        url: baseUrl,
-        logo: "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
-        contactPoint: {
-          "@type": "ContactPoint",
-          telephone: "+91-8839931558",
-          contactType: "customer support",
-          areaServed: "IN",
-          availableLanguage: ["English", "Hindi"],
-        },
-      },
-
-      {
-        "@type": "BreadcrumbList",
-        "@id": `${categoryUrl}#breadcrumb`,
-        itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "Home",
-            item: baseUrl,
-          },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: cityName,
-            item: `${baseUrl}/${slug}`,
-          },
-          {
-            "@type": "ListItem",
-            position: 3,
-            name: categoryName,
-            item: categoryUrl,
-          },
-        ],
-      },
-
-      {
-        "@type": "CollectionPage",
-        "@id": categoryUrl,
-        name: `${categoryName} Rental in ${cityName}`,
-        description: `Browse ${categoryName.toLowerCase()} rental products in ${cityName}. Affordable pricing and verified vendors available.`,
-        url: categoryUrl,
-        isPartOf: {
-          "@id": `${baseUrl}/#website`,
-        },
-      },
-
-      {
-        "@type": "ItemList",
-        name: `${categoryName} Rental Products in ${cityName}`,
-        itemListElement: products.slice(0, 20).map((product, index) => ({
-          "@type": "ListItem",
-          position: index + 1,
-          url: `${baseUrl}/${slug}/products/${product.slug}`,
-          name: product.title,
-        })),
-      },
-    ],
+    "@type": "CollectionPage",
+    name: `${categoryName} Rental in ${cityName}`,
+    url: categoryUrl,
   };
 
   return (
