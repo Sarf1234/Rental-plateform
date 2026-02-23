@@ -46,7 +46,7 @@ export default function BlogRelatedServices({ services }) {
 
               <Link
                 href={`/${city.slug}/${service.slug}`}
-                className="px-4 py-2 text-sm font-medium rounded-lg border border-[#003459] text-[#003459] hover:bg-[#003459] hover:text-white transition"
+                className="px-4 py-2 text-sm font-medium rounded-lg border border-black text-black hover:bg-black hover:text-white transition"
               >
                 Book Service →
               </Link>

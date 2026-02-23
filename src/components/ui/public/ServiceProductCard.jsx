@@ -116,12 +116,12 @@ export default function ServiceCard({ service = {}, citySlug }) {
         <div className="flex items-center justify-between pt-3">
 
           {/* Price */}
-          <div className="text-lg font-semibold text-gray-900">
+          <div className="text-base font-semibold text-gray-900">
             {getPriceLabel()}
           </div>
 
           {/* CTA Buttons */}
-          <div className="flex gap-2">
+          {/* <div className="flex gap-2">
             {(contactMode === "call" || contactMode === "call_whatsapp") &&
               callNumber && (
                 <a
@@ -143,7 +143,13 @@ export default function ServiceCard({ service = {}, citySlug }) {
                   <MessageCircle size={16} />
                 </a>
               )}
-          </div>
+          </div> */}
+          <Link
+            href={`/${citySlug}/${slug}`}
+            className="inline-flex whitespace-nowrap items-center justify-center px-2 py-2 text-sm font-medium rounded-lg border border-black text-black hover:bg-black hover:text-white transition"
+          >
+            View Service →
+          </Link>
         </div>
       </div>
     </div>

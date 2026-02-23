@@ -76,11 +76,12 @@ export default function ProductCard({ product, citySlug }) {
             </p>
           </div>
 
-          <Link href={productUrl}>
-            <button className="bg-black text-white px-4 py-2 rounded-xl text-sm font-medium hover:scale-105 transition">
-              Rent Now
-            </button>
-          </Link>
+          <Link
+              href={productUrl}
+              className="inline-flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg border border-black text-balck hover:bg-black hover:text-white transition"
+            >
+              Rent Now →
+            </Link>
         </div>
 
       </div>

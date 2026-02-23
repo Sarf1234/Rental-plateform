@@ -234,21 +234,23 @@ export default async function ServiceDetailsPage({ params }) {
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* 3 Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* LEFT SIDEBAR */}
-          <div className="lg:col-span-3">
-            <LeftSidebar service={featured} cityData={cityData} />
-          </div>
 
-          {/* CENTER CONTENT */}
-          <div className="lg:col-span-6">
-            <CenterContent service={featured} city={slug} cityData={cityData} />
-          </div>
+  {/* CENTER FIRST ON MOBILE */}
+  <div className="order-1 lg:order-2 lg:col-span-6">
+    <CenterContent service={featured} city={slug} cityData={cityData} />
+  </div>
 
-          {/* RIGHT SIDEBAR */}
-          <div className="lg:col-span-3">
-            <RightSidebar service={featured} cityData={slug} />
-          </div>
-        </div>
+  {/* LEFT SECOND ON MOBILE */}
+  <div className="order-2 lg:order-1 lg:col-span-3">
+    <LeftSidebar service={featured} cityData={cityData} />
+  </div>
+
+  {/* RIGHT THIRD ON MOBILE */}
+  <div className="order-3 lg:order-3 lg:col-span-3">
+    <RightSidebar service={featured} cityData={slug} />
+  </div>
+
+</div>
       </div>
     </div>
   );
@@ -631,45 +633,71 @@ Thank you!
   const whatsappUrl = `https://wa.me/${service.whatsappNumber}?text=${encodedMessage}`;
 
   return (
-    <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100 space-y-5">
-      <div>
-        <h3 className="text-xl font-semibold text-gray-900">
-          Get a Free Quote
-        </h3>
-        <p className="text-sm text-gray-500 mt-1">
-          Quick response within 30 minutes
-        </p>
-      </div>
+   
+<div className="p-6 border rounded-2xl bg-white shadow-sm space-y-4">
 
-      <div className="bg-gray-50 border rounded-xl p-4 text-center">
-        <p className="text-xs text-gray-500">Trusted by Clients</p>
-        <p className="text-sm font-semibold text-gray-900">
-          Verified Event Professionals
-        </p>
-      </div>
+  {/* Price Section */}
+  <div>
+    <p className="text-sm text-gray-500">
+      Starting From
+    </p>
 
-      <div className="space-y-3">
-        <a
-          href={`tel:${service.callNumber}`}
-          className="block w-full text-center bg-black text-white py-3 rounded-xl font-medium hover:scale-[1.02] transition duration-200"
-        >
-          Call Now
-        </a>
+    <div className="flex items-end gap-3">
+      <p className="text-3xl font-bold text-black">
+        ₹{service?.pricing?.amount}
+      </p>
 
-        <a
-          href={whatsappUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="block w-full text-center bg-green-500 text-white py-3 rounded-xl font-medium hover:bg-green-600 transition duration-200"
-        >
-          Get Quote on WhatsApp
-        </a>
-      </div>
+      {service?.pricing?.originalPrice && (
+        <span className="text-sm text-gray-400 line-through">
+          ₹{service?.pricing?.originalPrice}
+        </span>
+      )}
+    </div>
 
-      <p className="text-xs text-gray-400 text-center">
-        No booking fee • Instant support
+    <p className="text-sm text-gray-500">
+      {service?.pricing?.type === "per_event"
+        ? "per event"
+        : service?.pricing?.type === "per_hour"
+        ? "per hour"
+        : ""}
+    </p>
+  </div>
+
+  {/* Divider */}
+  <div className="border-t pt-6 space-y-4">
+
+    {/* Call Button */}
+    <a
+      href={`tel:${service?.callNumber}`}
+      className="flex items-center justify-center gap-2 w-full bg-black text-white py-3 rounded-xl font-medium hover:scale-[1.02] transition duration-200 shadow-md"
+    >
+      Call to Book Now
+    </a>
+
+    {/* WhatsApp Button */}
+    <a
+      href={`https://wa.me/${service?.whatsappNumber}?text=${encodeURIComponent(
+        `Hi, I'm interested in booking "${service?.title}". Please share full details.`
+      )}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex items-center justify-center gap-2 w-full bg-green-500 text-white py-3 rounded-xl font-medium hover:bg-green-600 transition duration-200 shadow-md"
+    >
+      Book on WhatsApp
+    </a>
+
+    {/* Trust Section */}
+    <div className="bg-gray-50 border rounded-xl p-4 text-center mt-4">
+      <p className="text-xs text-gray-500">
+        Instant confirmation • No hidden charges
+      </p>
+      <p className="text-sm font-semibold text-gray-900">
+        Verified Event Professionals
       </p>
     </div>
+
+  </div>
+</div>
   );
 }
 
