@@ -7,38 +7,55 @@ export default function ProductDescription({
   if (!description) return null;
 
   const cityName = cityData?.name;
-  const topAreas = cityData?.subAreas
-    ?.slice(0, 3)
-    .map((a) => a.name)
-    .join(", ");
+  const subAreas = cityData?.subAreas || [];
+  const topAreas = subAreas.slice(0, 3).map((a) => a.name).join(", ");
+
+  const primaryPrice =
+      pricing?.minPrice || pricing?.discountedPrice
 
   return (
     <div className="mt-16">
-      <h2 className="text-2xl font-semibold mb-6">
-        Product Details
-      </h2>
 
-      {/* 🔹 SEO INTRO */}
+      {/* ===================== */}
+      {/* 🔥 CITY CONTEXT BLOCK */}
+      {/* ===================== */}
       {cityName && (
-        <p className=" mb-6 leading-relaxed">
-          {title} is available for rent in {cityName}. Ideal for weddings,
-          birthday parties, corporate events and private celebrations.
-          Pricing starts from ₹
-          {pricing?.discountedPrice || pricing?.minPrice} per {pricing?.unit}.
-        </p>
+        <section className="mb-8">
+          <h1 className="text-xl font-semibold mb-3">
+            Rental Details & Specifications
+          </h1>
+
+          <p className="text-gray-700 leading-relaxed">
+            Looking for {title.toLowerCase()} rental in {cityName}? 
+            We provide professional delivery and setup services 
+            {topAreas && ` across ${topAreas}`} and nearby areas. 
+            With pricing starting from ₹{primaryPrice} per {pricing?.unit}, 
+            this product is suitable for weddings, receptions, 
+            corporate events and private celebrations in {cityName}.
+          </p>
+        </section>
       )}
 
-      {/* 🔹 ORIGINAL DESCRIPTION */}
+      {/* ===================== */}
+      {/* 📦 PRODUCT DETAILS */}
+      {/* ===================== */}
+      {/* <h2 className="text-2xl font-semibold mb-4">
+        Product Details
+      </h2> */}
+
       <div
-        className="prose max-w-none"
+        className="prose max-w-none content"
         dangerouslySetInnerHTML={{ __html: description }}
       />
 
-      {/* 🔹 SUBAREAS CONTEXT */}
+      {/* ===================== */}
+      {/* 📍 SERVICE AREAS */}
+      {/* ===================== */}
       {topAreas && (
-        <p className="mt-6 text-sm text-gray-600">
-          Serving major areas of {cityName} including {topAreas}.
-        </p>
+        <div className="mt-8 text-sm  text-gray-600 border-t pt-4">
+          We regularly deliver {title.toLowerCase()} rentals in {cityName}, 
+          including {topAreas} and surrounding localities.
+        </div>
       )}
     </div>
   );

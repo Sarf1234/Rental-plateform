@@ -21,7 +21,7 @@ export default function ProductInfo({
       {/* ================= TITLE + BADGES ================= */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 leading-snug">
-          {title} in {citySlug}
+          {title} in {citySlug?.charAt(0).toUpperCase() + citySlug?.slice(1)}
         </h1>
 
         {/* {productdescription && (

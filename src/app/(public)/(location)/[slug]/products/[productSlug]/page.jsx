@@ -210,7 +210,7 @@ export default async function ProductPage({ params }) {
               cityData={data?.city}
               pricing={pricing}
             />
-            <ProductFAQ faqs={faqs} />
+            <ProductFAQ faqs={faqs} cityData={data?.city}/>
             <ProductTerms terms={termsAndConditions} />
           </div>
 

@@ -8,7 +8,7 @@ export default function ProductTerms({ terms }) {
       </h2>
 
       <div
-        className="prose max-w-none text-sm text-gray-600"
+        className="prose max-w-none content text-sm text-gray-600"
         dangerouslySetInnerHTML={{ __html: terms }}
       />
     </div>
