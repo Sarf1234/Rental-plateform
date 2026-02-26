@@ -43,6 +43,9 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }) {
           <Link href="/admin/cities" className="block p-2 rounded hover:bg-gray-100">
             Cities
           </Link>
+          <Link href="/admin/location-profiles" className="block p-2 rounded hover:bg-gray-100">
+            Cities Location Profiles
+          </Link>
           <Link href="/admin/products" className="block p-2 rounded hover:bg-gray-100">
             Products
           </Link>
@@ -54,6 +57,9 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }) {
           </Link>
           <Link href="/admin/services" className="block p-2 rounded hover:bg-gray-100">
             Services
+          </Link>
+          <Link href="/admin/services/categories" className="block p-2 rounded hover:bg-gray-100">
+            Services categories
           </Link>
 
           {/* Users */}

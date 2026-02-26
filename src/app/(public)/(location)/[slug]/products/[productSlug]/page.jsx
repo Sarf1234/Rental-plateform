@@ -101,7 +101,7 @@ export default async function ProductPage({ params }) {
     description,
     pricing,
     highlights,
-    faqs,
+    faqs: rawFaqs,
     termsAndConditions,
   } = product;
 
@@ -109,6 +109,55 @@ export default async function ProductPage({ params }) {
 
   const cityName = data?.city?.name || slug;
   const productUrl = `${baseUrl}/${slug}/products/${productSlug}`;
+
+
+// 🔥 MODIFY FAQ HERE (single source of truth)
+const pricingKeywords = [
+  "price",
+  "rent",
+  "rental",
+  "cost",
+  "how much"
+];
+
+const faqs = rawFaqs?.map((faq) => {
+  let question = faq.question;
+  let answer = faq.answer;
+
+  if (cityName) {
+    // 1️⃣ Placeholder support
+    if (question.includes("{city}")) {
+      question = question.replace("{city}", cityName);
+    }
+
+    if (answer.includes("{city}")) {
+      answer = answer.replace("{city}", cityName);
+    }
+
+    // 2️⃣ Smart injection for pricing intent
+    const lowerQ = question.toLowerCase();
+
+    const shouldInject =
+      pricingKeywords.some(keyword =>
+        lowerQ.includes(keyword)
+      ) &&
+      !lowerQ.includes(cityName.toLowerCase());
+
+    if (shouldInject) {
+      if (question.includes("?")) {
+        question = question.replace("?", ` in ${cityName}?`);
+      } else {
+        question = `${question} in ${cityName}`;
+      }
+    }
+  }
+
+  return {
+    ...faq,
+    question,
+    answer,
+  };
+});
 
   const primaryPrice =
     pricing?.discountedPrice || pricing?.minPrice || pricing?.amount || 1000;
