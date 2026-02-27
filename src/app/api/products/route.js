@@ -6,6 +6,7 @@ import ProductTag from "@/models/ProductTags";
 import City from "@/models/CityModels";
 import { requireAdmin } from "@/lib/protectRoute";
 import { createSlug } from "@/utils/createSlug";
+import LocationProfile from "@/models/LocationProfile";
 
 /* =======================
    GET PRODUCTS
@@ -35,9 +36,7 @@ export async function GET(req) {
       status: "published",
     };
 
-    /* ===============================
-       🏙 CITY HANDLING
-    ================================ */
+    /* ================= CITY ================= */
     if (citySlug) {
       city = await City.findOne({
         slug: citySlug,
@@ -54,15 +53,11 @@ export async function GET(req) {
       baseFilter.serviceAreas = city._id;
     }
 
-    /* ===============================
-       CHECK IF FILTER MODE
-    ================================ */
     const isFilterMode =
       q || category || tags || min || max || sort;
 
     /* ===================================================
-       🟢 MODE 1 — HOMEPAGE MODE
-       Condition: city present AND no filters
+       HOMEPAGE MODE
     =================================================== */
     if (citySlug && !isFilterMode) {
 
@@ -75,31 +70,19 @@ export async function GET(req) {
         totalAll,
       ] = await Promise.all([
 
-        Product.find({
-          ...baseFilter,
-          "highlights.isFeatured": true,
-        })
+        Product.find({ ...baseFilter, "highlights.isFeatured": true })
           .limit(6)
           .lean(),
 
-        Product.find({
-          ...baseFilter,
-          "highlights.isTopRented": true,
-        })
+        Product.find({ ...baseFilter, "highlights.isTopRented": true })
           .limit(6)
           .lean(),
 
-        Product.find({
-          ...baseFilter,
-          "highlights.isBestDeal": true,
-        })
+        Product.find({ ...baseFilter, "highlights.isBestDeal": true })
           .limit(6)
           .lean(),
 
-        Product.find({
-          ...baseFilter,
-          "highlights.isNewProduct": true,
-        })
+        Product.find({ ...baseFilter, "highlights.isNewProduct": true })
           .limit(6)
           .lean(),
 
@@ -112,16 +95,26 @@ export async function GET(req) {
         Product.countDocuments(baseFilter),
       ]);
 
+      const allFetched = [
+        ...featured,
+        ...top,
+        ...best,
+        ...newProducts,
+        ...allProducts,
+      ];
+
+      const adjusted = await applyMultiplier(allFetched, city);
+
       return NextResponse.json({
         success: true,
         mode: "homepage",
         city,
-        featured,
-        top,
-        best,
-        new: newProducts,
+        featured: adjusted.slice(0, featured.length),
+        top: adjusted.slice(featured.length, featured.length + top.length),
+        best: adjusted.slice(featured.length + top.length, featured.length + top.length + best.length),
+        new: adjusted.slice(featured.length + top.length + best.length, featured.length + top.length + best.length + newProducts.length),
         all: {
-          data: allProducts,
+          data: adjusted.slice(featured.length + top.length + best.length + newProducts.length),
           pagination: {
             total: totalAll,
             page,
@@ -133,49 +126,47 @@ export async function GET(req) {
     }
 
     /* ===================================================
-       🔵 MODE 2 — SEARCH / FILTER MODE
+       SEARCH MODE
     =================================================== */
 
     if (q) {
-        const trimmedQuery = q.trim();
-
-        baseFilter.$or = [
-          { productCode: trimmedQuery }, // exact product code match
-          { title: { $regex: trimmedQuery, $options: "i" } },
-          { description: { $regex: trimmedQuery, $options: "i" } },
-        ];
-      }
+      baseFilter.$or = [
+        { productCode: q },
+        { title: { $regex: q, $options: "i" } },
+        { description: { $regex: q, $options: "i" } },
+      ];
+    }
 
     if (category) {
-  const categoryDoc = await ProductCategory.findOne({
-    slug: category,
-    isActive: true,
-  }).lean();
+      const categoryDoc = await ProductCategory.findOne({
+        slug: category,
+        isActive: true,
+      }).lean();
 
-  if (!categoryDoc) {
-    return NextResponse.json(
-      { success: false, message: "Category not found" },
-      { status: 404 }
-    );
-  }
+      if (!categoryDoc) {
+        return NextResponse.json(
+          { success: false, message: "Category not found" },
+          { status: 404 }
+        );
+      }
 
-  baseFilter.categories = categoryDoc._id;
-}
+      baseFilter.categories = categoryDoc._id;
+    }
 
     if (tags) {
-  const tagSlugs = tags.split(",");
+      const tagSlugs = tags.split(",");
 
-  const tagDocs = await ProductTag.find({
-    slug: { $in: tagSlugs },
-    isActive: true,
-  }).lean();
+      const tagDocs = await ProductTag.find({
+        slug: { $in: tagSlugs },
+        isActive: true,
+      }).lean();
 
-  if (tagDocs.length > 0) {
-    baseFilter.tags = {
-      $in: tagDocs.map((t) => t._id),
-    };
-  }
-}
+      if (tagDocs.length > 0) {
+        baseFilter.tags = {
+          $in: tagDocs.map((t) => t._id),
+        };
+      }
+    }
 
     if (min || max) {
       baseFilter["pricing.minPrice"] = {};
@@ -192,10 +183,9 @@ export async function GET(req) {
     };
 
     const sortOption = sortMap[sort] || { createdAt: -1 };
-    const projection = {};
 
     const [products, total] = await Promise.all([
-      Product.find(baseFilter, projection)
+      Product.find(baseFilter)
         .sort(sortOption)
         .skip(skip)
         .limit(limit)
@@ -205,11 +195,13 @@ export async function GET(req) {
       Product.countDocuments(baseFilter),
     ]);
 
+    const adjustedProducts = await applyMultiplier(products, city);
+
     return NextResponse.json({
       success: true,
       mode: "search",
       city,
-      data: products,
+      data: adjustedProducts,
       pagination: {
         total,
         page,
@@ -225,6 +217,61 @@ export async function GET(req) {
       { status: 500 }
     );
   }
+}
+
+/* ================= MULTIPLIER LOGIC ================= */
+
+async function applyMultiplier(products, city) {
+  if (!city || !products?.length) return products;
+
+  const productIds = products.map((p) => p._id);
+
+  const profiles = await LocationProfile.find({
+    city: city._id,
+    scope: { $in: ["product", "city"] }, // backward compatible
+    product: { $in: productIds },
+  }).lean();
+
+  let cityMultiplier = null;
+  const productMap = new Map();
+
+  profiles.forEach((profile) => {
+    if (profile.scope === "product") {
+      productMap.set(
+        profile.product?.toString(),
+        profile.priceMultiplier
+      );
+    }
+    if (profile.scope === "city") {
+      cityMultiplier = profile.priceMultiplier;
+    }
+  });
+
+  return products.map((product) => {
+    let multiplier =
+      productMap.get(product._id.toString()) ||
+      cityMultiplier;
+
+    if (!multiplier || multiplier === 1) return product;
+
+    return {
+      ...product,
+      pricing: {
+        ...product.pricing,
+        minPrice: Math.round(product.pricing.minPrice * multiplier),
+        maxPrice: Math.round(product.pricing.maxPrice * multiplier),
+        discountedPrice: product.pricing.discountedPrice
+          ? Math.round(product.pricing.discountedPrice * multiplier)
+          : undefined,
+        securityDeposit: product.pricing.securityDeposit
+          ? Math.round(product.pricing.securityDeposit * multiplier)
+          : 0,
+        serviceCharge: product.pricing.serviceCharge
+          ? Math.round(product.pricing.serviceCharge * multiplier)
+          : 0,
+      },
+    };
+  });
 }
 
 

@@ -4,6 +4,8 @@ import Service from "@/models/Serviceproduct";
 import { createSlug } from "@/utils/createSlug";
 import { requireAdmin } from "@/lib/protectRoute";
 import City from "@/models/CityModels";
+import LocationProfile from "@/models/LocationProfile";
+
 
 export async function GET(req) {
   try {
@@ -41,51 +43,97 @@ export async function GET(req) {
       serviceAreas: { $in: [city._id] },
     };
 
-    /* ---------- PARALLEL QUERIES ---------- */
-    const [
-      featured,
-      top,
-      best,
-      allServices,
-      totalAll
-    ] = await Promise.all([
+    /* ---------- FETCH SERVICES ---------- */
+    const [featured, top, best, allServices, totalAll] =
+      await Promise.all([
+        Service.find({ ...baseFilter, isFeatured: true })
+          .sort({ priority: -1 })
+          .limit(6)
+          .lean(),
 
-      // Featured (limit 6)
-      Service.find({ ...baseFilter, isFeatured: true })
-        .sort({ priority: -1 })
-        .limit(6)
-        .lean(),
+        Service.find({ ...baseFilter, isTopService: true })
+          .sort({ priority: -1 })
+          .limit(6)
+          .lean(),
 
-      // Top (limit 6)
-      Service.find({ ...baseFilter, isTopService: true })
-        .sort({ priority: -1 })
-        .limit(6)
-        .lean(),
+        Service.find({ ...baseFilter, isBestService: true })
+          .sort({ priority: -1 })
+          .limit(6)
+          .lean(),
 
-      // Best (limit 6)
-      Service.find({ ...baseFilter, isBestService: true })
-        .sort({ priority: -1 })
-        .limit(6)
-        .lean(),
+        Service.find(baseFilter)
+          .sort({ priority: -1, createdAt: -1 })
+          .skip(skip)
+          .limit(limit)
+          .lean(),
 
-      // All (Paginated)
-      Service.find(baseFilter)
-        .sort({ priority: -1, createdAt: -1 })
-        .skip(skip)
-        .limit(limit)
-        .lean(),
+        Service.countDocuments(baseFilter),
+      ]);
 
-      Service.countDocuments(baseFilter),
-    ]);
+    /* ---------- FETCH SERVICE-LEVEL MULTIPLIERS ---------- */
+    const serviceIds = [
+      ...featured,
+      ...top,
+      ...best,
+      ...allServices,
+    ].map((s) => s._id);
 
+    const serviceProfiles = await LocationProfile.find({
+      city: city._id,
+      scope: "service",
+      service: { $in: serviceIds },
+    }).lean();
+
+    const profileMap = new Map(
+      serviceProfiles.map((p) => [p.service.toString(), p])
+    );
+
+    /* ---------- APPLY MULTIPLIER PER SERVICE ---------- */
+    function applyServiceMultiplier(items) {
+      return items.map((item) => {
+        const profile = profileMap.get(item._id.toString());
+
+        if (!profile?.priceMultiplier || profile.priceMultiplier === 1) {
+          return item; // no change
+        }
+
+        if (!item.pricing?.amount) return item;
+
+        const newAmount = Math.round(
+          item.pricing.amount * profile.priceMultiplier
+        );
+
+        return {
+          ...item,
+          pricing: {
+            ...item.pricing,
+            amount: newAmount,
+            label: `Starting from ₹${newAmount.toLocaleString()}`,
+          },
+        };
+      });
+    }
+
+    const adjustedFeatured = applyServiceMultiplier(featured);
+    const adjustedTop = applyServiceMultiplier(top);
+    const adjustedBest = applyServiceMultiplier(best);
+    const adjustedAll = applyServiceMultiplier(allServices);
+
+    /* ---------- RESPONSE ---------- */
     return NextResponse.json({
       success: true,
-      city,
-      featured,
-      top,
-      best,
+
+      city: {
+        ...city,
+        locationContext: null, // no city-level multiplier anymore
+      },
+
+      featured: adjustedFeatured,
+      top: adjustedTop,
+      best: adjustedBest,
+
       all: {
-        data: allServices,
+        data: adjustedAll,
         pagination: {
           total: totalAll,
           page,
@@ -94,17 +142,15 @@ export async function GET(req) {
         },
       },
     });
-
   } catch (error) {
-    console.error("HOME SERVICE ERROR:", error);
+    console.error("CITY SERVICE ERROR:", error);
+
     return NextResponse.json(
       { success: false, message: "Server Error" },
       { status: 500 }
     );
   }
 }
-
-
 
 /* ================= CREATE (ADMIN) ================= */
 export async function POST(req) {
@@ -124,14 +170,12 @@ export async function POST(req) {
     ) {
       return NextResponse.json(
         { success: false, message: "Required fields missing" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     /* ---------- SLUG GENERATION ---------- */
-    let slug = body.slug
-      ? createSlug(body.slug)
-      : createSlug(body.title);
+    let slug = body.slug ? createSlug(body.slug) : createSlug(body.title);
 
     const exists = await Service.findOne({ slug });
     if (exists) slug = `${slug}-${Date.now()}`;
@@ -145,25 +189,20 @@ export async function POST(req) {
       serviceAreas: body.serviceAreas || [],
     });
 
-    return NextResponse.json(
-      { success: true, data: service },
-      { status: 201 }
-    );
-
+    return NextResponse.json({ success: true, data: service }, { status: 201 });
   } catch (err) {
     console.error("POST /api/service", err);
 
     if (err.code === 11000) {
       return NextResponse.json(
         { success: false, message: "Duplicate slug" },
-        { status: 409 }
+        { status: 409 },
       );
     }
 
     return NextResponse.json(
       { success: false, message: err.message },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
-

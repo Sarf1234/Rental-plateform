@@ -4,8 +4,11 @@ import Product from "@/models/Product";
 import ProductCategory from "@/models/ProductCategory";
 import ProductTag from "@/models/ProductTags";
 import City from "@/models/CityModels";
+import Service from "@/models/Serviceproduct";
+import Business from "@/models/BusinessModel";
 import { requireAdmin } from "@/lib/protectRoute";
 import { createSlug } from "@/utils/createSlug";
+import LocationProfile from "@/models/LocationProfile";
 
 /* =======================
    GET PRODUCT BY SLUG
@@ -22,14 +25,9 @@ export async function GET(req, { params }) {
     const citySlug = searchParams.get("city");
     const isAdminPreview = searchParams.get("admin") === "true";
 
-    const filter = { slug };
+    /* ================= PRODUCT ================= */
 
-    // Future public safety
-    // if (!isAdminPreview) {
-    //   filter.status = "published";
-    // }
-
-    const product = await Product.findOne(filter)
+    const product = await Product.findOne({ slug })
       .populate("categories", "name slug")
       .populate("tags", "name slug")
       .populate("serviceAreas", "name slug")
@@ -42,10 +40,16 @@ export async function GET(req, { params }) {
       );
     }
 
+    /* ================= CITY ================= */
+
     let city = null;
+    let locationProfile = null;
 
     if (citySlug) {
-      city = await City.findOne({ slug: citySlug, isActive: true })
+      city = await City.findOne({
+        slug: citySlug,
+        isActive: true,
+      })
         .select("name slug subAreas")
         .lean();
 
@@ -56,7 +60,6 @@ export async function GET(req, { params }) {
         );
       }
 
-      // ✅ Ensure product available in that city
       const isAvailableInCity = product.serviceAreas?.some(
         (area) => area.slug === citySlug
       );
@@ -67,11 +70,124 @@ export async function GET(req, { params }) {
           { status: 404 }
         );
       }
+
+      /* ================= LOCATION PROFILE ================= */
+
+      locationProfile = await LocationProfile.findOne({
+        city: city._id,
+        scope: "product",
+        product: product._id,
+      }).lean();
+
+      /* ================= APPLY MULTIPLIER ================= */
+
+      if (
+        locationProfile?.priceMultiplier &&
+        locationProfile.priceMultiplier !== 1
+      ) {
+        const multiplier = locationProfile.priceMultiplier;
+
+        product.pricing.minPrice = Math.round(
+          product.pricing.minPrice * multiplier
+        );
+
+        product.pricing.maxPrice = Math.round(
+          product.pricing.maxPrice * multiplier
+        );
+
+        if (product.pricing.discountedPrice) {
+          product.pricing.discountedPrice = Math.round(
+            product.pricing.discountedPrice * multiplier
+          );
+        }
+
+        product.pricing.securityDeposit = Math.round(
+          product.pricing.securityDeposit * multiplier
+        );
+
+        product.pricing.serviceCharge = Math.round(
+          product.pricing.serviceCharge * multiplier
+        );
+      }
     }
+
+    /* ================= RELATED SERVICES ================= */
+
+    let relatedServices = [];
+    let relatedProducts = [];
+    let providers = [];
+
+    if (city) {
+      relatedServices = await Service.find({
+        products: product._id,
+        serviceAreas: city._id,
+        status: "published",
+      })
+        .populate("providers", "name slug phone serviceAreas isVerified")
+        .limit(6)
+        .lean();
+
+      /* ================= PROVIDERS (DEDUPED) ================= */
+
+      const providerSet = new Set();
+
+      relatedServices.forEach((service) => {
+        service.providers?.forEach((provider) => {
+          providerSet.add(provider._id.toString());
+        });
+      });
+
+      if (providerSet.size > 0) {
+        providers = await Business.find({
+          _id: { $in: [...providerSet] },
+          serviceAreas: city._id,
+          status: "active",
+        })
+          .select("name slug phone isVerified")
+          .lean();
+      }
+
+      /* ================= RELATED PRODUCTS ================= */
+
+      relatedProducts = await Product.find({
+        _id: { $ne: product._id },
+        serviceAreas: city._id,
+        status: "published",
+        $or: [
+          { categories: { $in: product.categories } },
+          { tags: { $in: product.tags } },
+        ],
+      })
+        .limit(6)
+        .lean();
+    }
+
+    /* ================= LOCATION CONTEXT DATA ================= */
+
+    const locationContext = locationProfile
+      ? {
+          demandLevel: locationProfile.demandLevel,
+          customIntro: locationProfile.customIntro,
+          seasonalNote: locationProfile.seasonalNote,
+          deliveryNote: locationProfile.deliveryNote,
+          trendingText: locationProfile.trendingText,
+          expressAvailable: locationProfile.expressAvailable,
+          additionalContent: locationProfile.additionalContent,
+          seoTitleOverride: locationProfile.seoTitleOverride,
+          seoDescriptionOverride:
+            locationProfile.seoDescriptionOverride,
+        }
+      : null;
+
+    /* ================= RESPONSE ================= */
 
     return NextResponse.json({
       success: true,
       data: product,
+      locationContext,
+      relatedServices,
+      relatedProducts,
+      providers,
       city: city || null,
     });
 
