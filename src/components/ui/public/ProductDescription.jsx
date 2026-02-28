@@ -21,9 +21,9 @@ export default function ProductDescription({
       {/* ===================== */}
       {cityName && (
         <section className="mb-8">
-          <h1 className="text-xl font-semibold mb-3">
+          <h2 className="text-xl font-semibold mb-3">
             Rental Details & Specifications
-          </h1>
+          </h2>
 
           <p className="text-gray-700 leading-relaxed">
             Looking for {title.toLowerCase()} rental in {cityName}? 
