@@ -5,6 +5,9 @@ import ProductTerms from "@/components/ui/public/ProductTerms";
 import ProductInfo from "@/components/ui/public/ProductInfo";
 import Image from "next/image";
 import { notFound } from "next/navigation";
+import FlagsCards from "@/components/ui/public/FlagsCards";
+import Servicecards from "@/components/ui/public/Servicecards";
+import ProviderCards from "@/components/ui/public/ProviderCards";
 
 export const dynamic = "force-dynamic";
 
@@ -17,7 +20,7 @@ export async function generateMetadata({ params }) {
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productSlug}?city=${slug}`,
-    { cache: "no-store" }
+    { cache: "no-store" },
   );
 
   if (!res.ok) return {};
@@ -25,7 +28,7 @@ export async function generateMetadata({ params }) {
   const data = await res.json();
   const product = data?.data;
   const city = data?.city;
-
+  const locationContext = data?.locationContext;
   if (!product) return {};
 
   const cityName = city?.name || slug;
@@ -34,17 +37,19 @@ export async function generateMetadata({ params }) {
     ?.replace(/<[^>]+>/g, "")
     .slice(0, 160);
 
-  const title = product.seo?.metaTitle
-    ? `${product.seo.metaTitle} in ${cityName}`
-    : `${product.title} in ${cityName}`;
+  const title = locationContext?.seoTitleOverride
+    ? locationContext.seoTitleOverride
+    : product.seo?.metaTitle
+      ? `${product.seo.metaTitle} in ${cityName}`
+      : `${product.title} in ${cityName}`;
 
-  const description = product.seo?.metaDescription
-    ? `${product.seo.metaDescription} Available in ${cityName}.`
-    : cleanDescription
-    ? `${cleanDescription} Available for rent in ${cityName}.`
-    : `Rent ${product.title} in ${cityName} at affordable pricing. ${
-        primaryPrice ? `Starting from ₹${primaryPrice}.` : ""
-      }`;
+  const description = locationContext?.seoDescriptionOverride
+    ? locationContext.seoDescriptionOverride
+    : product.seo?.metaDescription
+      ? `${product.seo.metaDescription} Available in ${cityName}.`
+      : cleanDescription
+        ? `${cleanDescription} Available for rent in ${cityName}.`
+        : `Rent ${product.title} in ${cityName}.`;
 
   const image =
     product.images?.[0] ||
@@ -75,7 +80,6 @@ export async function generateMetadata({ params }) {
   };
 }
 
-
 /* =========================
    PRODUCT PAGE
 ========================= */
@@ -87,11 +91,15 @@ export default async function ProductPage({ params }) {
     { cache: "no-store" },
   );
 
-
   if (!res.ok) return notFound();
 
   const data = await res.json();
   const product = data?.data;
+  const locationContext = data?.locationContext;
+  const relatedProducts = data?.relatedProducts || [];
+  const relatedServices = data?.relatedServices || [];
+  const city = data?.city;
+  const providers = data?.providers || [];
 
   if (!product) return notFound();
 
@@ -110,126 +118,146 @@ export default async function ProductPage({ params }) {
   const cityName = data?.city?.name || slug;
   const productUrl = `${baseUrl}/${slug}/products/${productSlug}`;
 
+  // 🔥 MODIFY FAQ HERE (single source of truth)
+  const pricingKeywords = ["price", "rent", "rental", "cost", "how much"];
 
-// 🔥 MODIFY FAQ HERE (single source of truth)
-const pricingKeywords = [
-  "price",
-  "rent",
-  "rental",
-  "cost",
-  "how much"
-];
+  const faqs = rawFaqs?.map((faq) => {
+    let question = faq.question;
+    let answer = faq.answer;
 
-const faqs = rawFaqs?.map((faq) => {
-  let question = faq.question;
-  let answer = faq.answer;
+    if (cityName) {
+      // 1️⃣ Placeholder support
+      if (question.includes("{city}")) {
+        question = question.replace("{city}", cityName);
+      }
 
-  if (cityName) {
-    // 1️⃣ Placeholder support
-    if (question.includes("{city}")) {
-      question = question.replace("{city}", cityName);
-    }
+      if (answer.includes("{city}")) {
+        answer = answer.replace("{city}", cityName);
+      }
 
-    if (answer.includes("{city}")) {
-      answer = answer.replace("{city}", cityName);
-    }
+      // 2️⃣ Smart injection for pricing intent
+      const lowerQ = question.toLowerCase();
 
-    // 2️⃣ Smart injection for pricing intent
-    const lowerQ = question.toLowerCase();
+      const shouldInject =
+        pricingKeywords.some((keyword) => lowerQ.includes(keyword)) &&
+        !lowerQ.includes(cityName.toLowerCase());
 
-    const shouldInject =
-      pricingKeywords.some(keyword =>
-        lowerQ.includes(keyword)
-      ) &&
-      !lowerQ.includes(cityName.toLowerCase());
-
-    if (shouldInject) {
-      if (question.includes("?")) {
-        question = question.replace("?", ` in ${cityName}?`);
-      } else {
-        question = `${question} in ${cityName}`;
+      if (shouldInject) {
+        if (question.includes("?")) {
+          question = question.replace("?", ` in ${cityName}?`);
+        } else {
+          question = `${question} in ${cityName}`;
+        }
       }
     }
-  }
 
-  return {
-    ...faq,
-    question,
-    answer,
-  };
-});
+    return {
+      ...faq,
+      question,
+      answer,
+    };
+  });
 
   const primaryPrice =
     pricing?.discountedPrice || pricing?.minPrice || pricing?.amount || 1000;
 
   // Optional seller logic (if provider exists in backend later)
-  const seller = {
-    "@type": "LocalBusiness",
-    name: "Verified Rental Provider",
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: cityName,
-      addressCountry: "IN",
-    },
-  };
+  const seller =
+    providers.length > 0
+      ? {
+          "@type": "LocalBusiness",
+          name: providers[0].name,
+          telephone: providers[0].phone,
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: cityName,
+            addressCountry: "IN",
+          },
+        }
+      : {
+          "@type": "LocalBusiness",
+          name: `Rental Provider in ${cityName}`,
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: cityName,
+            addressCountry: "IN",
+          },
+        };
 
   const structuredData = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": `${baseUrl}#organization`,
-      name: "KirayNow",
-      url: baseUrl,
-      logo: "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
-    },
-
-    {
-      "@type": "BreadcrumbList",
-      "@id": `${productUrl}#breadcrumb`,
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: baseUrl },
-        { "@type": "ListItem", position: 2, name: cityName, item: `${baseUrl}/${slug}` },
-        { "@type": "ListItem", position: 3, name: "Rental Products", item: `${baseUrl}/${slug}/products` },
-        { "@type": "ListItem", position: 4, name: title, item: productUrl },
-      ],
-    },
-
-    {
-      "@type": "Product",
-      "@id": productUrl,
-      name: `${title} in ${cityName}`,
-      image: images,
-      description: description?.replace(/<[^>]+>/g, "").slice(0, 250),
-      brand: {
-        "@type": "Brand",
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${baseUrl}#organization`,
         name: "KirayNow",
+        url: baseUrl,
+        logo: "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
       },
-      offers: {
-        "@type": "Offer",
-        url: productUrl,
-        priceCurrency: "INR",
-        price: primaryPrice,
-        availability: "https://schema.org/InStock",
-      },
-    },
 
-    ...(faqs?.length
-      ? [{
-          "@type": "FAQPage",
-          mainEntity: faqs.slice(0, 5).map((faq) => ({
-            "@type": "Question",
-            name: faq.question,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: faq.answer,
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${productUrl}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: baseUrl },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: cityName,
+            item: `${baseUrl}/${slug}`,
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: "Rental Products",
+            item: `${baseUrl}/${slug}/products`,
+          },
+          { "@type": "ListItem", position: 4, name: title, item: productUrl },
+        ],
+      },
+
+      {
+        "@type": "Product",
+        "@id": productUrl,
+        name: `${title} in ${cityName}`,
+        image: images,
+        description: description?.replace(/<[^>]+>/g, "").slice(0, 250),
+        brand: {
+          "@type": "Brand",
+          name: "KirayNow",
+        },
+        seller,
+
+        areaServed: {
+          "@type": "City",
+          name: cityName,
+        },
+        offers: {
+          "@type": "Offer",
+          url: productUrl,
+          priceCurrency: "INR",
+          price: primaryPrice,
+          availability: "https://schema.org/InStock",
+        },
+      },
+
+      ...(faqs?.length
+        ? [
+            {
+              "@type": "FAQPage",
+              mainEntity: faqs.slice(0, 5).map((faq) => ({
+                "@type": "Question",
+                name: faq.question,
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: faq.answer,
+                },
+              })),
             },
-          })),
-        }]
-      : []),
-  ],
-};
-
+          ]
+        : []),
+    ],
+  };
 
   return (
     <div className="bg-gray-50">
@@ -251,6 +279,7 @@ const faqs = rawFaqs?.map((faq) => {
                 highlights={highlights}
                 productdescription={product.seo.metaDescription}
                 citySlug={slug}
+                locationContext={locationContext}
               />
             </div>
             <ProductDescription
@@ -258,8 +287,14 @@ const faqs = rawFaqs?.map((faq) => {
               title={title}
               cityData={data?.city}
               pricing={pricing}
+              locationContext={locationContext}
             />
-            <ProductFAQ faqs={faqs} cityData={data?.city}/>
+            {locationContext?.seasonalNote && (
+              <div className="mt-6 text-sm text-gray-600">
+                {locationContext.seasonalNote}
+              </div>
+            )}
+            <ProductFAQ faqs={faqs} cityData={data?.city} />
             <ProductTerms terms={termsAndConditions} />
           </div>
 
@@ -272,11 +307,32 @@ const faqs = rawFaqs?.map((faq) => {
                 highlights={highlights}
                 productdescription={product.seo.metaDescription}
                 citySlug={slug}
+                locationContext={locationContext}
               />
             </div>
           </div>
         </div>
       </div>
+      {relatedProducts.length > 0 && (
+        <FlagsCards
+          data={relatedProducts}
+          citySlug={slug}
+          title={`Related Rental Products in ${city?.name}`}
+        />
+      )}
+
+      {relatedServices.length > 0 && (
+        <Servicecards
+          data={relatedServices}
+          citySlug={slug}
+          title={`Services That Use This Product in ${city?.name}`}
+          subtitle={`Top-rated services in ${city?.name} that use this product`}
+        />
+      )}
+
+      {providers.length > 0 && (
+        <ProviderCards data={providers} citySlug={slug} />
+      )}
     </div>
   );
 }

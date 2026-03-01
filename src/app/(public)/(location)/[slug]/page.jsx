@@ -7,7 +7,7 @@ import ProductCategories from "@/components/ui/public/ProductCategories";
 import RelatedBlogs from "@/components/layout/RelatedBlogs";
 import ServiceCategories from "@/components/ui/public/ServiceCategories";
 
-export const revalidate = 3600; // ISR (1 hour)
+// export const revalidate = 3600; // ISR (1 hour)
 
 // 🔥 Dynamic Metadata Generator
 export async function generateMetadata({ params }) {
@@ -19,6 +19,7 @@ export async function generateMetadata({ params }) {
     );
 
     const city = cityRes?.data;
+    const locationContext = cityRes?.locationContext;
     if (!city) return {};
 
     const subAreasText =
@@ -27,10 +28,14 @@ export async function generateMetadata({ params }) {
         .map((a) => a.name)
         .join(", ") || "";
 
-    const title = `Affordable Birthday, Wedding & Party Rentals in ${city.name}`;
-    const description = `Planning a celebration in ${city.name}? KirayNow helps you book trusted birthday decoration, wedding setups and party rental services${
-      subAreasText ? ` across ${subAreasText}` : ""
-    }. Compare packages, view transparent pricing and hire verified professionals for a hassle-free event experience.`;
+    const title =
+      locationContext?.seoTitleOverride ||
+      `Affordable Birthday, Wedding & Party Rentals in ${city.name}`;
+    const description =
+      locationContext?.seoDescriptionOverride ||
+      `Planning a celebration in ${city.name}? KirayNow helps you book trusted birthday decoration, wedding setups and party rental services${
+        subAreasText ? ` across ${subAreasText}` : ""
+      }. Compare packages, view transparent pricing and hire verified professionals for a hassle-free event experience.`;
 
     const url = `https://kiraynow.com/${city.slug}`;
     const ogImage =
@@ -87,6 +92,7 @@ export default async function CityHome({ params }) {
   let all = [];
   let categories = [];
   let cityData = null;
+  let locationProfile = null;
 
   let serviceCategories = [];
 
@@ -104,6 +110,7 @@ export default async function CityHome({ params }) {
       `${process.env.NEXT_PUBLIC_API_URL}/api/cities/${slug}`,
     );
     cityData = cityRes?.data || null;
+    locationProfile = cityRes?.locationContext || null;
   } catch (err) {
     console.error("Failed to fetch city:", err);
   }
@@ -280,27 +287,38 @@ export default async function CityHome({ params }) {
       {/* HERO */}
       <HeroCarousel images={imagesLink} contents={carouselContent} />
       {/* SEO H1 + SHORT INTRO */}
-      <section className="max-w-7xl mx-auto px-4 py-8">
-        <h1 className="text-2xl text-center md:text-3xl font-bold text-gray-900">
+      <section className="max-w-5xl mx-auto px-4 py-12 text-center">
+        <h1 className="text-3xl md:text-4xl font-semibold text-gray-900">
           Birthday, Wedding & Party Rental Services in {cityName}
         </h1>
-        <p className="mt-3 text-gray-600 text-center m-auto max-w-3xl">
-          Book trusted rental services in {cityName}
-          {subAreas.length > 0 && (
-            <>
-              {" "}
-              including{" "}
-              {subAreas.slice(0, 3).map((area, i) => (
-                <span key={area._id}>
-                  {area.name}
-                  {i < Math.min(2, subAreas.length - 1) ? ", " : ""}
-                </span>
-              ))}
-            </>
-          )}
-          . Explore {totalServices}+ verified service options with transparent
-          pricing and professional event support.
+
+        <p className="mt-5 text-gray-600 leading-relaxed text-sm md:text-base">
+          {locationProfile?.customIntro
+            ? locationProfile.customIntro
+            : `Book trusted rental services in ${cityName}${
+                subAreas.length > 0
+                  ? ` including ${subAreas
+                      .slice(0, 3)
+                      .map((a) => a.name)
+                      .join(", ")}`
+                  : ""
+              }. Explore ${totalServices}+ verified service options with transparent pricing and professional event support.`}
         </p>
+
+        {/* Optional intelligence layer */}
+        {(locationProfile?.demandLevel === "high" ||
+          locationProfile?.expressAvailable) && (
+          <div className="mt-6 text-xs uppercase tracking-wider text-gray-500 space-y-1">
+            {locationProfile?.demandLevel === "high" && (
+              <div>
+                {cityName} is currently experiencing strong rental demand.
+              </div>
+            )}
+            {locationProfile?.expressAvailable && (
+              <div>Fast fulfillment and priority delivery available.</div>
+            )}
+          </div>
+        )}
       </section>
 
       {/* FEATURED */}
@@ -312,8 +330,16 @@ export default async function CityHome({ params }) {
       />
 
       {/* WHY CHOOSE US */}
-      <Services city={cityName} subAreas={subAreas} totalServices={10} />
-
+      <Services
+        city={cityName}
+        subAreas={subAreas}
+        totalServices={totalServices}
+        seasonalNote={locationProfile?.seasonalNote || null}
+        deliveryNote={locationProfile?.deliveryNote || null}
+        trendingText={locationProfile?.trendingText || null}
+        expressAvailable={locationProfile?.expressAvailable || false}
+        demandLevel={locationProfile?.demandLevel || null}
+      />
       {/* PRODUCT CATEGORIES */}
       {/* <ProductCategories categories={categories} citySlug={slug} /> */}
 

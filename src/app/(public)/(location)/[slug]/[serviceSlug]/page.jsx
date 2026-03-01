@@ -22,20 +22,22 @@ export async function generateMetadata({ params }) {
 
     const service = result.data;
     const city = result.city;
+    const locationProfile = service.locationContext || null;
+    
 
     const cityName = city?.name || "";
     const brandName = "KirayNow"; // replace later
 
     // Base meta from backend
-    const baseTitle = service.seo?.metaTitle || service.title;
+    const baseTitle =  service.seo?.metaTitle || service.title;
 
-    const baseDescription =
+    const baseDescription = 
       service.seo?.metaDescription ||
       service.description?.replace(/<[^>]+>/g, "").slice(0, 140);
 
-    const title = `${baseTitle} in ${cityName} `;
+    const title = locationProfile?.seoTitleOverride || `${baseTitle} in ${cityName} `;
 
-    const description = `${baseDescription} Available across ${cityName}${
+    const description = locationProfile?.seoDescriptionOverride || `${baseDescription} Available across ${cityName}${
       city?.subAreas?.length
         ? ` including ${city.subAreas
             .slice(0, 3)
@@ -97,6 +99,7 @@ export default async function ServiceDetailsPage({ params }) {
   const { serviceSlug, slug } = await params;
   let featured = [];
   let cityData = [];
+  let locationProfile = null;
 
   try {
     const res = await apiRequest(
@@ -104,6 +107,7 @@ export default async function ServiceDetailsPage({ params }) {
     );
     featured = res.data || [];
     cityData = res.city;
+    locationProfile = res.data?.locationContext || null;
   } catch (err) {
     console.error("Failed to fetch categories:", err);
   }
@@ -114,9 +118,61 @@ export default async function ServiceDetailsPage({ params }) {
   const cityName = cityData?.name || "";
   const service = featured;
   const serviceUrl = `${baseUrl}/${slug}/${serviceSlug}`;
-  console.log(service.description);
 
   const primaryProvider = service.providers?.[0];
+  // =============================
+// 🔥 MODIFY SERVICE FAQ HERE
+// =============================
+
+const pricingKeywords = [
+  "price",
+  "cost",
+  "charges",
+  "package",
+  "rent",
+  "how much"
+];
+
+const rawFaqs = service.faqs || [];
+
+const modifiedFaqs = rawFaqs.map((faq) => {
+  let question = faq.question;
+  let answer = faq.answer;
+
+  if (cityName) {
+    // 1️⃣ Placeholder support
+    if (question.includes("{city}")) {
+      question = question.replace("{city}", cityName);
+    }
+
+    if (answer.includes("{city}")) {
+      answer = answer.replace("{city}", cityName);
+    }
+
+    // 2️⃣ Inject city in pricing intent questions
+    const lowerQ = question.toLowerCase();
+
+    const shouldInject =
+      pricingKeywords.some((keyword) =>
+        lowerQ.includes(keyword)
+      ) &&
+      !lowerQ.includes(cityName.toLowerCase());
+
+    if (shouldInject) {
+      if (question.includes("?")) {
+        question = question.replace("?", ` in ${cityName}?`);
+      } else {
+        question = `${question} in ${cityName}`;
+      }
+    }
+  }
+
+  return {
+    ...faq,
+    question,
+    answer,
+  };
+});
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -201,15 +257,7 @@ export default async function ServiceDetailsPage({ params }) {
       {
         "@type": "FAQPage",
         mainEntity: [
-          {
-            "@type": "Question",
-            name: `Is ${service.title} available in ${cityName}?`,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: `Yes, multiple verified providers offer ${service.title} services across ${cityName}.`,
-            },
-          },
-          ...(service.faqs || []).slice(0, 4).map((faq) => ({
+          ...(modifiedFaqs || []).slice(0, 5).map((faq) => ({
             "@type": "Question",
             name: faq.question,
             acceptedAnswer: {
@@ -236,17 +284,31 @@ export default async function ServiceDetailsPage({ params }) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           {/* CENTER FIRST ON MOBILE */}
           <div className="order-1 lg:order-2 lg:col-span-6">
-            <CenterContent service={featured} city={slug} cityData={cityData} />
+            <CenterContent
+              service={featured}
+              city={slug}
+              cityData={cityData}
+              locationProfile={locationProfile}
+              modifiedFaqs={modifiedFaqs}
+            />
           </div>
 
           {/* LEFT SECOND ON MOBILE */}
           <div className="order-2 lg:order-1 lg:col-span-3">
-            <LeftSidebar service={featured} cityData={cityData} />
+            <LeftSidebar
+              service={featured}
+              cityData={cityData}
+              locationProfile={locationProfile}
+            />
           </div>
 
           {/* RIGHT THIRD ON MOBILE */}
           <div className="order-3 lg:order-3 lg:col-span-3">
-            <RightSidebar service={featured} cityData={slug} />
+            <RightSidebar
+              service={featured}
+              cityData={slug}
+              locationProfile={locationProfile}
+            />
           </div>
         </div>
       </div>
@@ -254,38 +316,22 @@ export default async function ServiceDetailsPage({ params }) {
   );
 }
 
-function LeftSidebar({ service, cityData }) {
+function LeftSidebar({ service, cityData, locationProfile }) {
   return (
     <div className="lg:sticky lg:top-20 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 space-y-6">
       {/* Title Section */}
-      <div>
-        <h2 className="text-2xl font-semibold text-gray-900 leading-snug">
-          {service.title}
-        </h2>
-
-        {/* Highlight Badges */}
-        <div className="flex flex-wrap gap-2 mt-3">
-          {service.isTopService && (
-            <span className="px-3 py-1 text-xs font-medium bg-black text-white rounded-full">
-              Top Service
-            </span>
-          )}
-          {service.isBestService && (
-            <span className="px-3 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-              Best Rated
-            </span>
-          )}
-        </div>
-      </div>
+      
 
       {/* Divider */}
-      <div className="border-t border-gray-100"></div>
+      {/* <div className="border-t border-gray-100"></div> */}
 
       {/* Service Areas */}
       <div>
         <h4 className="text-sm font-semibold text-gray-800 mb-3 uppercase tracking-wide">
           Available Across
         </h4>
+
+        
 
         <div className="flex flex-wrap gap-2">
           {cityData.subAreas.map((area) => (
@@ -298,6 +344,11 @@ function LeftSidebar({ service, cityData }) {
           ))}
         </div>
       </div>
+      {locationProfile?.trendingText && (
+          <p className="mt-4 text-xs text-gray-500">
+            {locationProfile.trendingText}
+          </p>
+        )}
 
       {/* Divider */}
       <div className="border-t border-gray-100"></div>
@@ -327,14 +378,8 @@ function LeftSidebar({ service, cityData }) {
   );
 }
 
-function CenterContent({ service, city, cityData }) {
-  const dynamicFaq = {
-    question: `Is ${service.title} available in ${cityData?.name}?`,
-    answer: `Yes, we provide ${service.title} services across ${cityData?.name}, including ${cityData?.subAreas
-      ?.slice(0, 3)
-      .map((a) => a.name)
-      .join(", ")}.`,
-  };
+function CenterContent({ service, city, cityData, locationProfile, modifiedFaqs }) {
+  
 
   const cityName = cityData?.name;
   const topAreas = cityData?.subAreas
@@ -377,19 +422,32 @@ function CenterContent({ service, city, cityData }) {
       </div>
 
       <div className="lg:hidden">
-        <ContactCTA service={service} citySlug={city} />
+        <ContactCTA
+          service={service}
+          citySlug={cityData}
+          locationProfile={locationProfile}
+        />
       </div>
 
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <h1 className="text-3xl font-bold text-gray-900">
-          {service.title} in {cityName}
-        </h1>
 
-        <p className="mt-4 text-gray-600 leading-relaxed">
-          Looking for professional {service.title.toLowerCase()} in {cityName}?
-          We provide customized and reliable setups across major areas like{" "}
-          {topAreas}. Packages start from ₹{service.pricing?.amount}.
+      <h1 className="text-3xl font-bold text-gray-900">
+        {service.title} in {cityName}
+      </h1>
+
+      <p className="mt-4 text-gray-600 leading-relaxed">
+        {locationProfile?.customIntro
+          ? locationProfile.customIntro
+          : `Looking for professional ${service.title.toLowerCase()} in ${cityName}? We provide customized and reliable setups across major areas like ${topAreas}. Packages start from ₹${service.pricing?.amount}.`}
+      </p>
+
+      {/* 🔥 Demand Level Indicator */}
+      {locationProfile?.demandLevel === "high" && (
+        <p className="mt-2 text-xs uppercase tracking-wide text-gray-500">
+          High demand service in {cityName}
         </p>
+      )}
+
       </div>
 
       {/* ===== ORIGINAL DESCRIPTION FROM BACKEND ===== */}
@@ -398,6 +456,14 @@ function CenterContent({ service, city, cityData }) {
           className="prose max-w-none text-gray-700"
           dangerouslySetInnerHTML={{ __html: service.description }}
         />
+        {locationProfile?.seasonalNote && (
+          <div className="mt-8 border-t pt-6">
+            <h3 className="text-lg font-semibold text-gray-900">
+              Market Trend in {cityName}
+            </h3>
+            <p className="text-gray-600 mt-2">{locationProfile.seasonalNote}</p>
+          </div>
+        )}
         <div className="mt-8">
           <h2 className="text-xl font-semibold">
             {service.title} Service in {cityName}
@@ -505,13 +571,13 @@ function CenterContent({ service, city, cityData }) {
           Frequently Asked Questions
         </h3>
 
-        <FAQSection faqs={[dynamicFaq, ...service.faqs]} />
+        <FAQSection faqs={[...modifiedFaqs]} />
       </div>
     </div>
   );
 }
 
-function RightSidebar({ service, cityData }) {
+function RightSidebar({ service, cityData, locationProfile }) {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kiraynow.com";
 
   // ⚡ Generate dynamic WhatsApp message
@@ -538,7 +604,11 @@ Thank you!
     <div className="lg:sticky lg:top-20 space-y-6">
       {/* ========== CONTACT / CTA CARD ========== */}
       <div className="hidden lg:block">
-        <ContactCTA service={service} citySlug={cityData} />
+        <ContactCTA
+          service={service}
+          citySlug={cityData}
+          locationProfile={locationProfile}
+        />
       </div>
       {/* ========== PROVIDERS CARD ========== */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
@@ -603,7 +673,7 @@ function FAQSection({ faqs }) {
   );
 }
 
-function ContactCTA({ service, citySlug }) {
+function ContactCTA({ service, citySlug, locationProfile }) {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kiraynow.com";
 
   const message = `
@@ -641,6 +711,11 @@ Thank you!
             </span>
           )}
         </div>
+        {locationProfile?.deliveryNote && (
+          <p className="mt-4 text-xs text-gray-500">
+            {locationProfile.deliveryNote}
+          </p>
+        )}
 
         <p className="text-sm text-gray-500">
           {service?.pricing?.type === "per_event"
@@ -676,7 +751,9 @@ Thank you!
         {/* Trust Section */}
         <div className="bg-gray-50 border rounded-xl p-4 text-center mt-4">
           <p className="text-xs text-gray-500">
-            Instant confirmation • No hidden charges
+            {locationProfile?.expressAvailable
+              ? "Express fulfillment available • Instant confirmation"
+              : "Instant confirmation • No hidden charges"}
           </p>
           <p className="text-sm font-semibold text-gray-900">
             Verified Event Professionals

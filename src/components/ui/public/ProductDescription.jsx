@@ -2,7 +2,8 @@ export default function ProductDescription({
   description, 
   title, 
   cityData, 
-  pricing 
+  pricing,
+  locationContext
 }) {
   if (!description) return null;
 
@@ -42,6 +43,11 @@ export default function ProductDescription({
       {/* <h2 className="text-2xl font-semibold mb-4">
         Product Details
       </h2> */}
+      {locationContext?.customIntro && (
+          <div className="mb-6 text-gray-700 leading-relaxed">
+            {locationContext.customIntro}
+          </div>
+        )}
 
       <div
         className="prose max-w-none content"
@@ -56,6 +62,11 @@ export default function ProductDescription({
           We regularly deliver {title.toLowerCase()} rentals in {cityName}, 
           including {topAreas} and surrounding localities.
         </div>
+      )}
+      {locationContext?.trendingText && (
+        <p className="mt-3 text-blue-600">
+          {locationContext.trendingText}
+        </p>
       )}
     </div>
   );

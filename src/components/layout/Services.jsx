@@ -4,8 +4,12 @@ export default function Services({
   city = "Patna",
   subAreas = [],
   totalServices = 0,
+  seasonalNote,
+  deliveryNote,
+  trendingText,
+  expressAvailable,
+  demandLevel,
 }) {
-  // Pick top 2 subareas (priority-based data already sorted from backend recommended)
   const topAreas = subAreas.slice(0, 2).map((area) => area.name);
 
   const areasText =
@@ -17,7 +21,9 @@ export default function Services({
     {
       icon: <Truck className="w-8 h-8 text-[#003459]" />,
       title: "On-Time Rental Delivery",
-      description: `We ensure timely delivery and professional setup of rental products across ${areasText}, ${city}. Our local team guarantees punctual service without last-minute surprises.`,
+      description: deliveryNote
+        ? deliveryNote
+        : `We ensure timely delivery and professional setup of rental products across ${areasText}, ${city}. Our local team guarantees punctual service without last-minute surprises.`,
     },
     {
       icon: <Headset className="w-8 h-8 text-[#003459]" />,
@@ -45,10 +51,25 @@ export default function Services({
           Why We’re Trusted for Event Rentals in {city}
         </h2>
 
-        <p className="text-center text-gray-600 max-w-2xl mx-auto mb-10">
-          Delivering reliable rental services across {areasText}, our team ensures
-          seamless event execution with professional support and transparent pricing.
+        {/* Dynamic Intro Paragraph */}
+        <p className="text-center text-gray-600 max-w-2xl mx-auto mb-4">
+          {seasonalNote
+            ? seasonalNote
+            : `Delivering reliable rental services across ${areasText}, our team ensures seamless event execution with professional support and transparent pricing.`}
         </p>
+
+        {/* Market Intelligence Line (Subtle) */}
+        {(demandLevel === "high" ||
+          expressAvailable ||
+          trendingText) && (
+          <p className="text-center text-gray-500 text-sm max-w-3xl mx-auto mb-10">
+            {demandLevel === "high" &&
+              `${city} is currently experiencing strong rental demand. `}
+            {expressAvailable &&
+              `Fast and priority delivery options are available. `}
+            {trendingText && trendingText}
+          </p>
+        )}
 
         {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">

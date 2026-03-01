@@ -3,6 +3,7 @@ import { connectDB } from "@/lib/db";
 import City from "@/models/CityModels";
 import { requireAdmin } from "@/lib/protectRoute";
 import { createSlug } from "@/utils/createSlug";
+import LocationProfile from "@/models/LocationProfile";
 
 export async function GET(req, { params }) {
   try {
@@ -18,19 +19,38 @@ export async function GET(req, { params }) {
     if (!city) {
       return NextResponse.json(
         { success: false, message: "City not found" },
-        { status: 404 },
+        { status: 404 }
       );
     }
+
+    // 🔥 Fetch City-Level LocationProfile
+    const cityProfile = await LocationProfile.findOne({
+      city: city._id,
+      scope: "city",
+    }).lean();
 
     return NextResponse.json({
       success: true,
       data: city,
+      locationContext: cityProfile
+        ? {
+            customIntro: cityProfile.customIntro,
+            seasonalNote: cityProfile.seasonalNote,
+            deliveryNote: cityProfile.deliveryNote,
+            trendingText: cityProfile.trendingText,
+            expressAvailable: cityProfile.expressAvailable,
+            demandLevel: cityProfile.demandLevel,
+            seoTitleOverride: cityProfile.seoTitleOverride,
+            seoDescriptionOverride:
+              cityProfile.seoDescriptionOverride,
+          }
+        : null,
     });
   } catch (err) {
     console.error("GET /api/cities/[slug] error:", err);
     return NextResponse.json(
       { success: false, message: err.message },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

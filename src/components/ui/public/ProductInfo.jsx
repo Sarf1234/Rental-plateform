@@ -10,6 +10,7 @@ export default function ProductInfo({
   highlights,
   productdescription,
   citySlug,
+  locationContext,
 }) {
   const price = pricing?.discountedPrice || pricing?.minPrice;
 
@@ -68,6 +69,11 @@ export default function ProductInfo({
             per {pricing?.unit}
           </p>
         </div>
+        {locationContext?.deliveryNote && (
+          <p className="text-xs text-gray-500 mt-2">
+            {locationContext.deliveryNote}
+          </p>
+        )}
 
         {/* Extra Charges */}
         {/* <div className="space-y-1 text-sm text-gray-600">
@@ -115,6 +121,18 @@ export default function ProductInfo({
             Book on WhatsApp
           </a>
 
+          {locationContext?.expressAvailable && (
+            <p className="text-xs text-green-600 text-center mt-2">
+               Express delivery available in {citySlug}
+            </p>
+          )}
+
+        {locationContext?.demandLevel === "high" && (
+          <p className="text-xs text-orange-600 text-center">
+            High demand in {citySlug}. Book early.
+          </p>
+        )}
+
           {/* Trust Section */}
           <div className="bg-gray-50 border rounded-xl p-4 text-center mt-4 flex flex-col items-center gap-2">
             <ShieldCheck className="text-green-600" size={22} />
@@ -122,7 +140,7 @@ export default function ProductInfo({
               Instant confirmation • No hidden charges
             </p>
             <p className="text-sm font-semibold text-gray-900">
-              Verified Rental Provider
+              Verified rental providers in {citySlug}
             </p>
           </div>
 
