@@ -45,7 +45,7 @@
     "zod": "^4.1.12"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
+    "@tailwindcss/postcss": "^4.2.1",
     "autoprefixer": "^10.4.27",
     "baseline-browser-mapping": "^2.8.32",
     "postcss": "^8.5.6",
