@@ -7,7 +7,7 @@ import ProductCategories from "@/components/ui/public/ProductCategories";
 import RelatedBlogs from "@/components/layout/RelatedBlogs";
 import ServiceCategories from "@/components/ui/public/ServiceCategories";
 
-// export const revalidate = 3600; // ISR (1 hour)
+export const revalidate = 3600; // ISR (1 hour)
 
 // 🔥 Dynamic Metadata Generator
 export async function generateMetadata({ params }) {

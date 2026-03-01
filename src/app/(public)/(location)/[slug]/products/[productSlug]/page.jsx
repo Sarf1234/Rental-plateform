@@ -9,7 +9,19 @@ import FlagsCards from "@/components/ui/public/FlagsCards";
 import Servicecards from "@/components/ui/public/Servicecards";
 import ProviderCards from "@/components/ui/public/ProviderCards";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
+
+
+async function getProductData(slug, productSlug) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productSlug}?city=${slug}`,
+    { next: { revalidate: 300 } }
+  );
+
+  if (!res.ok) return null;
+
+  return res.json();
+}
 
 /* =========================
    SEO METADATA
@@ -18,14 +30,8 @@ export async function generateMetadata({ params }) {
   const { slug, productSlug } = await params;
   const baseUrl = "https://kiraynow.com";
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productSlug}?city=${slug}`,
-    { cache: "no-store" },
-  );
-
-  if (!res.ok) return {};
-
-  const data = await res.json();
+  const data = await getProductData(slug, productSlug);
+  if (!data) return {};
   const product = data?.data;
   const city = data?.city;
   const locationContext = data?.locationContext;
@@ -86,14 +92,8 @@ export async function generateMetadata({ params }) {
 export default async function ProductPage({ params }) {
   const { slug, productSlug } = await params;
 
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productSlug}?city=${slug}`,
-    { cache: "no-store" },
-  );
-
-  if (!res.ok) return notFound();
-
-  const data = await res.json();
+ const data = await getProductData(slug, productSlug);
+  if (!data) return {};
   const product = data?.data;
   const locationContext = data?.locationContext;
   const relatedProducts = data?.relatedProducts || [];

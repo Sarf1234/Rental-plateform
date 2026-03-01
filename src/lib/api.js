@@ -1,6 +1,10 @@
 export async function apiRequest(url, method = "GET", data = null) {
   const options = { method, headers: {}, credentials: "include" }; // <-- add this
 
+  if (method === "GET") {
+    options.next = { revalidate: 3600 }; // 1 hour ISR
+  }
+  
   if (data && !(data instanceof FormData)) {
     options.headers["Content-Type"] = "application/json";
     options.body = JSON.stringify(data);
