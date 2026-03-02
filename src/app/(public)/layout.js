@@ -58,8 +58,10 @@ export const metadata = {
   },
 
   icons: {
-    icon: "/favicon.ico",
-  },
+  icon: "/favicon2.ico",
+  shortcut: "/favicon2.ico",
+  apple: "/favicon2.ico",
+},
 
   manifest: "/manifest.json",
 
