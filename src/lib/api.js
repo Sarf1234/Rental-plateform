@@ -1,5 +1,10 @@
 export async function apiRequest(url, method = "GET", data = null) {
-  const options = { method, headers: {}, credentials: "include" }; // <-- add this
+  const options = { method, headers: {} }; // <-- add this
+
+  // 🔥 Only non-GET requests need credentials
+  if (method !== "GET") {
+    options.credentials = "include";
+  }
 
   if (method === "GET") {
     options.next = { revalidate: 3600 }; // 1 hour ISR
