@@ -9,14 +9,12 @@ import FlagsCards from "@/components/ui/public/FlagsCards";
 import Servicecards from "@/components/ui/public/Servicecards";
 import ProviderCards from "@/components/ui/public/ProviderCards";
 
-export const revalidate = 300;
+export const revalidate = 3600;
 
 
 async function getProductData(slug, productSlug) {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productSlug}?city=${slug}`,
-    { next: { revalidate: 300 } }
-  );
+    `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productSlug}?city=${slug}`);
 
   if (!res.ok) return null;
 

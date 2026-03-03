@@ -104,6 +104,7 @@ export default async function ServiceDetailsPage({ params }) {
   try {
     const res = await apiRequest(
       `${process.env.NEXT_PUBLIC_API_URL}/api/service/${serviceSlug}?city=${slug}`,
+      { next: { revalidate: 3600 } },
     );
     featured = res.data || [];
     cityData = res.city;
