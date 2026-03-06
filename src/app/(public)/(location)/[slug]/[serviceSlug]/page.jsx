@@ -28,6 +28,12 @@ export async function generateMetadata({ params }) {
     const cityName = city?.name || "";
     const brandName = "KirayNow"; // replace later
 
+    const primaryPrice =
+      service?.pricing?.minPrice ||
+      service?.pricing?.discountedPrice ||
+      service?.pricing?.amount ||
+      null;
+
     // Base meta from backend
     const baseTitle =  service.seo?.metaTitle || service.title;
 
@@ -35,7 +41,7 @@ export async function generateMetadata({ params }) {
       service.seo?.metaDescription ||
       service.description?.replace(/<[^>]+>/g, "").slice(0, 140);
 
-    const title = locationProfile?.seoTitleOverride || `${baseTitle} in ${cityName} `;
+    const title = locationProfile?.seoTitleOverride || `${baseTitle} in ${cityName} – From ${primaryPrice} `;
 
     const description = locationProfile?.seoDescriptionOverride || `${baseDescription} Available across ${cityName}${
       city?.subAreas?.length
