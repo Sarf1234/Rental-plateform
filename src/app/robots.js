@@ -5,7 +5,7 @@ export default function robots() {
       {
         userAgent: "*",
         allow: "/",
-        disallow: ["/admin/", "/login", "/sign-up", "/api/",],
+        disallow: ["/admin/", "/login", "/sign-up", "/api/","/_next/"],
       },
     ],
     sitemap: "https://kiraynow.com/sitemap.xml",
