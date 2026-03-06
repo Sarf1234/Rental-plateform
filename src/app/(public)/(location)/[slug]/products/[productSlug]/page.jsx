@@ -37,23 +37,58 @@ export async function generateMetadata({ params }) {
 
   const cityName = city?.name || slug;
 
+    const primaryPrice =
+    product?.pricing?.minPrice ||
+    product?.pricing?.discountedPrice ||
+    product?.pricing?.amount ||
+    null;
+
+    function replaceTokens(template) {
+    if (!template) return "";
+
+    let result = template;
+
+    // city replace
+    result = result.replace(/\{city\}/gi, cityName);
+
+    // price replace
+    if (primaryPrice) {
+      result = result.replace(/\{price\}/gi, `₹${primaryPrice}`);
+    } else {
+      result = result.replace(/₹?\s?\{price\}/gi, "");
+    }
+
+    // cleanup
+    result = result
+      .replace(/\s+/g, " ")
+      .replace(/\s-\s$/, "")
+      .replace(/\s\|\s$/, "")
+      .trim();
+
+    return result;
+  }
+
+
   const cleanDescription = product.description
     ?.replace(/<[^>]+>/g, "")
     .slice(0, 160);
 
+   // TITLE
   const title = locationContext?.seoTitleOverride
-    ? locationContext.seoTitleOverride
+    ? replaceTokens(locationContext.seoTitleOverride)
     : product.seo?.metaTitle
-      ? `${product.seo.metaTitle} in ${cityName}`
-      : `${product.title} in ${cityName}`;
+    ? replaceTokens(product.seo.metaTitle)
+    : `${product.title} in ${cityName}`;
 
+  // DESCRIPTION
   const description = locationContext?.seoDescriptionOverride
-    ? locationContext.seoDescriptionOverride
+    ? replaceTokens(locationContext.seoDescriptionOverride)
     : product.seo?.metaDescription
-      ? `${product.seo.metaDescription} Available in ${cityName}.`
-      : cleanDescription
-        ? `${cleanDescription} Available for rent in ${cityName}.`
-        : `Rent ${product.title} in ${cityName}.`;
+    ? replaceTokens(product.seo.metaDescription)
+    : cleanDescription
+    ? `${cleanDescription} Available for rent in ${cityName}.`
+    : `Rent ${product.title} in ${cityName}.`;
+
 
   const image =
     product.images?.[0] ||
@@ -157,7 +192,7 @@ export default async function ProductPage({ params }) {
   });
 
   const primaryPrice =
-    pricing?.discountedPrice || pricing?.minPrice || pricing?.amount || 1000;
+    pricing?.minPrice || pricing?.discountedPrice ||  pricing?.amount || 1000;
 
   // Optional seller logic (if provider exists in backend later)
   const seller =
