@@ -10,6 +10,7 @@ export default function ProductInfo({
   highlights,
   productdescription,
   citySlug,
+  productSlug,
   locationContext,
 }) {
   const price = pricing?.discountedPrice || pricing?.minPrice;
@@ -23,7 +24,7 @@ Product: ${title}
 City: ${citySlug}
 
 Product Link:
-https://kiraynow.com/${citySlug}/products/${slug}
+https://kiraynow.com/${citySlug}/products/${productSlug}
 
 Event Type:
 Event Date:

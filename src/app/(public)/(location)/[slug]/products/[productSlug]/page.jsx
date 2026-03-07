@@ -312,6 +312,7 @@ export default async function ProductPage({ params }) {
                 highlights={highlights}
                 productdescription={product.seo.metaDescription}
                 citySlug={slug}
+                productSlug={productSlug}
                 locationContext={locationContext}
               />
             </div>
@@ -340,6 +341,7 @@ export default async function ProductPage({ params }) {
                 highlights={highlights}
                 productdescription={product.seo.metaDescription}
                 citySlug={slug}
+                productSlug={productSlug}
                 locationContext={locationContext}
               />
             </div>
