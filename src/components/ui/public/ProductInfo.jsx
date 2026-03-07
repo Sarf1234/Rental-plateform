@@ -23,10 +23,6 @@ I'm interested in renting the following product:
 Product: ${title}
 City: ${citySlug}
 
-Product Link:
-https://kiraynow.com/${citySlug}/products/${productSlug}
-
-Event Type:
 Event Date:
 Quantity Required:
 Delivery Location:

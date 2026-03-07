@@ -536,8 +536,6 @@ Starting Price: ₹${service.pricing?.amount}
 
 Please share details, availability & best quotation.
 
-Service Link:
-${baseUrl}/${cityData}/${service.slug}
 
 Thank you!
   `;
