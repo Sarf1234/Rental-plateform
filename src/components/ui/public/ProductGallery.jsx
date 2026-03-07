@@ -40,6 +40,7 @@ export default function ProductGallery({ images = [], title }) {
             className="
               object-cover
               object-center
+              md:object-contain
               transition-transform
               duration-500
               group-hover:scale-105
