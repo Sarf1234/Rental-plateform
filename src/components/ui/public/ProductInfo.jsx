@@ -14,7 +14,28 @@ export default function ProductInfo({
 }) {
   const price = pricing?.discountedPrice || pricing?.minPrice;
 
-  const whatsappMessage = `Hi, I'm interested in booking "${title}" in ${citySlug}. Please share full details and availability.`;
+const whatsappMessage = `
+Hi KirayNow Team 👋
+
+I'm interested in renting the following product:
+
+Product: ${title}
+City: ${citySlug}
+
+Product Link:
+https://kiraynow.com/${citySlug}/products/${slug}
+
+Event Type:
+Event Date:
+Quantity Required:
+Delivery Location:
+
+Additional Requirements (if any):
+
+Please share availability and quotation.
+
+Thank you!
+`;
 
   return (
     <div className="space-y-8">

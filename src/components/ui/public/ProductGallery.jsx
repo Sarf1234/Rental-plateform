@@ -4,7 +4,6 @@ import { useState } from "react";
 import Image from "next/image";
 
 export default function ProductGallery({ images = [], title }) {
-
   const galleryImages = images?.slice(0, 4) || [];
 
   const [activeImage, setActiveImage] = useState(galleryImages?.[0]);
@@ -18,17 +17,18 @@ export default function ProductGallery({ images = [], title }) {
       <div className="flex justify-center">
         <div
           className="
-          relative 
-          w-full 
-          max-w-[500px] 
-          md:max-w-[600px] 
+          group
+          relative
+          w-full
+          max-w-[520px]
+          md:max-w-[620px]
           lg:max-w-full
-          aspect-square 
+          aspect-square
           md:aspect-[5/3]
-          rounded-2xl 
-          overflow-hidden 
-          md:border 
-          md:bg-gray-200
+          rounded-2xl
+          overflow-hidden
+          border
+          bg-white
         "
         >
           <Image
@@ -37,14 +37,19 @@ export default function ProductGallery({ images = [], title }) {
             fill
             priority
             sizes="(max-width: 768px) 100vw, 600px"
-            className="object-contain"
+            className="
+              object-cover
+              object-center
+              transition-transform
+              duration-500
+              group-hover:scale-105
+            "
           />
         </div>
       </div>
 
       {/* ================= THUMBNAILS ================= */}
       <div className="w-full overflow-hidden">
-
         <div className="flex gap-2 overflow-x-auto no-scrollbar">
 
           {galleryImages.map((img, i) => (
@@ -55,11 +60,14 @@ export default function ProductGallery({ images = [], title }) {
                 relative flex-shrink-0
                 w-[22%] min-w-[70px] max-w-[90px]
                 aspect-square
-                rounded-xl overflow-hidden border
-                transition
+                rounded-xl
+                overflow-hidden
+                border
+                transition-all
+                duration-200
                 ${
                   activeImage === img
-                    ? "ring-1 ring-gray-500"
+                    ? "ring-1 ring-gray-200"
                     : "opacity-80 hover:opacity-100"
                 }
               `}
@@ -69,7 +77,7 @@ export default function ProductGallery({ images = [], title }) {
                 alt={`${title} thumbnail ${i + 1}`}
                 fill
                 sizes="80px"
-                className="object-contain"
+                className="object-cover object-center"
               />
             </button>
           ))}
