@@ -26,14 +26,14 @@ export default async function SearchPage({ searchParams }) {
   const products = res?.data || [];
 
   return (
-    <div className="max-w-7xl mx-auto py-10 px-4">
+    <div className="max-w-7xl mx-auto py-10 px-4 mt-16">
 
       <h1 className="text-2xl font-semibold mb-6">
         Search Results for "{q}"
       </h1>
 
       {products.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {products.map((product) => (
             <ProductCard
               key={product._id}

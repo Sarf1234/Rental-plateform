@@ -1,6 +1,8 @@
 import Image from "next/image";
 import { apiRequest } from "@/lib/api";
 import Link from "next/link";
+import ProductCard from "@/components/ui/public/ProductCards";
+import ServiceGallery from "@/components/ui/public/ServiceGallery";
 
 export async function generateMetadata({ params }) {
   const { serviceSlug, slug } = await params;
@@ -285,9 +287,9 @@ const modifiedFaqs = rawFaqs.map((faq) => {
         }}
       />
 
-      <div className="max-w-7xl mx-auto px-4 py-6">
+      <div className="max-w-7xl mx-auto md:px-4 py-6">
         {/* 3 Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 md:gap-6">
           {/* CENTER FIRST ON MOBILE */}
           <div className="order-1 lg:order-2 lg:col-span-6">
             <CenterContent
@@ -394,38 +396,9 @@ function CenterContent({ service, city, cityData, locationProfile, modifiedFaqs 
     .join(", ");
 
   return (
-    <div className="space-y-12">
+    <div className="md:space-y-12">
       {/* ========== IMAGE GALLERY (Hero Style) ========== */}
-      <div className="bg-white p-4 rounded-2xl shadow-sm border border-gray-100">
-        <div className="grid grid-cols-3 gap-3 h-[320px]">
-          {/* Main Large Image */}
-          <div className="relative col-span-2 rounded-xl overflow-hidden group">
-            <Image
-              src={service.images[0]}
-              alt={`${service.title} setup in ${cityData?.name}`}
-              fill
-              className="object-cover group-hover:scale-105 transition duration-500"
-            />
-          </div>
-
-          {/* Side Images */}
-          <div className="grid grid-rows-2 gap-3">
-            {service.images.slice(1, 3).map((img, i) => (
-              <div
-                key={i}
-                className="relative rounded-xl overflow-hidden group"
-              >
-                <Image
-                  src={img}
-                  alt="service"
-                  fill
-                  className="object-cover group-hover:scale-105 transition duration-500"
-                />
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <ServiceGallery images={service.images} />
 
       <div className="lg:hidden">
         <ContactCTA
@@ -496,46 +469,13 @@ function CenterContent({ service, city, cityData, locationProfile, modifiedFaqs 
         </h3>
 
         <div className="grid md:grid-cols-2 gap-8">
-          {service.products?.map((product) => {
-            const price =
-              product.pricing?.minPrice || product.pricing?.discountedPrice;
-
-            return (
-              <Link
-                key={product._id}
-                href={`/${city}/products/${product.slug}`}
-                className="group block border border-gray-100 rounded-2xl overflow-hidden bg-white hover:shadow-2xl hover:-translate-y-1 transition duration-300"
-              >
-                {/* Product Image */}
-                <div className="relative h-52 w-full overflow-hidden">
-                  <Image
-                    src={product.images?.[0] || "/placeholder.jpg"}
-                    alt={product.title}
-                    fill
-                    className="object-fill group-hover:scale-105 transition duration-500"
-                  />
-                </div>
-
-                {/* Product Content */}
-                <div className="p-5 space-y-4">
-                  <h4 className="font-semibold text-gray-900 leading-snug line-clamp-2">
-                    {product.title}
-                  </h4>
-
-                  {/* Price */}
-                  <div>
-                    <p className="text-xs text-gray-500">Starting From</p>
-
-                    <p className="text-2xl font-bold text-black">₹{price}</p>
-
-                    <p className="text-xs text-gray-500">
-                      per {product.pricing?.unit}
-                    </p>
-                  </div>
-                </div>
-              </Link>
-            );
-          })}
+          {service.products?.map((product) => (
+    <ProductCard
+      key={product._id}
+      product={product}
+      citySlug={city}
+    />
+  ))}
         </div>
       </div>
 
@@ -701,7 +641,7 @@ Thank you!
   const whatsappUrl = `https://wa.me/${service.whatsappNumber}?text=${encodedMessage}`;
 
   return (
-    <div className="p-6 border rounded-2xl bg-white shadow-sm space-y-4">
+    <div className="p-6 md:border md:rounded-2xl bg-white md:shadow-sm space-y-4">
       {/* Price Section */}
       <div>
         <p className="text-sm text-gray-500">Starting From</p>

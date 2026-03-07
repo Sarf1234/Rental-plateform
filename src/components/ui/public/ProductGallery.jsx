@@ -4,16 +4,20 @@ import { useState } from "react";
 import Image from "next/image";
 
 export default function ProductGallery({ images = [], title }) {
-  const [activeImage, setActiveImage] = useState(images?.[0]);
 
-  if (!images?.length) return null;
+  const galleryImages = images?.slice(0, 4) || [];
+
+  const [activeImage, setActiveImage] = useState(galleryImages?.[0]);
+
+  if (!galleryImages.length) return null;
 
   return (
     <div className="w-full space-y-4">
 
       {/* ================= MAIN IMAGE ================= */}
       <div className="flex justify-center">
-        <div className="
+        <div
+          className="
           relative 
           w-full 
           max-w-[500px] 
@@ -23,9 +27,10 @@ export default function ProductGallery({ images = [], title }) {
           md:aspect-[5/3]
           rounded-2xl 
           overflow-hidden 
-          border 
-          bg-white
-        ">
+          md:border 
+          md:bg-gray-200
+        "
+        >
           <Image
             src={activeImage}
             alt={title}
@@ -42,7 +47,7 @@ export default function ProductGallery({ images = [], title }) {
 
         <div className="flex gap-2 overflow-x-auto no-scrollbar">
 
-          {images.map((img, i) => (
+          {galleryImages.map((img, i) => (
             <button
               key={i}
               onClick={() => setActiveImage(img)}
@@ -54,7 +59,7 @@ export default function ProductGallery({ images = [], title }) {
                 transition
                 ${
                   activeImage === img
-                    ? "ring-2 ring-blue-50"
+                    ? "ring-1 ring-gray-500"
                     : "opacity-80 hover:opacity-100"
                 }
               `}

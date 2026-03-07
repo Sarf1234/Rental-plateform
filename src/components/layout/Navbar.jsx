@@ -35,7 +35,10 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  
+
   const citySlug = city?.slug;
+  console.log(citySlug)
 
   /* ================= SCROLL EFFECT ================= */
 
@@ -86,13 +89,19 @@ export default function Navbar() {
   /* ================= SEARCH ================= */
 
   const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
-      setSearchQuery("");
-      setOpen(false);
-    }
-  };
+  e.preventDefault();
+
+  if (searchQuery.trim()) {
+    const url = citySlug
+      ? `/search?q=${encodeURIComponent(searchQuery)}&city=${citySlug}`
+      : `/search?q=${encodeURIComponent(searchQuery)}`;
+
+    router.push(url);
+
+    setSearchQuery("");
+    setOpen(false);
+  }
+};
 
   const headerStyle = `
     fixed top-0 z-50 w-full transition-all duration-300
