@@ -297,9 +297,7 @@ export default function PostForm({
         setAllTags(tgs.data || tgs || []);
         setAllServices(services.data || []);
         setAllProducts(products.data || []);
-        console.clear()
-        console.log(services)
-        console.log(products)
+    
       } catch (err) {
         toast.error("Failed to load categories/tags");
       }

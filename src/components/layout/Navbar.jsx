@@ -38,7 +38,7 @@ export default function Navbar() {
   
 
   const citySlug = city?.slug;
-  console.log(citySlug)
+
 
   /* ================= SCROLL EFFECT ================= */
 
