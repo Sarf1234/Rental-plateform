@@ -11,10 +11,10 @@ import ProviderCards from "@/components/ui/public/ProviderCards";
 
 export const revalidate = 3600;
 
-
 async function getProductData(slug, productSlug) {
   const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productSlug}?city=${slug}`);
+    `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productSlug}?city=${slug}`,
+  );
 
   if (!res.ok) return null;
 
@@ -37,13 +37,13 @@ export async function generateMetadata({ params }) {
 
   const cityName = city?.name || slug;
 
-    const primaryPrice =
+  const primaryPrice =
     product?.pricing?.minPrice ||
     product?.pricing?.discountedPrice ||
     product?.pricing?.amount ||
     null;
 
-    function replaceTokens(template) {
+  function replaceTokens(template) {
     if (!template) return "";
 
     let result = template;
@@ -68,27 +68,25 @@ export async function generateMetadata({ params }) {
     return result;
   }
 
-
   const cleanDescription = product.description
     ?.replace(/<[^>]+>/g, "")
     .slice(0, 160);
 
-   // TITLE
+  // TITLE
   const title = locationContext?.seoTitleOverride
     ? replaceTokens(locationContext.seoTitleOverride)
     : product.seo?.metaTitle
-    ? replaceTokens(product.seo.metaTitle)
-    : `${product.title} in ${cityName}`;
+      ? replaceTokens(product.seo.metaTitle)
+      : `${product.title} in ${cityName}`;
 
   // DESCRIPTION
   const description = locationContext?.seoDescriptionOverride
     ? replaceTokens(locationContext.seoDescriptionOverride)
     : product.seo?.metaDescription
-    ? replaceTokens(product.seo.metaDescription)
-    : cleanDescription
-    ? `${cleanDescription} Available for rent in ${cityName}.`
-    : `Rent ${product.title} in ${cityName}.`;
-
+      ? replaceTokens(product.seo.metaDescription)
+      : cleanDescription
+        ? `${cleanDescription} Available for rent in ${cityName}.`
+        : `Rent ${product.title} in ${cityName}.`;
 
   const image =
     product.images?.[0] ||
@@ -125,7 +123,7 @@ export async function generateMetadata({ params }) {
 export default async function ProductPage({ params }) {
   const { slug, productSlug } = await params;
 
- const data = await getProductData(slug, productSlug);
+  const data = await getProductData(slug, productSlug);
   if (!data) return {};
   const product = data?.data;
   const locationContext = data?.locationContext;
@@ -133,6 +131,9 @@ export default async function ProductPage({ params }) {
   const relatedServices = data?.relatedServices || [];
   const city = data?.city;
   const providers = data?.providers || [];
+  const vendors = data?.vendors || [];
+  const productRating = data?.productRating || 0;
+  const productReviewCount = data?.productReviewCount || 0;
 
   if (!product) return notFound();
 
@@ -192,7 +193,7 @@ export default async function ProductPage({ params }) {
   });
 
   const primaryPrice =
-    pricing?.minPrice || pricing?.discountedPrice ||  pricing?.amount || 1000;
+    pricing?.minPrice || pricing?.discountedPrice || pricing?.amount || 1000;
 
   // Optional seller logic (if provider exists in backend later)
   const seller =
@@ -305,6 +306,7 @@ export default async function ProductPage({ params }) {
           {/* LEFT SIDE */}
           <div className="lg:col-span-7">
             <ProductGallery images={images} title={title} />
+            <div className="mt-3 text-sm text-gray-600"></div>
             <div className="block md:hidden">
               <ProductInfo
                 title={title}
@@ -314,6 +316,8 @@ export default async function ProductPage({ params }) {
                 citySlug={slug}
                 productSlug={productSlug}
                 locationContext={locationContext}
+                productRating={data?.productRating}
+                productReviewCount={data?.productReviewCount}
               />
             </div>
             <ProductDescription
@@ -343,6 +347,8 @@ export default async function ProductPage({ params }) {
                 citySlug={slug}
                 productSlug={productSlug}
                 locationContext={locationContext}
+                productRating={data?.productRating}
+                productReviewCount={data?.productReviewCount}
               />
             </div>
           </div>
@@ -365,9 +371,10 @@ export default async function ProductPage({ params }) {
         />
       )}
 
-      {providers.length > 0 && (
-        <ProviderCards data={providers} citySlug={slug} />
+      {vendors.length > 0 && (
+        <ProviderCards data={vendors} citySlug={slug} />
       )}
+
     </div>
   );
 }

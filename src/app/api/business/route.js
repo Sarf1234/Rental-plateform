@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Business from "@/models/BusinessModel";
 import City from "@/models/CityModels";
+import Product from "@/models/Product";
+import Service from "@/models/Serviceproduct";
 import { requireAdmin } from "@/lib/protectRoute";
 import { createSlug } from "@/utils/createSlug";
 
@@ -14,18 +16,16 @@ export async function GET(req) {
     const page = parseInt(searchParams.get("page") || "1");
     const limit = Math.min(parseInt(searchParams.get("limit") || "10"), 50);
 
-    const city = searchParams.get("city"); // city slug or id
+    const city = searchParams.get("city");
     const status = searchParams.get("status") || "active";
     const q = searchParams.get("q");
 
     const filter = { status };
 
-    // Search by business name
     if (q) {
       filter.name = { $regex: q, $options: "i" };
     }
 
-    // Filter by service area
     if (city) {
       const cityDoc = await City.findOne({
         $or: [{ slug: city }, { _id: city }],
@@ -44,10 +44,16 @@ export async function GET(req) {
 
     const businesses = await Business.find(filter)
       .select(
-        "name slug phone email address isVerified status serviceAreas createdAt"
+        "name slug phone email logo ratingAvg totalOrders isVerified status serviceAreas createdAt"
       )
       .populate("serviceAreas", "name slug")
-      .sort({ isVerified: -1, createdAt: -1 })
+      .sort({
+        isFeatured: -1,
+        priority: -1,
+        isVerified: -1,
+        ratingAvg: -1,
+        createdAt: -1,
+      })
       .skip(skip)
       .limit(limit)
       .lean();
@@ -70,7 +76,6 @@ export async function GET(req) {
 
 export async function POST(req) {
   try {
-    // permission first (important)
     await requireAdmin();
     await connectDB();
 
@@ -83,15 +88,15 @@ export async function POST(req) {
       );
     }
 
-    // slug
-    let slug = body.slug
-      ? createSlug(body.slug)
-      : createSlug(body.name);
+    /* ---------- SLUG ---------- */
+
+    let slug = body.slug ? createSlug(body.slug) : createSlug(body.name);
 
     const exists = await Business.findOne({ slug });
     if (exists) slug = `${slug}-${Date.now()}`;
 
-    // validate service areas
+    /* ---------- SERVICE AREAS VALIDATION ---------- */
+
     const serviceAreas = Array.isArray(body.serviceAreas)
       ? body.serviceAreas
       : [];
@@ -109,6 +114,7 @@ export async function POST(req) {
       }
 
       const cities = await City.find({ _id: { $in: serviceAreas } });
+
       if (cities.length !== serviceAreas.length) {
         return NextResponse.json(
           { success: false, message: "One or more cities not found" },
@@ -117,14 +123,72 @@ export async function POST(req) {
       }
     }
 
+    /* ---------- PRODUCTS ---------- */
+
+    let products = Array.isArray(body.products) ? body.products : [];
+
+    const productIds = products.map((p) => p.product?.toString());
+
+    if (new Set(productIds).size !== productIds.length) {
+      return NextResponse.json(
+        { success: false, message: "Duplicate products not allowed" },
+        { status: 400 }
+      );
+    }
+
+    /* ---------- SERVICES ---------- */
+
+    let services = Array.isArray(body.services) ? body.services : [];
+
+    const serviceIds = services.map((s) => s.service?.toString());
+
+    if (new Set(serviceIds).size !== serviceIds.length) {
+      return NextResponse.json(
+        { success: false, message: "Duplicate services not allowed" },
+        { status: 400 }
+      );
+    }
+
+    /* ---------- CREATE BUSINESS ---------- */
+
     const business = await Business.create({
       name: body.name,
       slug,
+
       phone: body.phone,
       email: body.email || "",
+
+      whatsappNumber: body.whatsappNumber || "",
+      contactPreference: body.contactPreference || "both",
+      website: body.website || "",
+
       address: body.address || {},
+
       serviceAreas,
+
+      intro: body.intro || "",
+      description: body.description || "",
+      experienceYears: body.experienceYears || 0,
+
+      logo: body.logo || "",
+      coverImage: body.coverImage || "",
+      gallery: body.gallery || [],
+
+      products,
+      services,
+
+      totalOrders: body.totalOrders || 0,
+
+      ratingAvg: body.ratingAvg || 0,
+      ratingCount: body.ratingCount || 0,
+
       isVerified: !!body.isVerified,
+      isFeatured: !!body.isFeatured,
+
+      priority: body.priority || 0,
+
+      seo: body.seo || {},
+
       status: body.status || "active",
     });
 

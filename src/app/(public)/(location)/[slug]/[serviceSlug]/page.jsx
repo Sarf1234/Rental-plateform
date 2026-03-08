@@ -108,6 +108,9 @@ export default async function ServiceDetailsPage({ params }) {
   let featured = [];
   let cityData = [];
   let locationProfile = null;
+  let vendors =  [];
+  let serviceRating = 0;
+  let serviceReviewCount = 0;
 
   try {
     const res = await apiRequest(
@@ -116,6 +119,9 @@ export default async function ServiceDetailsPage({ params }) {
     featured = res.data || [];
     cityData = res.city;
     locationProfile = res.data?.locationContext || null;
+    vendors = res.vendors || [];
+    serviceRating = res.serviceRating || 0;
+    serviceReviewCount = res.serviceReviewCount || 0;
   } catch (err) {
     console.error("Failed to fetch categories:", err);
   }
@@ -315,6 +321,9 @@ const modifiedFaqs = rawFaqs.map((faq) => {
             <RightSidebar
               service={featured}
               cityData={slug}
+              vendors={vendors}
+              serviceRating={serviceRating}
+              serviceReviewCount={serviceReviewCount}
               locationProfile={locationProfile}
             />
           </div>
@@ -523,30 +532,18 @@ function CenterContent({ service, city, cityData, locationProfile, modifiedFaqs 
   );
 }
 
-function RightSidebar({ service, cityData, locationProfile }) {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://kiraynow.com";
-
-  // ⚡ Generate dynamic WhatsApp message
-  const message = `
-Hi KirayNow Team 
-
-I'm interested in *${service.title}*.
-
-Starting Price: ₹${service.pricing?.amount}
-
-Please share details, availability & best quotation.
-
-
-Thank you!
-  `;
-
-  const encodedMessage = encodeURIComponent(message.trim());
-
-  const whatsappUrl = `https://wa.me/${service.whatsappNumber}?text=${encodedMessage}`;
-
+function RightSidebar({
+  service,
+  cityData,
+  vendors = [],
+  serviceRating,
+  serviceReviewCount,
+  locationProfile,
+}) {
   return (
     <div className="lg:sticky lg:top-20 space-y-6">
-      {/* ========== CONTACT / CTA CARD ========== */}
+
+      {/* CTA */}
       <div className="hidden lg:block">
         <ContactCTA
           service={service}
@@ -554,39 +551,113 @@ Thank you!
           locationProfile={locationProfile}
         />
       </div>
-      {/* ========== PROVIDERS CARD ========== */}
+
+      {/* Vendors Card */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <h3 className="text-lg font-semibold text-gray-900 mb-5">
+
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">
           Available Providers
         </h3>
 
+        {serviceRating > 0 && (
+          <p className="text-sm text-gray-500 mb-4">
+            ⭐ {serviceRating} ({serviceReviewCount} reviews)
+          </p>
+        )}
+
+        {vendors.length === 0 && (
+          <p className="text-sm text-gray-500">
+            No vendors available in this city yet.
+          </p>
+        )}
+
         <div className="space-y-4 max-h-[45vh] overflow-y-auto pr-2">
-          {service.providers.map((provider) => (
-            <div
-              key={provider._id}
-              className="p-4 border border-gray-100 rounded-xl hover:shadow-md hover:-translate-y-1 transition duration-300 bg-gray-50 hover:bg-white"
-            >
-              <div className="flex items-center justify-between">
-                <p className="font-semibold text-gray-900 text-sm">
-                  {provider.name}
-                </p>
 
-                <span className="text-xs bg-gray-200 px-2 py-1 rounded-full">
-                  Verified
-                </span>
-              </div>
+          {vendors.map((vendor) => {
 
-              <p className="text-xs text-gray-500 mt-2">📞 {provider.phone}</p>
+            const phone = vendor?.contact?.phone;
+            const whatsapp =
+              vendor?.contact?.whatsapp || vendor?.contact?.phone;
 
-              <a
-                href={`tel:${provider.phone}`}
-                className="mt-3 inline-block text-sm font-medium text-black hover:underline"
+            const price = vendor?.service?.price;
+
+            return (
+              <div
+                key={vendor._id}
+                className="p-4 border border-gray-100 rounded-xl hover:shadow-md transition bg-gray-50 hover:bg-white"
               >
-                Contact Provider →
-              </a>
-            </div>
-          ))}
+
+                {/* Vendor Name */}
+                <div className="flex items-center justify-between">
+                  <p className="font-semibold text-gray-900 text-sm">
+                    {vendor.name}
+                  </p>
+
+                  {vendor?.badges?.verified && (
+                    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                      Verified
+                    </span>
+                  )}
+                </div>
+
+                {/* Rating */}
+                {vendor?.service?.ratingAvg > 0 && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    ⭐ {vendor.service.ratingAvg} ({vendor.service.ratingCount})
+                  </p>
+                )}
+
+                {/* Price */}
+                {price && (
+                  <p className="text-sm font-semibold text-black mt-2">
+                    ₹{price}
+                  </p>
+                )}
+
+                {/* Location */}
+                {vendor?.location?.street && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    📍 {vendor.location.street}
+                  </p>
+                )}
+
+                {/* Phone */}
+                {phone && (
+                  <p className="text-xs text-gray-500 mt-1">
+                    📞 {phone}
+                  </p>
+                )}
+
+                {/* Actions */}
+                <div className="flex gap-2 mt-3">
+
+                  {phone && (
+                    <a
+                      href={`tel:${phone}`}
+                      className="flex-1 text-center text-xs border py-1 rounded hover:bg-gray-100"
+                    >
+                      Call
+                    </a>
+                  )}
+
+                  {whatsapp && (
+                    <a
+                      href={`https://wa.me/${whatsapp}`}
+                      target="_blank"
+                      className="flex-1 text-center text-xs bg-green-500 text-white py-1 rounded hover:bg-green-600"
+                    >
+                      WhatsApp
+                    </a>
+                  )}
+
+                </div>
+
+              </div>
+            );
+          })}
+
         </div>
+
       </div>
     </div>
   );

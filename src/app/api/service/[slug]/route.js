@@ -14,7 +14,8 @@ export async function GET(req, context) {
   try {
     await connectDB();
 
-    // ✅ Next.js 16 params handling
+    /* ================= PARAMS ================= */
+
     const { params } = await context;
     const { slug } = await params;
 
@@ -40,7 +41,7 @@ export async function GET(req, context) {
         match: city
           ? {
               status: "published",
-              serviceAreas: city._id, // ✅ product must belong to city
+              serviceAreas: city._id,
             }
           : { status: "published" },
         select: "title slug images pricing highlights status serviceAreas",
@@ -61,7 +62,7 @@ export async function GET(req, context) {
       );
     }
 
-    /* ================= SERVICE-LEVEL MULTIPLIER ================= */
+    /* ================= SERVICE MULTIPLIER ================= */
 
     let serviceProfile = null;
 
@@ -86,7 +87,7 @@ export async function GET(req, context) {
       service.pricing.label = `Starting from ₹${newAmount.toLocaleString()}`;
     }
 
-    /* ================= PRODUCT-LEVEL MULTIPLIER ================= */
+    /* ================= PRODUCT MULTIPLIER ================= */
 
     if (city && service.products?.length) {
       const productIds = service.products.map((p) => p._id);
@@ -108,7 +109,7 @@ export async function GET(req, context) {
         const multiplier = profileMap.get(product._id.toString());
 
         if (!multiplier || multiplier === 1) {
-          return product; // no multiplier
+          return product;
         }
 
         if (!product.pricing) return product;
@@ -133,12 +134,102 @@ export async function GET(req, context) {
       });
     }
 
+    /* ================= SERVICE VENDORS ================= */
+
+    let vendors = [];
+    let totalReviews = 0;
+    let weightedSum = 0;
+
+    if (city) {
+      const businesses = await Business.find({
+        status: "active",
+        serviceAreas: city._id,
+        "services.service": service._id,
+      })
+        .select(`
+          name slug logo phone whatsappNumber contactPreference website
+          ratingAvg ratingCount totalOrders experienceYears
+          isVerified isFeatured address services
+        `)
+        .lean();
+
+      vendors = businesses
+        .map((b) => {
+          const vendorService = b.services?.find(
+            (s) => s.service.toString() === service._id.toString()
+          );
+
+          if (!vendorService) return null;
+
+          const ratingAvg = vendorService.ratingAvg || 0;
+          const ratingCount = vendorService.ratingCount || 0;
+
+          totalReviews += ratingCount;
+          weightedSum += ratingAvg * ratingCount;
+
+          return {
+            _id: b._id,
+
+            name: b.name,
+            slug: b.slug,
+            logo: b.logo,
+
+            location: {
+              street: b.address?.street,
+              city: b.address?.city,
+              state: b.address?.state,
+              pincode: b.address?.pincode,
+            },
+
+            contact: {
+              phone: b.phone,
+              whatsapp: b.whatsappNumber,
+              preference: b.contactPreference,
+              website: b.website,
+            },
+
+            badges: {
+              verified: b.isVerified,
+              featured: b.isFeatured,
+            },
+
+            stats: {
+              ratingAvg: b.ratingAvg,
+              ratingCount: b.ratingCount,
+              totalOrders: b.totalOrders,
+              experienceYears: b.experienceYears,
+            },
+
+            service: {
+              price: vendorService.price,
+              isAvailable: vendorService.isAvailable,
+              ratingAvg: vendorService.ratingAvg,
+              ratingCount: vendorService.ratingCount,
+            },
+          };
+        })
+        .filter(Boolean);
+
+      vendors.sort((a, b) => (a.service.price || 0) - (b.service.price || 0));
+    }
+
+    /* ================= SERVICE RATING ================= */
+
+    let serviceRating = 0;
+    let serviceReviewCount = totalReviews;
+
+    if (totalReviews > 0) {
+      serviceRating = Number((weightedSum / totalReviews).toFixed(1));
+    }
+
     /* ================= RESPONSE ================= */
 
     return NextResponse.json({
       success: true,
+
       data: {
         ...service,
+
         locationContext: serviceProfile
           ? {
               customIntro: serviceProfile.customIntro,
@@ -152,6 +243,12 @@ export async function GET(req, context) {
             }
           : null,
       },
+
+      serviceRating,
+      serviceReviewCount,
+
+      vendors,
+
       city: city
         ? {
             name: city.name,

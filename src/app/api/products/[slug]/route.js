@@ -162,6 +162,108 @@ export async function GET(req, { params }) {
         .lean();
     }
 
+    /* ================= VENDORS FOR PRODUCT ================= */
+
+    let vendors = [];
+    let totalReviews = 0;
+    let weightedSum = 0;
+
+    if (city) {
+      const businesses = await Business.find({
+        status: "active",
+        serviceAreas: city._id,
+        "products.product": product._id,
+      })
+        .select(
+          `
+          name slug logo phone whatsappNumber contactPreference website
+          ratingAvg ratingCount totalOrders experienceYears
+          isVerified isFeatured address products
+        `
+        )
+        .lean();
+
+      vendors = businesses
+        .map((b) => {
+          const vendorProduct = b.products.find(
+            (p) => p.product.toString() === product._id.toString()
+          );
+
+          if (!vendorProduct) return null;
+
+          const ratingAvg = vendorProduct.ratingAvg || 0;
+          const ratingCount = vendorProduct.ratingCount || 0;
+
+          totalReviews += ratingCount;
+          weightedSum += ratingAvg * ratingCount;
+
+          return {
+            _id: b._id,
+
+            /* BASIC */
+            name: b.name,
+            slug: b.slug,
+            logo: b.logo,
+
+            /* LOCATION */
+            location: {
+              street: b.address?.street,
+              city: b.address?.city,
+              state: b.address?.state,
+              pincode: b.address?.pincode,
+            },
+
+            /* CONTACT */
+            contact: {
+              phone: b.phone,
+              whatsapp: b.whatsappNumber,
+              preference: b.contactPreference,
+              website: b.website,
+            },
+
+            /* TRUST BADGES */
+            badges: {
+              verified: b.isVerified,
+              featured: b.isFeatured,
+            },
+
+            /* VENDOR STATS */
+            stats: {
+              ratingAvg: b.ratingAvg,
+              ratingCount: b.ratingCount,
+              totalOrders: b.totalOrders,
+              experienceYears: b.experienceYears,
+            },
+
+            /* PRODUCT SPECIFIC DATA */
+            product: {
+              price: vendorProduct.price,
+              discountedPrice: vendorProduct.discountedPrice,
+              securityDeposit: vendorProduct.securityDeposit,
+              isAvailable: vendorProduct.isAvailable,
+              ratingAvg: vendorProduct.ratingAvg,
+              ratingCount: vendorProduct.ratingCount,
+            },
+          };
+        })
+        .filter(Boolean);
+
+      /* SORT BY CHEAPEST PRICE */
+
+      vendors.sort(
+        (a, b) => (a.product.price || 0) - (b.product.price || 0)
+      );
+    }
+
+    /* ================= PRODUCT RATING ================= */
+
+    let productRating = 0;
+    let productReviewCount = totalReviews;
+
+    if (totalReviews > 0) {
+      productRating = Number((weightedSum / totalReviews).toFixed(1));
+    }
+
     /* ================= LOCATION CONTEXT DATA ================= */
 
     const locationContext = locationProfile
@@ -183,7 +285,16 @@ export async function GET(req, { params }) {
 
     return NextResponse.json({
       success: true,
+
       data: product,
+
+      /* PRODUCT RATING */
+      productRating,
+      productReviewCount,
+
+      /* VENDORS */
+      vendors,
+
       locationContext,
       relatedServices,
       relatedProducts,
@@ -193,6 +304,7 @@ export async function GET(req, { params }) {
 
   } catch (err) {
     console.error("GET /api/products/[slug] error:", err);
+
     return NextResponse.json(
       { success: false, message: "Failed to fetch product" },
       { status: 500 }

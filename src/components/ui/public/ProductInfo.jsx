@@ -1,8 +1,4 @@
-import {
-  Phone,
-  MessageCircle,
-  ShieldCheck
-} from "lucide-react";
+import { Phone, MessageCircle, ShieldCheck } from "lucide-react";
 
 export default function ProductInfo({
   title,
@@ -12,10 +8,12 @@ export default function ProductInfo({
   citySlug,
   productSlug,
   locationContext,
+  productRating,
+  productReviewCount,
 }) {
   const price = pricing?.discountedPrice || pricing?.minPrice;
 
-const whatsappMessage = `
+  const whatsappMessage = `
 Hi KirayNow Team 👋
 
 I'm interested in renting the following product:
@@ -36,11 +34,19 @@ Thank you!
 
   return (
     <div className="space-y-8">
-
       {/* ================= TITLE + BADGES ================= */}
       <div>
         <h1 className="text-3xl font-bold text-gray-900 leading-snug">
           {title} in {citySlug?.charAt(0).toUpperCase() + citySlug?.slice(1)}
+          {productRating > 0 && (
+            <div className="flex items-center gap-2 mt-3 text-sm text-gray-600">
+              <span className="text-yellow-500 font-semibold">
+                ⭐ {productRating}
+              </span>
+
+              <span>({productReviewCount} reviews)</span>
+            </div>
+          )}
         </h1>
 
         {/* {productdescription && (
@@ -50,9 +56,7 @@ Thank you!
         )} */}
 
         <div className="flex flex-wrap gap-2 mt-4">
-          {highlights?.isFeatured && (
-            <Badge text="Featured" />
-          )}
+          {highlights?.isFeatured && <Badge text="Featured" />}
           {highlights?.isTopRented && (
             <Badge text="Top Rented" color="bg-yellow-500" />
           )}
@@ -64,17 +68,12 @@ Thank you!
 
       {/* ================= PRICING + BOOKING CARD ================= */}
       <div className="p-6 border rounded-2xl bg-white shadow-sm space-y-4">
-
         {/* Price Section */}
         <div>
-          <p className="text-sm text-gray-500">
-            Starting From
-          </p>
+          <p className="text-sm text-gray-500">Starting From</p>
 
           <div className="flex items-end gap-3">
-            <p className="text-3xl font-bold text-black">
-               ₹{pricing.minPrice}
-            </p>
+            <p className="text-3xl font-bold text-black">₹{pricing.minPrice}</p>
 
             {pricing?.discountedPrice && pricing?.minPrice && (
               <span className="text-sm text-gray-400 line-through">
@@ -83,9 +82,7 @@ Thank you!
             )}
           </div>
 
-          <p className="text-sm text-gray-500">
-            per {pricing?.unit}
-          </p>
+          <p className="text-sm text-gray-500">per {pricing?.unit}</p>
         </div>
         {locationContext?.deliveryNote && (
           <p className="text-xs text-gray-500 mt-2">
@@ -116,7 +113,6 @@ Thank you!
 
         {/* Divider */}
         <div className="border-t pt-6 space-y-4">
-
           {/* Call Button */}
           <a
             href="tel:8839931558"
@@ -129,7 +125,7 @@ Thank you!
           {/* WhatsApp Button */}
           <a
             href={`https://wa.me/918839931558?text=${encodeURIComponent(
-              whatsappMessage
+              whatsappMessage,
             )}`}
             target="_blank"
             rel="noopener noreferrer"
@@ -141,15 +137,15 @@ Thank you!
 
           {locationContext?.expressAvailable && (
             <p className="text-xs text-green-600 text-center mt-2">
-               Express delivery available in {citySlug}
+              Express delivery available in {citySlug}
             </p>
           )}
 
-        {locationContext?.demandLevel === "high" && (
-          <p className="text-xs text-orange-600 text-center">
-            High demand in {citySlug}. Book early.
-          </p>
-        )}
+          {locationContext?.demandLevel === "high" && (
+            <p className="text-xs text-orange-600 text-center">
+              High demand in {citySlug}. Book early.
+            </p>
+          )}
 
           {/* Trust Section */}
           <div className="bg-gray-50 border rounded-xl p-4 text-center mt-4 flex flex-col items-center gap-2">
@@ -161,9 +157,7 @@ Thank you!
               Verified rental providers in {citySlug}
             </p>
           </div>
-
         </div>
-
       </div>
     </div>
   );
