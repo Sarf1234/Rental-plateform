@@ -192,6 +192,8 @@ export default async function ProductPage({ params }) {
     };
   });
 
+  
+
   const primaryPrice =
     pricing?.minPrice || pricing?.discountedPrice || pricing?.amount || 1000;
 
@@ -219,79 +221,97 @@ export default async function ProductPage({ params }) {
         };
 
   const structuredData = {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "@id": `${baseUrl}#organization`,
-        name: "KirayNow",
-        url: baseUrl,
-        logo: "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
-      },
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${baseUrl}#organization`,
+      name: "KirayNow",
+      url: baseUrl,
+      logo: "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
+    },
 
-      {
-        "@type": "BreadcrumbList",
-        "@id": `${productUrl}#breadcrumb`,
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: baseUrl },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: cityName,
-            item: `${baseUrl}/${slug}`,
-          },
-          {
-            "@type": "ListItem",
-            position: 3,
-            name: "Rental Products",
-            item: `${baseUrl}/${slug}/products`,
-          },
-          { "@type": "ListItem", position: 4, name: title, item: productUrl },
-        ],
-      },
-
-      {
-        "@type": "Product",
-        "@id": productUrl,
-        name: `${title} in ${cityName}`,
-        image: images,
-        description: description?.replace(/<[^>]+>/g, "").slice(0, 250),
-        brand: {
-          "@type": "Brand",
-          name: "KirayNow",
-        },
-        seller,
-
-        areaServed: {
-          "@type": "City",
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${productUrl}#breadcrumb`,
+      itemListElement: [
+        { "@type": "ListItem", position: 1, name: "Home", item: baseUrl },
+        {
+          "@type": "ListItem",
+          position: 2,
           name: cityName,
+          item: `${baseUrl}/${slug}`,
         },
-        offers: {
-          "@type": "Offer",
-          url: productUrl,
-          priceCurrency: "INR",
-          price: primaryPrice,
-          availability: "https://schema.org/InStock",
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: "Rental Products",
+          item: `${baseUrl}/${slug}/products`,
         },
+        {
+          "@type": "ListItem",
+          position: 4,
+          name: title,
+          item: productUrl,
+        },
+      ],
+    },
+
+    {
+      "@type": "Product",
+      "@id": `${productUrl}#product`,
+      name: `${title} in ${cityName}`,
+      image: images,
+      description: description?.replace(/<[^>]+>/g, "").slice(0, 250),
+
+      brand: {
+        "@type": "Brand",
+        name: "KirayNow",
       },
 
-      ...(faqs?.length
-        ? [
-            {
-              "@type": "FAQPage",
-              mainEntity: faqs.slice(0, 5).map((faq) => ({
-                "@type": "Question",
-                name: faq.question,
-                acceptedAnswer: {
-                  "@type": "Answer",
-                  text: faq.answer,
-                },
-              })),
-            },
-          ]
-        : []),
-    ],
-  };
+      seller,
+
+      areaServed: {
+        "@type": "City",
+        name: cityName,
+      },
+
+      offers: {
+        "@type": "Offer",
+        url: productUrl,
+        priceCurrency: "INR",
+        price: primaryPrice,
+        availability: "https://schema.org/InStock",
+        priceValidUntil: "2026-12-31",
+      },
+
+      ...(productReviewCount > 0 && {
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: productRating,
+          reviewCount: productReviewCount,
+        },
+      }),
+    },
+
+    ...(faqs?.length
+      ? [
+          {
+            "@type": "FAQPage",
+            "@id": `${productUrl}#faq`,
+            mainEntity: faqs.slice(0, 5).map((faq) => ({
+              "@type": "Question",
+              name: faq.question,
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: faq.answer,
+              },
+            })),
+          },
+        ]
+      : []),
+  ],
+};
 
   return (
     <div className="bg-gray-50">

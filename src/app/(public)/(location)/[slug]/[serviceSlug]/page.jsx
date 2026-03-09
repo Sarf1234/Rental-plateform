@@ -189,100 +189,112 @@ const modifiedFaqs = rawFaqs.map((faq) => {
 });
 
   const structuredData = {
-    "@context": "https://schema.org",
-    "@graph": [
-      // 🔹 Platform Organization
-      {
-        "@type": "Organization",
-        "@id": `${baseUrl}/#organization`,
-        name: "KirayNow",
-        url: baseUrl,
-        logo: "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
-      },
-      // 🔹 Breadcrumb
-      {
-        "@type": "BreadcrumbList",
-        "@id": `${serviceUrl}#breadcrumb`,
-        itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "Home",
-            item: baseUrl,
-          },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: cityName,
-            item: `${baseUrl}/${slug}`,
-          },
-          {
-            "@type": "ListItem",
-            position: 3,
-            name: service.title,
-            item: serviceUrl,
-          },
-        ],
-      },
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": `${baseUrl}/#organization`,
+      name: "KirayNow",
+      url: baseUrl,
+      logo: "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
+    },
 
-      // 🔹 Marketplace Service Listing
-      {
-        "@type": "Service",
-        "@id": `${serviceUrl}#service`,
-        mainEntityOfPage: serviceUrl,
-        name: `${service.title} in ${cityName}`,
-        description:
-          service.description?.replace(/<[^>]+>/g, "").slice(0, 250) ||
-          `${service.title} service available in ${cityName}.`,
-        provider: {
-          "@id": `${baseUrl}/#organization`,
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${serviceUrl}#breadcrumb`,
+      itemListElement: [
+        {
+          "@type": "ListItem",
+          position: 1,
+          name: "Home",
+          item: baseUrl,
         },
-        areaServed: {
-          "@type": "City",
+        {
+          "@type": "ListItem",
+          position: 2,
           name: cityName,
+          item: `${baseUrl}/${slug}`,
         },
-        image:
-          service.images?.[0] ||
-          "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
-
-        offers: {
-          "@type": "Offer",
-          url: serviceUrl,
-          priceCurrency: "INR",
-          price: service.pricing?.amount || "10000",
-          availability: "https://schema.org/InStock",
-
-          seller: primaryProvider
-            ? {
-                "@type": "LocalBusiness",
-                name: primaryProvider.name,
-                telephone: primaryProvider.phone,
-                address: {
-                  "@type": "PostalAddress",
-                  addressLocality: cityName,
-                  addressCountry: "IN",
-                },
-              }
-            : undefined,
+        {
+          "@type": "ListItem",
+          position: 3,
+          name: service.title,
+          item: serviceUrl,
         },
+      ],
+    },
+
+    {
+      "@type": "Service",
+      "@id": `${serviceUrl}#service`,
+      mainEntityOfPage: serviceUrl,
+      name: `${service.title} in ${cityName}`,
+      description:
+        service.description?.replace(/<[^>]+>/g, "").slice(0, 250) ||
+        `${service.title} service available in ${cityName}.`,
+
+      provider: {
+        "@id": `${baseUrl}/#organization`,
       },
 
-      // 🔹 FAQ Schema
-      {
-        "@type": "FAQPage",
-        mainEntity: [
-          ...(modifiedFaqs || []).slice(0, 5).map((faq) => ({
-            "@type": "Question",
-            name: faq.question,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: faq.answer,
-            },
-          })),
-        ],
+      areaServed: {
+        "@type": "City",
+        name: cityName,
       },
-    ],
-  };
+
+      image:
+        service.images?.[0] ||
+        "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
+
+      offers: {
+        "@type": "Offer",
+        url: serviceUrl,
+        priceCurrency: "INR",
+        price: service.pricing?.amount || "10000",
+        availability: "https://schema.org/InStock",
+        priceValidUntil: "2026-12-31",
+
+        seller: primaryProvider
+          ? {
+              "@type": "LocalBusiness",
+              name: primaryProvider.name,
+              telephone: primaryProvider.phone,
+              address: {
+                "@type": "PostalAddress",
+                addressLocality: cityName,
+                addressCountry: "IN",
+              },
+            }
+          : undefined,
+      },
+
+      ...(serviceReviewCount > 0 && {
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: serviceRating,
+          reviewCount: serviceReviewCount,
+        },
+      }),
+    },
+
+    ...(modifiedFaqs?.length
+      ? [
+          {
+            "@type": "FAQPage",
+            "@id": `${serviceUrl}#faq`,
+            mainEntity: modifiedFaqs.slice(0, 5).map((faq) => ({
+              "@type": "Question",
+              name: faq.question,
+              acceptedAnswer: {
+                "@type": "Answer",
+                text: faq.answer,
+              },
+            })),
+          },
+        ]
+      : []),
+  ],
+};
 
   return (
     <div className="min-h-screen bg-gray-50 mt-16">
