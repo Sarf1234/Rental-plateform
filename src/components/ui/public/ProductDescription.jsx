@@ -27,7 +27,7 @@ export default function ProductDescription({
           </h2>
 
           <p className="text-gray-700 leading-relaxed">
-            Looking for {title.toLowerCase()} rental in {cityName}? 
+            Looking for {title.toLowerCase()} in {cityName}? 
             We provide professional delivery and setup services 
             {topAreas && ` across ${topAreas}`} and nearby areas. 
             With pricing starting from ₹{primaryPrice} per {pricing?.unit}, 
