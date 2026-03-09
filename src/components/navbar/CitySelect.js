@@ -19,6 +19,8 @@ export default function CitySelect() {
   const router = useRouter();
   const pathname = usePathname();
 
+  /* ================= LOAD CITIES ================= */
+
   useEffect(() => {
     async function loadCities() {
       try {
@@ -35,57 +37,55 @@ export default function CitySelect() {
     loadCities();
   }, []);
 
+  /* ================= CHANGE CITY ================= */
+
   function handleChange(slug) {
-  const selectedCity = cities.find((c) => c.slug === slug);
-  if (!selectedCity) return;
+    const selectedCity = cities.find((c) => c.slug === slug);
+    if (!selectedCity) return;
 
-  updateCity(selectedCity);
+    updateCity(selectedCity);
 
-  const segments = pathname.split("/").filter(Boolean);
+    const segments = pathname.split("/").filter(Boolean);
 
-  if (segments[0] === "city") {
-    // Replace only city slug
-    segments[1] = selectedCity.slug;
+    if (segments.length > 0) {
+      segments[0] = selectedCity.slug;
 
-    const newPath = "/" + segments.join("/");
-    router.push(newPath);
-  } else {
-    // If not inside city route
-    router.push(`/${selectedCity.slug}`);
+      const newPath = "/" + segments.join("/");
+
+      router.push(newPath, { scroll: false });
+    } else {
+      router.push(`/${selectedCity.slug}`);
+    }
   }
-}
-
 
   if (!ready) return null;
 
   return (
-  <div className="flex-shrink-0">
-    <Select
-      value={city?.slug || ""}
-      onValueChange={handleChange}
-    >
-      <SelectTrigger className="
-        w-auto
-        min-w-[120px]
-        max-w-[160px]
-        h-10
-        px-3
-        border
-        border-gray-300
-        text-sm
-      ">
-        <SelectValue placeholder="City" />
-      </SelectTrigger>
+    <div className="flex-shrink-0">
+      <Select value={city?.slug || ""} onValueChange={handleChange}>
+        <SelectTrigger
+          className="
+          w-auto
+          min-w-[120px]
+          max-w-[160px]
+          h-10
+          px-3
+          border
+          border-gray-300
+          text-sm
+        "
+        >
+          <SelectValue placeholder="City" />
+        </SelectTrigger>
 
-      <SelectContent>
-        {cities.map((c) => (
-          <SelectItem key={c.slug} value={c.slug}>
-            {c.name}
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  </div>
-);
-
+        <SelectContent>
+          {cities.map((c) => (
+            <SelectItem key={c.slug} value={c.slug}>
+              {c.name}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </div>
+  );
 }

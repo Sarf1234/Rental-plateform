@@ -164,12 +164,22 @@ export default function BusinessForm({ initialData = {}, onSubmit }) {
 
   /* PRODUCTS */
 
-  const [products, setProducts] = useState(initialData.products || []);
+  const [products, setProducts] = useState(
+  (initialData.products || []).map((p) => ({
+    ...p,
+    product: p.product?._id?.toString() || p.product?.toString() || "",
+  }))
+);
   const [productList, setProductList] = useState([]);
 
   /* SERVICES */
 
-  const [services, setServices] = useState(initialData.services || []);
+  const [services, setServices] = useState(
+  (initialData.services || []).map((s) => ({
+    ...s,
+    service: s.service?._id?.toString() || s.service?.toString() || "",
+  }))
+);
   const [serviceList, setServiceList] = useState([]);
 
   /* STATS */
@@ -512,18 +522,28 @@ export default function BusinessForm({ initialData = {}, onSubmit }) {
               <Label>Product</Label>
 
               <select
-                value={p.product}
-                onChange={(e) => updateProduct(i, "product", e.target.value)}
-                className="border rounded-md p-2 w-full"
-              >
-                <option value="">Select product</option>
+  value={p.product}
+  onChange={(e) => updateProduct(i, "product", e.target.value)}
+  className="border rounded-md p-2 w-full"
+>
+  <option value="">Select product</option>
 
-                {productList.map((pr) => (
-                  <option key={pr._id} value={pr._id}>
-                    {pr.title}
-                  </option>
-                ))}
-              </select>
+  {productList.map((pr) => {
+    const alreadySelected = products.some(
+      (prod, index) => prod.product === pr._id && index !== i
+    );
+
+    return (
+      <option
+        key={pr._id}
+        value={pr._id}
+        disabled={alreadySelected}
+      >
+        {pr.title}
+      </option>
+    );
+  })}
+</select>
             </div>
 
             {/* PRICE */}
@@ -649,18 +669,28 @@ export default function BusinessForm({ initialData = {}, onSubmit }) {
               <Label>Service</Label>
 
               <select
-                value={s.service}
-                onChange={(e) => updateService(i, "service", e.target.value)}
-                className="border rounded-md p-2 w-full"
-              >
-                <option value="">Select service</option>
+  value={s.service}
+  onChange={(e) => updateService(i, "service", e.target.value)}
+  className="border rounded-md p-2 w-full"
+>
+  <option value="">Select service</option>
 
-                {serviceList.map((sv) => (
-                  <option key={sv._id} value={sv._id}>
-                    {sv.title}
-                  </option>
-                ))}
-              </select>
+  {serviceList.map((sv) => {
+    const alreadySelected = services.some(
+      (ser, index) => ser.service === sv._id && index !== i
+    );
+
+    return (
+      <option
+        key={sv._id}
+        value={sv._id}
+        disabled={alreadySelected}
+      >
+        {sv.title}
+      </option>
+    );
+  })}
+</select>
             </div>
 
             {/* PRICE */}

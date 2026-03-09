@@ -37,7 +37,10 @@ export default function Navbar() {
 
   
 
-  const citySlug = city?.slug;
+ const segments = pathname.split("/").filter(Boolean);
+ const urlCity = segments[0];
+
+ const citySlug = urlCity || city?.slug;
 
 
   /* ================= SCROLL EFFECT ================= */
