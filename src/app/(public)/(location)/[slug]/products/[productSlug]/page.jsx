@@ -16,8 +16,8 @@ async function getProductData(slug, productSlug) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productSlug}?city=${slug}`,
     {
+      next: { revalidate: 3600 },
       cache: "force-cache",
-      next: { revalidate: 3600 }
     }
   );
 
