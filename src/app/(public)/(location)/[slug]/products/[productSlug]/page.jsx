@@ -192,10 +192,44 @@ export default async function ProductPage({ params }) {
     };
   });
 
-  
 
-  const primaryPrice =
+  function replaceDynamicTokens(text, cityName, price) {
+  if (!text) return text;
+
+  let result = text;
+
+  // replace {city}
+  result = result.replace(/\{city\}/gi, cityName);
+
+  // replace hardcoded Patna (future proof)
+  result = result.replace(/\bpatna\b/gi, cityName);
+
+  // replace {price}
+  if (price) {
+    result = result.replace(/\{price\}/gi, `₹${price}`);
+  } else {
+    result = result.replace(/₹?\s?\{price\}/gi, "");
+  }
+
+  return result;
+}
+
+ const primaryPrice =
     pricing?.minPrice || pricing?.discountedPrice || pricing?.amount || 1000;
+
+
+const processedDescription = replaceDynamicTokens(
+  description,
+  cityName,
+  primaryPrice
+);
+
+const processedTerms = replaceDynamicTokens(
+  termsAndConditions,
+  cityName,
+  primaryPrice
+)
+
 
   // Optional seller logic (if provider exists in backend later)
   const seller =
@@ -262,7 +296,7 @@ export default async function ProductPage({ params }) {
       "@id": `${productUrl}#product`,
       name: `${title} in ${cityName}`,
       image: images,
-      description: description?.replace(/<[^>]+>/g, "").slice(0, 250),
+      description: processedDescription?.replace(/<[^>]+>/g, "").slice(0, 250),
 
       brand: {
         "@type": "Brand",
@@ -313,6 +347,10 @@ export default async function ProductPage({ params }) {
   ],
 };
 
+
+
+
+
   return (
     <div className="bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 pt-24 pb-20">
@@ -341,7 +379,7 @@ export default async function ProductPage({ params }) {
               />
             </div>
             <ProductDescription
-              description={description}
+              description={processedDescription}
               title={title}
               cityData={data?.city}
               pricing={pricing}
@@ -353,7 +391,7 @@ export default async function ProductPage({ params }) {
               </div>
             )}
             <ProductFAQ faqs={faqs} cityData={data?.city} />
-            <ProductTerms terms={termsAndConditions} />
+            <ProductTerms terms={processedTerms} />
           </div>
 
           {/* RIGHT SIDE (STICKY CARD) */}

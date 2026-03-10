@@ -3,9 +3,10 @@ export default function ProductDescription({
   title, 
   cityData, 
   pricing,
-  locationContext
+  locationContext,
 }) {
   if (!description) return null;
+  console.log(cityData?.name)
 
   const cityName = cityData?.name;
   const subAreas = cityData?.subAreas || [];
@@ -23,7 +24,7 @@ export default function ProductDescription({
       {cityName && (
         <section className="mb-8">
           <h2 className="text-xl font-semibold mb-3">
-            Rental Details & Specifications
+            {title} in {cityName} – Details & Pricing
           </h2>
 
           <p className="text-gray-700 leading-relaxed">
