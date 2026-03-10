@@ -4,17 +4,29 @@ import Link from "next/link";
 import ProductCard from "@/components/ui/public/ProductCards";
 import ServiceGallery from "@/components/ui/public/ServiceGallery";
 
+export const revalidate = 3600;
+export const dynamic = "force-static";
+
+export async function getServiceData(slug, serviceSlug) {
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/service/${serviceSlug}?city=${slug}`,
+    {
+      next: { revalidate: 3600 },
+      cache: "force-cache",
+    }
+  );
+
+  if (!res.ok) return null;
+
+  return res.json();
+}
+
 export async function generateMetadata({ params }) {
   const { serviceSlug, slug } = await params;
 
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/service/${serviceSlug}?city=${slug}`,
-      { next: { revalidate: 3600 } },
-    );
 
-    const result = await res.json();
-
+    const result = await getServiceData(slug, serviceSlug);
     if (!result?.data) {
       return {
         title: "Service Not Found",
@@ -113,9 +125,9 @@ export default async function ServiceDetailsPage({ params }) {
   let serviceReviewCount = 0;
 
   try {
-    const res = await apiRequest(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/service/${serviceSlug}?city=${slug}`,
-    );
+    
+
+    const res = await getServiceData(slug, serviceSlug);
     featured = res.data || [];
     cityData = res.city;
     locationProfile = res.data?.locationContext || null;
