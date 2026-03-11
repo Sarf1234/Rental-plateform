@@ -317,7 +317,7 @@ const modifiedFaqs = rawFaqs.map((faq) => {
         }}
       />
 
-      <div className="max-w-7xl mx-auto md:px-4 py-6">
+      <div className="max-w-7xl mx-auto md:px-4 md:py-6">
         {/* 3 Column Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-2 md:gap-6">
           {/* CENTER FIRST ON MOBILE */}
