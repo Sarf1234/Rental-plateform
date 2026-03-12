@@ -7,6 +7,7 @@ import City from "@/models/CityModels";
 import { requireAdmin } from "@/lib/protectRoute";
 import { createSlug } from "@/utils/createSlug";
 import LocationProfile from "@/models/LocationProfile";
+import Service from "@/models/Serviceproduct";
 
 /* =======================
    GET PRODUCTS
@@ -320,6 +321,20 @@ export async function POST(req) {
     const exists = await Product.findOne({ slug });
     if (exists) slug = `${slug}-${Date.now()}`;
 
+    if (body.suggestedProducts?.length > 6) {
+  return NextResponse.json(
+    { success: false, message: "Maximum 6 suggested products allowed" },
+    { status: 400 }
+  );
+}
+
+if (body.suggestedServices?.length > 6) {
+  return NextResponse.json(
+    { success: false, message: "Maximum 6 suggested services allowed" },
+    { status: 400 }
+  );
+}
+
     const product = await Product.create({
       title: body.title,
       slug,
@@ -333,6 +348,8 @@ export async function POST(req) {
       termsAndConditions: body.termsAndConditions,
       seo: body.seo || {},
       status: body.status || "draft",
+      suggestedProducts: body.suggestedProducts || [],
+      suggestedServices: body.suggestedServices || [],
 
       highlights: {
         isTopRented: body.highlights?.isTopRented || false,

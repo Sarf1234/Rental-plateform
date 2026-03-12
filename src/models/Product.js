@@ -1,6 +1,11 @@
 import mongoose from "mongoose";
 import { nanoid } from "nanoid";
 
+function limitSuggestions(val) {
+  return !val || val.length <= 6;
+}
+
+
 /* ---------------- FAQ SUB-SCHEMA ---------------- */
 const FAQSchema = new mongoose.Schema(
   {
@@ -67,6 +72,26 @@ tags: [
     serviceAreas: [
       { type: mongoose.Schema.Types.ObjectId, ref: "City", index: true },
     ],
+
+    suggestedProducts: {
+  type: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Product",
+    },
+  ],
+  validate: [limitSuggestions, "Maximum 6 suggested products allowed"],
+},
+
+suggestedServices: {
+  type: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Service",
+    },
+  ],
+  validate: [limitSuggestions, "Maximum 6 suggested services allowed"],
+},
 
     /* ---------- FAQ ---------- */
     faqs: [FAQSchema],

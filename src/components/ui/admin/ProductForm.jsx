@@ -213,19 +213,50 @@ export default function ProductForm({ initialData = {}, onSubmit }) {
   const [allCategories, setAllCategories] = useState([]);
   const [allTags, setAllTags] = useState([]);
   const [allCities, setAllCities] = useState([]);
+  const [suggestedProducts, setSuggestedProducts] = useState(
+  (initialData.suggestedProducts || []).map((p) => p._id || p)
+);
+
+const [suggestedServices, setSuggestedServices] = useState(
+  (initialData.suggestedServices || []).map((s) => s._id || s)
+);
+const [allProducts, setAllProducts] = useState([]);
+const [allServices, setAllServices] = useState([]);
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    apiRequest("/api/products/categories").then((r) =>
-      setAllCategories(r.data || []),
-    );
-    apiRequest("/api/products/tags").then((r) =>
-      setAllTags(r.data || []),
-    );
-    apiRequest("/api/cities").then((r) =>
-      setAllCities(r.data || []),
-    );
-  }, []);
+useEffect(() => {
+  apiRequest("/api/products/categories").then((r) =>
+    setAllCategories(r.data || [])
+  );
+
+  apiRequest("/api/products/tags").then((r) =>
+    setAllTags(r.data || [])
+  );
+
+  apiRequest("/api/cities").then((r) =>
+    setAllCities(r.data || [])
+  );
+
+  apiRequest("/api/products?limit=200").then((r) => {
+    const products =
+      r.data?.map((p) => ({
+        ...p,
+        name: p.title,
+      })) || [];
+
+    setAllProducts(products);
+  });
+
+  apiRequest("/api/service/admin?limit=200").then((r) => {
+    const services =
+      r.data?.map((s) => ({
+        ...s,
+        name: s.title,
+      })) || [];
+
+    setAllServices(services);
+  });
+}, []);
 
   useEffect(() => {
     if (!initialData.slug) setSlug(createSlug(title));
@@ -299,6 +330,8 @@ export default function ProductForm({ initialData = {}, onSubmit }) {
       images,
       categories,
       tags,
+      suggestedProducts,
+      suggestedServices,
       serviceAreas: cities,
       pricing: {
         unit: pricing.unit,
@@ -536,6 +569,22 @@ export default function ProductForm({ initialData = {}, onSubmit }) {
               onChange={setCities}
               placeholder="Service areas"
             />
+
+            <MultiSelect
+                label="Suggested Products"
+                options={allProducts}
+                value={suggestedProducts}
+                onChange={setSuggestedProducts}
+                placeholder="Select suggested products"
+              />
+
+              <MultiSelect
+                label="Suggested Services"
+                options={allServices}
+                value={suggestedServices}
+                onChange={setSuggestedServices}
+                placeholder="Select suggested services"
+              />
           </div>
 
           {/* FAQ */}

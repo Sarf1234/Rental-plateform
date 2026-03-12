@@ -31,6 +31,17 @@ export async function GET(req, { params }) {
       .populate("categories", "name slug")
       .populate("tags", "name slug")
       .populate("serviceAreas", "name slug")
+      .populate({
+        path: "suggestedProducts",
+        select: "title slug images pricing serviceAreas productCode",
+        options: { limit: 6 },
+      })
+
+      .populate({
+        path: "suggestedServices",
+        select: "title slug images pricing serviceAreas",
+        options: { limit: 6 },
+      })
       .lean();
 
     if (!product) {
@@ -161,6 +172,21 @@ export async function GET(req, { params }) {
         .limit(6)
         .lean();
     }
+
+
+    if (city) {
+  if (product.suggestedProducts?.length) {
+    product.suggestedProducts = product.suggestedProducts.filter((p) =>
+      p.serviceAreas?.some((area) => area.toString() === city._id.toString())
+    );
+  }
+
+  if (product.suggestedServices?.length) {
+    product.suggestedServices = product.suggestedServices.filter((s) =>
+      s.serviceAreas?.some((area) => area.toString() === city._id.toString())
+    );
+  }
+}
 
     /* ================= VENDORS FOR PRODUCT ================= */
 
@@ -354,6 +380,11 @@ export async function PUT(req, { params }) {
     if (body.images) product.images = body.images;
     if (body.categories) product.categories = body.categories;
     if (body.tags) product.tags = body.tags;
+    if (body.suggestedProducts !== undefined)
+      product.suggestedProducts = body.suggestedProducts;
+
+    if (body.suggestedServices !== undefined)
+      product.suggestedServices = body.suggestedServices;
     if (body.pricing) product.pricing = body.pricing;
     if (body.serviceAreas) product.serviceAreas = body.serviceAreas;
     if (body.faqs) product.faqs = body.faqs;

@@ -9,16 +9,16 @@ import FlagsCards from "@/components/ui/public/FlagsCards";
 import Servicecards from "@/components/ui/public/Servicecards";
 import ProviderCards from "@/components/ui/public/ProviderCards";
 
-export const revalidate = 3600;
-export const dynamic = "force-static";
+// export const revalidate = 3600;
+// export const dynamic = "force-static";
 
 async function getProductData(slug, productSlug) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productSlug}?city=${slug}`,
-    {
-      next: { revalidate: 3600 },
-      cache: "force-cache",
-    }
+    // {
+    //   next: { revalidate: 3600 },
+    //   cache: "force-cache",
+    // }
   );
 
   if (!res.ok) return null;
@@ -134,6 +134,8 @@ export default async function ProductPage({ params }) {
   const locationContext = data?.locationContext;
   const relatedProducts = data?.relatedProducts || [];
   const relatedServices = data?.relatedServices || [];
+  const suggestedProducts = product?.suggestedProducts || [];
+  const suggestedServices = product?.suggestedServices || [];
   const city = data?.city;
   const providers = data?.providers || [];
   const vendors = data?.vendors || [];
@@ -417,6 +419,13 @@ const processedTerms = replaceDynamicTokens(
           </div>
         </div>
       </div>
+      {suggestedProducts.length > 0 && (
+        <FlagsCards
+          data={suggestedProducts}
+          citySlug={slug}
+          title={`Related Rental Products in ${city?.name}`}
+        />
+      )}
       {relatedProducts.length > 0 && (
         <FlagsCards
           data={relatedProducts}
@@ -428,6 +437,15 @@ const processedTerms = replaceDynamicTokens(
       {relatedServices.length > 0 && (
         <Servicecards
           data={relatedServices}
+          citySlug={slug}
+          title={`Services That Use This Product in ${city?.name}`}
+          subtitle={`Top-rated services in ${city?.name} that use this product`}
+        />
+      )}
+
+      {suggestedServices.length > 0 && (
+        <Servicecards
+          data={suggestedServices}
           citySlug={slug}
           title={`Services That Use This Product in ${city?.name}`}
           subtitle={`Top-rated services in ${city?.name} that use this product`}
