@@ -199,44 +199,41 @@ export default async function ProductPage({ params }) {
     };
   });
 
-
   function replaceDynamicTokens(text, cityName, price) {
-  if (!text) return text;
+    if (!text) return text;
 
-  let result = text;
+    let result = text;
 
-  // replace {city}
-  result = result.replace(/\{city\}/gi, cityName);
+    // replace {city}
+    result = result.replace(/\{city\}/gi, cityName);
 
-  // replace hardcoded Patna (future proof)
-  result = result.replace(/\bpatna\b/gi, cityName);
+    // replace hardcoded Patna (future proof)
+    result = result.replace(/\bpatna\b/gi, cityName);
 
-  // replace {price}
-  if (price) {
-    result = result.replace(/\{price\}/gi, `₹${price}`);
-  } else {
-    result = result.replace(/₹?\s?\{price\}/gi, "");
+    // replace {price}
+    if (price) {
+      result = result.replace(/\{price\}/gi, `₹${price}`);
+    } else {
+      result = result.replace(/₹?\s?\{price\}/gi, "");
+    }
+
+    return result;
   }
 
-  return result;
-}
-
- const primaryPrice =
+  const primaryPrice =
     pricing?.minPrice || pricing?.discountedPrice || pricing?.amount || 1000;
 
+  const processedDescription = replaceDynamicTokens(
+    description,
+    cityName,
+    primaryPrice,
+  );
 
-const processedDescription = replaceDynamicTokens(
-  description,
-  cityName,
-  primaryPrice
-);
-
-const processedTerms = replaceDynamicTokens(
-  termsAndConditions,
-  cityName,
-  primaryPrice
-)
-
+  const processedTerms = replaceDynamicTokens(
+    termsAndConditions,
+    cityName,
+    primaryPrice,
+  );
 
   // Optional seller logic (if provider exists in backend later)
   const seller =
@@ -262,101 +259,99 @@ const processedTerms = replaceDynamicTokens(
         };
 
   const structuredData = {
-  "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "Organization",
-      "@id": `${baseUrl}#organization`,
-      name: "KirayNow",
-      url: baseUrl,
-      logo: "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
-    },
-
-    {
-      "@type": "BreadcrumbList",
-      "@id": `${productUrl}#breadcrumb`,
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: baseUrl },
-        {
-          "@type": "ListItem",
-          position: 2,
-          name: cityName,
-          item: `${baseUrl}/${slug}`,
-        },
-        {
-          "@type": "ListItem",
-          position: 3,
-          name: "Rental Products",
-          item: `${baseUrl}/${slug}/products`,
-        },
-        {
-          "@type": "ListItem",
-          position: 4,
-          name: title,
-          item: productUrl,
-        },
-      ],
-    },
-
-    {
-      "@type": "Product",
-      "@id": `${productUrl}#product`,
-      name: `${title} in ${cityName}`,
-      image: images,
-      description: processedDescription?.replace(/<[^>]+>/g, "").slice(0, 250),
-
-      brand: {
-        "@type": "Brand",
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": `${baseUrl}#organization`,
         name: "KirayNow",
+        url: baseUrl,
+        logo: "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
       },
 
-      seller,
-
-      areaServed: {
-        "@type": "City",
-        name: cityName,
-      },
-
-      offers: {
-        "@type": "Offer",
-        url: productUrl,
-        priceCurrency: "INR",
-        price: primaryPrice,
-        availability: "https://schema.org/InStock",
-        priceValidUntil: "2026-12-31",
-      },
-
-      ...(productReviewCount > 0 && {
-        aggregateRating: {
-          "@type": "AggregateRating",
-          ratingValue: productRating,
-          reviewCount: productReviewCount,
-        },
-      }),
-    },
-
-    ...(faqs?.length
-      ? [
+      {
+        "@type": "BreadcrumbList",
+        "@id": `${productUrl}#breadcrumb`,
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: baseUrl },
           {
-            "@type": "FAQPage",
-            "@id": `${productUrl}#faq`,
-            mainEntity: faqs.slice(0, 5).map((faq) => ({
-              "@type": "Question",
-              name: faq.question,
-              acceptedAnswer: {
-                "@type": "Answer",
-                text: faq.answer,
-              },
-            })),
+            "@type": "ListItem",
+            position: 2,
+            name: cityName,
+            item: `${baseUrl}/${slug}`,
           },
-        ]
-      : []),
-  ],
-};
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: "Rental Products",
+            item: `${baseUrl}/${slug}/products`,
+          },
+          {
+            "@type": "ListItem",
+            position: 4,
+            name: title,
+            item: productUrl,
+          },
+        ],
+      },
 
+      {
+        "@type": "Product",
+        "@id": `${productUrl}#product`,
+        name: `${title} in ${cityName}`,
+        image: images,
+        description: processedDescription
+          ?.replace(/<[^>]+>/g, "")
+          .slice(0, 250),
 
+        brand: {
+          "@type": "Brand",
+          name: "KirayNow",
+        },
 
+        seller,
 
+        areaServed: {
+          "@type": "City",
+          name: cityName,
+        },
+
+        offers: {
+          "@type": "Offer",
+          url: productUrl,
+          priceCurrency: "INR",
+          price: primaryPrice,
+          availability: "https://schema.org/InStock",
+          priceValidUntil: "2026-12-31",
+        },
+
+        ...(productReviewCount > 0 && {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: productRating,
+            reviewCount: productReviewCount,
+          },
+        }),
+      },
+
+      ...(faqs?.length
+        ? [
+            {
+              "@type": "FAQPage",
+              "@id": `${productUrl}#faq`,
+              mainEntity: faqs.slice(0, 5).map((faq) => ({
+                "@type": "Question",
+                name: faq.question,
+                acceptedAnswer: {
+                  "@type": "Answer",
+                  text: faq.answer,
+                },
+              })),
+            },
+          ]
+        : []),
+    ],
+  };
 
   return (
     <div className="bg-gray-50">
@@ -419,20 +414,19 @@ const processedTerms = replaceDynamicTokens(
           </div>
         </div>
       </div>
-      {suggestedProducts.length > 0 && (
+      {suggestedProducts.length > 0 ? (
         <FlagsCards
           data={suggestedProducts}
           citySlug={slug}
           title={`Related Rental Products in ${city?.name}`}
         />
-      )}
-      {relatedProducts.length > 0 && (
+      ) : relatedProducts.length > 0 ? (
         <FlagsCards
           data={relatedProducts}
           citySlug={slug}
           title={`Related Rental Products in ${city?.name}`}
         />
-      )}
+      ) : null}
 
       {relatedServices.length > 0 && (
         <Servicecards
@@ -452,10 +446,7 @@ const processedTerms = replaceDynamicTokens(
         />
       )}
 
-      {vendors.length > 0 && (
-        <ProviderCards data={vendors} citySlug={slug} />
-      )}
-
+      {vendors.length > 0 && <ProviderCards data={vendors} citySlug={slug} />}
     </div>
   );
 }
