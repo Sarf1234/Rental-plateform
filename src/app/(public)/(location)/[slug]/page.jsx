@@ -9,8 +9,8 @@ import ServiceCategories from "@/components/ui/public/ServiceCategories";
 import ProductCard from "@/components/ui/public/ProductCards";
 import VendorCard from "@/components/ui/public/VendorCard";
 
-// export const revalidate = 86400;  // ISR (1 hour)
-// export const dynamic = "force-static";
+export const revalidate = 86400;  // ISR (1 hour)
+export const dynamic = "force-static";
 
 // 🔥 Dynamic Metadata Generator
 export async function generateMetadata({ params }) {
