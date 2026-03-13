@@ -9,8 +9,8 @@ import ServiceCategories from "@/components/ui/public/ServiceCategories";
 import ProductCard from "@/components/ui/public/ProductCards";
 import VendorCard from "@/components/ui/public/VendorCard";
 
-export const revalidate = 86400;  // ISR (1 hour)
-export const dynamic = "force-static";
+// export const revalidate = 86400;  // ISR (1 hour)
+// export const dynamic = "force-static";
 
 // 🔥 Dynamic Metadata Generator
 export async function generateMetadata({ params }) {
@@ -133,7 +133,7 @@ export default async function CityHome({ params }) {
 
   try {
     const res = await apiRequest(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/service?city=${slug}&page=1&limit=10`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/service?city=${slug}&type=all&page=1&limit=10`,
     );
 
     featured = res.featured || [];
