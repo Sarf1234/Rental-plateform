@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
-export default function ProductCard({ product, citySlug }) {
+export default function ProductCard({ product, citySlug,  }) {
 
   if (!product) return null;
 

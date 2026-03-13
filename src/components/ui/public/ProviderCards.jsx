@@ -1,7 +1,14 @@
 "use client";
 
 import Image from "next/image";
-import { Phone, MessageCircle, ShieldCheck, MapPin, Star } from "lucide-react";
+import Link from "next/link";
+import {
+  Phone,
+  MessageCircle,
+  ShieldCheck,
+  MapPin,
+  Star,
+} from "lucide-react";
 
 export default function ProviderCards({ data = [], citySlug }) {
   if (!data || data.length === 0) return null;
@@ -21,7 +28,7 @@ export default function ProviderCards({ data = [], citySlug }) {
           </p>
         </div>
 
-        {/* Providers Grid */}
+        {/* Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
 
           {data.map((vendor) => {
@@ -49,12 +56,13 @@ export default function ProviderCards({ data = [], citySlug }) {
               : null;
 
             return (
-              <div
+              <Link
                 key={vendor._id}
-                className="group bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-lg transition"
+                href={`/${citySlug}/vendors/${vendor.slug}`}
+                className="group bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-lg transition block"
               >
 
-                {/* Vendor Header */}
+                {/* Header */}
                 <div className="flex items-center gap-3">
 
                   {vendor?.logo && (
@@ -76,21 +84,18 @@ export default function ProviderCards({ data = [], citySlug }) {
                       <div className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
                         <Star size={14} className="text-yellow-500" />
                         {rating} ({ratingCount})
-                        {(vendor?.badges?.verified || vendor?.isVerified) && (
-                  <div className="flex items-center gap-1 mt-2 text-green-600 text-xs font-medium">
-                    <ShieldCheck size={14} />
-                    Verified Business
-                  </div>
-                )}
                       </div>
                     )}
-                    {/* Verified Badge */}
-                
+
+                    {(vendor?.badges?.verified || vendor?.isVerified) && (
+                      <div className="flex items-center gap-1 mt-1 text-green-600 text-xs font-medium">
+                        <ShieldCheck size={14} />
+                        Verified
+                      </div>
+                    )}
+
                   </div>
-
                 </div>
-
-                
 
                 {/* Location */}
                 {vendor?.location?.city && (
@@ -113,17 +118,14 @@ export default function ProviderCards({ data = [], citySlug }) {
                     <p className="text-lg font-semibold text-black">
                       ₹{price}
                     </p>
-
-                    {/* {vendor?.product?.securityDeposit > 0 && (
-                      <p className="text-xs text-gray-400">
-                        Deposit ₹{vendor.product.securityDeposit}
-                      </p>
-                    )} */}
                   </div>
                 )}
 
-                {/* Action Buttons */}
-                <div className="flex gap-2 mt-5">
+                {/* Buttons */}
+                <div
+                  className="flex gap-2 mt-5"
+                  onClick={(e) => e.stopPropagation()}
+                >
 
                   {phone && (
                     <a
@@ -149,7 +151,7 @@ export default function ProviderCards({ data = [], citySlug }) {
 
                 </div>
 
-              </div>
+              </Link>
             );
           })}
 
