@@ -5,6 +5,8 @@ import { createSlug } from "@/utils/createSlug";
 import { requireAdmin } from "@/lib/protectRoute";
 import City from "@/models/CityModels";
 import LocationProfile from "@/models/LocationProfile";
+import Product from "@/models/Product";
+import Business from "@/models/BusinessModel";
 
 
 export async function GET(req) {
@@ -14,6 +16,8 @@ export async function GET(req) {
     const { searchParams } = new URL(req.url);
 
     const citySlug = searchParams.get("city");
+    const type = searchParams.get("type") || "all";
+
     const page = parseInt(searchParams.get("page")) || 1;
     const limit = parseInt(searchParams.get("limit")) || 10;
     const skip = (page - 1) * limit;
@@ -43,9 +47,18 @@ export async function GET(req) {
       serviceAreas: { $in: [city._id] },
     };
 
-    /* ---------- FETCH SERVICES ---------- */
-    const [featured, top, best, allServices, totalAll] =
-      await Promise.all([
+    let featured = [];
+    let top = [];
+    let best = [];
+    let allServices = [];
+    let totalAll = 0;
+
+    let products = [];
+    let vendors = [];
+
+    /* ---------- SERVICES ---------- */
+    if (type === "services" || type === "all") {
+      const result = await Promise.all([
         Service.find({ ...baseFilter, isFeatured: true })
           .sort({ priority: -1 })
           .limit(6)
@@ -70,54 +83,83 @@ export async function GET(req) {
         Service.countDocuments(baseFilter),
       ]);
 
-    /* ---------- FETCH SERVICE-LEVEL MULTIPLIERS ---------- */
-    const serviceIds = [
-      ...featured,
-      ...top,
-      ...best,
-      ...allServices,
-    ].map((s) => s._id);
+      featured = result[0];
+      top = result[1];
+      best = result[2];
+      allServices = result[3];
+      totalAll = result[4];
 
-    const serviceProfiles = await LocationProfile.find({
-      city: city._id,
-      scope: "service",
-      service: { $in: serviceIds },
-    }).lean();
+      /* ---------- FETCH SERVICE-LEVEL MULTIPLIERS ---------- */
+      const serviceIds = [
+        ...featured,
+        ...top,
+        ...best,
+        ...allServices,
+      ].map((s) => s._id);
 
-    const profileMap = new Map(
-      serviceProfiles.map((p) => [p.service.toString(), p])
-    );
+      const serviceProfiles = await LocationProfile.find({
+        city: city._id,
+        scope: "service",
+        service: { $in: serviceIds },
+      }).lean();
 
-    /* ---------- APPLY MULTIPLIER PER SERVICE ---------- */
-    function applyServiceMultiplier(items) {
-      return items.map((item) => {
-        const profile = profileMap.get(item._id.toString());
+      const profileMap = new Map(
+        serviceProfiles.map((p) => [p.service.toString(), p])
+      );
 
-        if (!profile?.priceMultiplier || profile.priceMultiplier === 1) {
-          return item; // no change
-        }
+      function applyServiceMultiplier(items) {
+        return items.map((item) => {
+          const profile = profileMap.get(item._id.toString());
 
-        if (!item.pricing?.amount) return item;
+          if (!profile?.priceMultiplier || profile.priceMultiplier === 1) {
+            return item;
+          }
 
-        const newAmount = Math.round(
-          item.pricing.amount * profile.priceMultiplier
-        );
+          if (!item.pricing?.amount) return item;
 
-        return {
-          ...item,
-          pricing: {
-            ...item.pricing,
-            amount: newAmount,
-            label: `Starting from ₹${newAmount.toLocaleString()}`,
-          },
-        };
-      });
+          const newAmount = Math.round(
+            item.pricing.amount * profile.priceMultiplier
+          );
+
+          return {
+            ...item,
+            pricing: {
+              ...item.pricing,
+              amount: newAmount,
+              label: `Starting from ₹${newAmount.toLocaleString()}`,
+            },
+          };
+        });
+      }
+
+      featured = applyServiceMultiplier(featured);
+      top = applyServiceMultiplier(top);
+      best = applyServiceMultiplier(best);
+      allServices = applyServiceMultiplier(allServices);
     }
 
-    const adjustedFeatured = applyServiceMultiplier(featured);
-    const adjustedTop = applyServiceMultiplier(top);
-    const adjustedBest = applyServiceMultiplier(best);
-    const adjustedAll = applyServiceMultiplier(allServices);
+    /* ---------- PRODUCTS ---------- */
+    if (type === "products" || type === "all") {
+      products = await Product.find({
+        status: "published",
+        serviceAreas: { $in: [city._id] },
+      })
+        .sort({ priority: -1, createdAt: -1 })
+        .limit(8)
+        .lean();
+    }
+
+    /* ---------- VENDORS ---------- */
+    if (type === "vendors" || type === "all") {
+      vendors = await Business.find({
+        status: "active",
+        serviceAreas: { $in: [city._id] },
+      })
+        .sort({ priority: -1, createdAt: -1 })
+        .limit(8)
+        .select("name slug logo coverImage ratingAvg ratingCount address")
+        .lean();
+    }
 
     /* ---------- RESPONSE ---------- */
     return NextResponse.json({
@@ -125,15 +167,18 @@ export async function GET(req) {
 
       city: {
         ...city,
-        locationContext: null, // no city-level multiplier anymore
+        locationContext: null,
       },
 
-      featured: adjustedFeatured,
-      top: adjustedTop,
-      best: adjustedBest,
+      featured,
+      top,
+      best,
+
+      products,
+      vendors,
 
       all: {
-        data: adjustedAll,
+        data: allServices,
         pagination: {
           total: totalAll,
           page,

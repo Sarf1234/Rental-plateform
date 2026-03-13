@@ -6,8 +6,11 @@ import { apiRequest } from "@/lib/api";
 import ProductCategories from "@/components/ui/public/ProductCategories";
 import RelatedBlogs from "@/components/layout/RelatedBlogs";
 import ServiceCategories from "@/components/ui/public/ServiceCategories";
+import ProductCard from "@/components/ui/public/ProductCards";
+import VendorCard from "@/components/ui/public/VendorCard";
 
-export const revalidate = 3600; // ISR (1 hour)
+export const revalidate = 86400;  // ISR (1 hour)
+export const dynamic = "force-static";
 
 // 🔥 Dynamic Metadata Generator
 export async function generateMetadata({ params }) {
@@ -90,6 +93,10 @@ export default async function CityHome({ params }) {
   let top = [];
   let best = [];
   let all = [];
+
+  let products = [];
+  let vendors = [];
+
   let categories = [];
   let cityData = null;
   let locationProfile = null;
@@ -133,6 +140,8 @@ export default async function CityHome({ params }) {
     top = res.top || [];
     best = res.best || [];
     all = res.all || [];
+    products = res.products || [];
+    vendors = res.vendors || [];
   } catch (err) {
     console.error("Failed to fetch services:", err);
   }
@@ -344,20 +353,60 @@ export default async function CityHome({ params }) {
       {/* <ProductCategories categories={categories} citySlug={slug} /> */}
 
       {/* TOP BOOKED */}
-      <Servicecards
+      {/* <Servicecards
         data={top}
         title={`Most Booked Services in ${cityName}`}
         subtitle={`Our top-performing and highest-rated rental packages available across ${cityName}.`}
         citySlug={slug}
-      />
+      /> */}
 
       {/* PREMIUM */}
-      <Servicecards
+      {/* <Servicecards
         data={best}
         title={`Premium & Luxury Rentals in ${cityName}`}
         subtitle={`Exclusive high-end event setups for weddings, corporate events, and special occasions in ${cityName}.`}
         citySlug={slug}
-      />
+      /> */}
+
+      {products.length > 0 && (
+  <section className="max-w-7xl mx-auto px-4 py-12">
+
+    <h2 className="text-xl font-semibold mb-6">
+      Popular Rental Products in {cityName}
+    </h2>
+
+    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {products.map((product) => (
+        <ProductCard
+          key={product._id}
+          product={product}
+          citySlug={slug}
+        />
+      ))}
+    </div>
+
+  </section>
+)}
+
+{vendors.length > 0 && (
+  <section className="max-w-7xl mx-auto px-4 py-12">
+
+    <h2 className="text-xl font-semibold mb-6">
+      Trusted Vendors in {cityName}
+    </h2>
+
+    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      {vendors.map((vendor) => (
+        <VendorCard
+          key={vendor._id}
+          vendor={vendor}
+          citySlug={slug}
+        />
+      ))}
+    </div>
+
+  </section>
+)}
 
       <ServiceCategories categories={serviceCategories} citySlug={slug} />
 
