@@ -428,23 +428,21 @@ export default async function ProductPage({ params }) {
         />
       ) : null}
 
-      {relatedServices.length > 0 && (
-        <Servicecards
-          data={relatedServices}
-          citySlug={slug}
-          title={`Services That Use This Product in ${city?.name}`}
-          subtitle={`Top-rated services in ${city?.name} that use this product`}
-        />
-      )}
-
-      {suggestedServices.length > 0 && (
+      {suggestedServices.length > 0 ? (
         <Servicecards
           data={suggestedServices}
           citySlug={slug}
           title={`Services That Use This Product in ${city?.name}`}
           subtitle={`Top-rated services in ${city?.name} that use this product`}
         />
-      )}
+      ) : relatedServices.length > 0 ? (
+        <Servicecards
+          data={relatedServices}
+          citySlug={slug}
+          title={`Services That Use This Product in ${city?.name}`}
+          subtitle={`Top-rated services in ${city?.name} that use this product`}
+        />
+      ) : null}
 
       {vendors.length > 0 && <ProviderCards data={vendors} citySlug={slug} />}
     </div>
