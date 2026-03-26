@@ -151,7 +151,7 @@ export default function TermsPage() {
               contact us at:
             </p>
             <p className="mt-2 font-medium">
-              Email: support@kiraynow.com
+              Email: kiraynow@gmail.com
             </p>
           </section>
 

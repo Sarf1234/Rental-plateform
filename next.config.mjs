@@ -29,12 +29,12 @@ const nextConfig = {
     return [
       {
         source: '/',
-        destination: '/patna', 
+        destination: '/mumbai', 
         permanent: false, // 308 permanent redirect (SEO ke liye best)
       },
       {
         source: '/city/patna',
-        destination: '/patna', 
+        destination: '/mumbai', 
         permanent: true, // 308 permanent redirect (SEO ke liye best)
       }
     ]

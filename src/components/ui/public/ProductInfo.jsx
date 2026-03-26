@@ -115,7 +115,7 @@ Thank you!
         <div className="border-t pt-6 space-y-4">
           {/* Call Button */}
           <a
-            href="tel:8839931558"
+            href="tel:7672876321"
             className="flex items-center justify-center gap-2 w-full bg-black text-white py-3 rounded-xl font-medium hover:scale-[1.02] transition duration-200 shadow-md"
           >
             <Phone size={18} />
@@ -124,7 +124,7 @@ Thank you!
 
           {/* WhatsApp Button */}
           <a
-            href={`https://wa.me/918839931558?text=${encodeURIComponent(
+            href={`https://wa.me/917672876321?text=${encodeURIComponent(
               whatsappMessage,
             )}`}
             target="_blank"

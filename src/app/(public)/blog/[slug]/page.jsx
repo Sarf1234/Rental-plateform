@@ -170,14 +170,14 @@ I want help planning my event. Please share details.
 
               <div className="space-y-4">
                 <a
-                  href="tel:+918839931558"
+                  href="tel:+917672876321"
                   className="block text-center bg-[#003459] text-white py-3 rounded-lg font-medium hover:bg-[#002a3f] transition"
                 >
                   Call Now
                 </a>
 
                 <a
-                  href={`https://wa.me/918839931558?text=${whatsappMessage}`}
+                  href={`https://wa.me/917672876321?text=${whatsappMessage}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block text-center bg-green-500 text-white py-3 rounded-lg font-medium hover:bg-green-600 transition"

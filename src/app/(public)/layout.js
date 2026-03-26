@@ -107,7 +107,7 @@ export default function RootLayout({ children }) {
           "KirayNow is a trusted event rental marketplace offering birthday decoration, wedding setups and party rental services across multiple cities in India.",
         contactPoint: {
           "@type": "ContactPoint",
-          telephone: "+91-8839931558",
+          telephone: "+91-7672876321",
           contactType: "customer support",
           areaServed: "IN",
           availableLanguage: ["English", "Hindi"],

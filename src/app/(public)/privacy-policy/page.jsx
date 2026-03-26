@@ -131,7 +131,7 @@ export default function PrivacyPolicyPage() {
               For questions regarding this Privacy Policy, please contact us:
             </p>
             <p className="mt-2 font-medium">
-              Email: support@kiraynow.com
+              Email: kiraynow@gmail.com
             </p>
           </section>
 

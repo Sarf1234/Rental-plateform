@@ -168,7 +168,7 @@ export default async function CityProductsPage({ params }) {
         url: baseUrl,
         contactPoint: {
           "@type": "ContactPoint",
-          telephone: "+91-8839931558",
+          telephone: "+91-7672876321",
           contactType: "customer support",
           areaServed: "IN",
           availableLanguage: ["English", "Hindi"],

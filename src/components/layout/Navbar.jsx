@@ -258,7 +258,7 @@ export default function Navbar() {
   {/* CALL BUTTON SECTION */}
   <div className="p-4 border-t bg-white">
     <a
-      href="tel:8839931558"
+      href="tel:7672876321"
       onClick={() => setOpen(false)}
       className="flex items-center justify-center gap-2 w-full bg-blue-800 text-white py-3 rounded-xl font-medium shadow-md hover:scale-[1.02] transition duration-200"
     >
