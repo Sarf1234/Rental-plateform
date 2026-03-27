@@ -99,6 +99,7 @@ export default async function CityProductsPage({ params }) {
   let newProduct = [];
   let cityData = null;
   let categories = [];
+  let locationContext = null;
 
   try {
     const catRes = await apiRequest(
@@ -128,7 +129,9 @@ export default async function CityProductsPage({ params }) {
       `${process.env.NEXT_PUBLIC_API_URL}/api/cities/${slug}`,
     );
     cityData = cityRes?.data || null;
+    locationContext = cityRes?.locationContext;
   } catch (err) {
+    console.log(locationContext);
     console.error("Failed to fetch city:", err);
   }
 
@@ -138,7 +141,7 @@ export default async function CityProductsPage({ params }) {
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");
 
-  const totalProducts = all.length;
+  const totalProducts = all?.data?.length;
 
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "https://kiraynow.com";
 
@@ -266,15 +269,14 @@ export default async function CityProductsPage({ params }) {
       <HeroCarousel images={imagesLink} contents={carouselContent} />
 
       {/* 🔹 SEO H1 + INTRO */}
-      <section className="max-w-7xl mx-auto px-4 py-8 text-center">
+      <section className="max-w-7xl mx-auto px-4 py-10 text-center">
         <h1 className="text-3xl font-bold text-gray-900">
           Rental Products in {cityName}
         </h1>
 
-        <p className="mt-3 text-gray-600 max-w-3xl mx-auto">
-          Explore {totalProducts}+ rental products available in {cityName}. From
-          event furniture and lighting to sound systems and decor, find reliable
-          and affordable rental options for your celebration.
+        <p className="mt-4 text-gray-600 max-w-3xl mx-auto">
+          {locationContext?.customIntro ||
+            `Explore ${totalProducts}+ rental products in ${cityName} including chairs, tables, tents, lighting and decor for weddings, parties and corporate events.`}
         </p>
       </section>
 
@@ -285,6 +287,26 @@ export default async function CityProductsPage({ params }) {
           title={`Featured Rental Products in ${cityName}`}
           citySlug={slug}
         />
+      )}
+
+      {(locationContext?.seasonalNote || locationContext?.deliveryNote) && (
+        <section className="max-w-7xl mx-auto px-4 py-10 text-center">
+          <h2 className="text-xl md:text-3xl md:font-bold text-gray-900 mb-3">
+            Rental Demand in {cityName}
+          </h2>
+
+          {locationContext?.seasonalNote && (
+            <p className="mb-2  text-gray-600 max-w-3xl mx-auto">
+              {locationContext.seasonalNote}
+            </p>
+          )}
+
+          {locationContext?.deliveryNote && (
+            <p className=" text-gray-600 max-w-3xl mx-auto">
+              {locationContext.deliveryNote}
+            </p>
+          )}
+        </section>
       )}
 
       <ProductCategories categories={categories} citySlug={slug} />
@@ -328,6 +350,67 @@ export default async function CityProductsPage({ params }) {
         <div className="text-center py-12 text-gray-500">
           No rental products available in {cityName} yet.
         </div>
+      )}
+      {(locationContext?.trendingText || locationContext?.demandLevel) && (
+        <section className="max-w-7xl mx-auto px-4 py-10">
+          <div className="bg-gradient-to-br from-gray-50 to-white border rounded-2xl shadow-sm p-6 md:p-8">
+            {/* HEADER */}
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-5">
+              <div>
+                <h2 className="text-xl md:text-2xl font-semibold text-gray-900">
+                  Delivery & Availability in {cityName}
+                </h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  Real-time rental insights for your area
+                </p>
+              </div>
+
+              {/* DEMAND BADGE */}
+              {locationContext?.demandLevel && (
+                <span
+                  className={`text-xs font-medium px-3 py-1 rounded-full w-fit ${
+                    locationContext.demandLevel === "high"
+                      ? "bg-red-100 text-red-600"
+                      : "bg-yellow-100 text-yellow-600"
+                  }`}
+                >
+                  🔥{" "}
+                  {locationContext.demandLevel === "high"
+                    ? "High Demand"
+                    : locationContext.demandLevel}
+                </span>
+              )}
+            </div>
+
+            {/* MAIN CONTENT */}
+            {locationContext?.trendingText && (
+              <p className="text-gray-700 leading-relaxed">
+                {locationContext.trendingText}
+              </p>
+            )}
+
+            {/* EXPRESS DELIVERY */}
+            {locationContext?.expressAvailable && (
+              <div className="mt-5 flex items-center gap-2 bg-green-50 border border-green-100 text-green-700 px-4 py-3 rounded-lg">
+                <span className="text-lg">⚡</span>
+                <span className="text-sm font-medium">
+                  Express delivery available in selected areas
+                </span>
+              </div>
+            )}
+
+            {/* MICRO CTA (VERY IMPORTANT 🔥) */}
+            {/* <div className="mt-6 flex flex-col sm:flex-row gap-3">
+        <button className="px-4 py-2 text-sm font-medium bg-black text-white rounded-lg hover:bg-gray-800 transition">
+          Explore Products
+        </button>
+
+        <button className="px-4 py-2 text-sm font-medium border rounded-lg hover:bg-gray-50 transition">
+          Contact Vendors
+        </button>
+      </div> */}
+          </div>
+        </section>
       )}
     </div>
   );
