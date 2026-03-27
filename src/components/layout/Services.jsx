@@ -48,7 +48,7 @@ export default function Services({
 
         {/* HEADER */}
         <div className="mb-8 max-w-2xl">
-          <h2 className="text-2xl font-semibold text-gray-900">
+          <h2 className="md:text-2xl text-base font-semibold text-gray-900">
             Why Choose Us in {city}
           </h2>
 

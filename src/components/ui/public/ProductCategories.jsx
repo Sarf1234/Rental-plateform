@@ -9,7 +9,7 @@ export default function ProductCategories({ categories = [], citySlug }) {
     <section className="max-w-7xl mx-auto py-12 px-4">
 
       <div className="border-b-4 border-[#003459] inline-block pb-2 mb-8">
-        <h2 className="text-2xl font-semibold">
+        <h2 className="md:text-2xl text-base font-semibold">
           Browse Rental Categories
         </h2>
       </div>
@@ -25,7 +25,7 @@ export default function ProductCategories({ categories = [], citySlug }) {
             <div className="flex flex-col justify-between h-full">
 
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-black transition">
+                <h3 className="md:text-lg text-sm font-semibold text-gray-900 group-hover:text-black transition">
                   {category.name}
                 </h3>
 
@@ -36,7 +36,7 @@ export default function ProductCategories({ categories = [], citySlug }) {
                 )}
               </div>
 
-              <div className="mt-4 text-sm text-[#003459] font-medium">
+              <div className="mt-4 text-xs text-[#003459] font-medium">
                 Explore →
               </div>
 
