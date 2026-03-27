@@ -13,7 +13,7 @@ export default function FlagsCards({
 
       {/* HEADER */}
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold text-gray-900 border-b-4 border-[#003459] pb-2 ">
+        <h2 className="md:text-xl text-base font-semibold text-gray-900 border-b-4 border-[#003459] pb-2 ">
           {title}
         </h2> 
       </div>
