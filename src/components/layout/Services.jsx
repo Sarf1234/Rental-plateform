@@ -10,7 +10,7 @@ export default function Services({
   expressAvailable,
   demandLevel,
 }) {
-  const topAreas = subAreas.slice(0, 2).map((area) => area.name);
+  const topAreas = subAreas?.map((area) => area.name);
 
   const areasText =
     topAreas.length > 0
@@ -23,77 +23,91 @@ export default function Services({
       title: "On-Time Rental Delivery",
       description: deliveryNote
         ? deliveryNote
-        : `We ensure timely delivery and professional setup of rental products across ${areasText}, ${city}. Our local team guarantees punctual service without last-minute surprises.`,
+        : `We ensure timely delivery and setup across ${areasText}, ${city}.`,
     },
     {
       icon: <Headset className="w-8 h-8 text-[#003459]" />,
-      title: `Dedicated ${city} Event Support`,
-      description: `Our support team in ${city} understands local venue requirements and event logistics, ensuring smooth coordination before, during, and after your booking.`,
+      title: `Dedicated ${city} Support`,
+      description: `Local support team ensures smooth coordination for your events.`,
     },
     {
       icon: <ShoppingCart className="w-8 h-8 text-[#003459]" />,
-      title: "Simple & Flexible Booking",
-      description: `Choose from ${totalServices}+ rental options available in ${city}. Book instantly with transparent pricing and flexible rental durations tailored for events in ${areasText}.`,
+      title: "Simple Booking",
+      description: `Choose from ${totalServices}+ rental options with transparent pricing.`,
     },
     {
       icon: <RefreshCw className="w-8 h-8 text-[#003459]" />,
-      title: "Hassle-Free Pickup & Returns",
-      description: `Once your event in ${city} is complete, our professional team handles pickup efficiently across ${areasText} without hidden charges or unnecessary paperwork.`,
+      title: "Easy Returns",
+      description: `Hassle-free pickup and returns across ${areasText}.`,
     },
   ];
 
   return (
-    <section className="py-12 md:py-16 lg:py-20 bg-gray-50">
-      <div className="container mx-auto px-4">
+    <section className="py-12 md:py-16 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4">
 
-        {/* Section Heading */}
-        <h2 className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-4">
-          Why We’re Trusted for Event Rentals in {city}
-        </h2>
+        {/* HEADER */}
+        <div className="mb-8 max-w-2xl">
+          <h2 className="text-2xl font-semibold text-gray-900">
+            Why Choose Us in {city}
+          </h2>
 
-        {/* Dynamic Intro Paragraph */}
-        <p className="text-center text-gray-600 max-w-2xl mx-auto mb-4">
-          {seasonalNote
-            ? seasonalNote
-            : `Delivering reliable rental services across ${areasText}, our team ensures seamless event execution with professional support and transparent pricing.`}
-        </p>
-
-        {/* Market Intelligence Line (Subtle) */}
-        {(demandLevel === "high" ||
-          expressAvailable ||
-          trendingText) && (
-          <p className="text-center text-gray-500 text-sm max-w-3xl mx-auto mb-10">
-            {demandLevel === "high" &&
-              `${city} is currently experiencing strong rental demand. `}
-            {expressAvailable &&
-              `Fast and priority delivery options are available. `}
-            {trendingText && trendingText}
+          <p className="text-gray-600 text-sm mt-2">
+            {seasonalNote ||
+              `Reliable rental services across ${areasText} with professional support.`}
           </p>
-        )}
+        </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
-          {services.map((service, index) => (
-            <div
-              key={index}
-              className="bg-white p-6 rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 border border-gray-100 hover:-translate-y-1"
-            >
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-4 p-3 bg-blue-50 rounded-full">
-                  {service.icon}
-                </div>
-                <h3 className="text-lg font-semibold text-[#003459] mb-2">
-                  {service.title}
-                </h3>
-                <p className="text-gray-600 text-sm md:text-base">
-                  {service.description}
-                </p>
+        {/* 🔥 MOBILE SCROLL */}
+        <div className="relative sm:hidden">
+
+          {/* scroll hint */}
+          <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-gray-50 to-transparent z-10" />
+
+          <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+            {services.map((service, index) => (
+              <div key={index} className="min-w-[80%]">
+                <ServiceCard service={service} />
               </div>
-            </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 💻 DESKTOP GRID */}
+        <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {services.map((service, index) => (
+            <ServiceCard key={index} service={service} />
           ))}
         </div>
 
+        {/* SUBTLE CONTEXT LINE */}
+        {(demandLevel === "high" || expressAvailable) && (
+          <p className="text-xs text-gray-500 mt-6">
+            {demandLevel === "high" && `${city} has high rental demand. `}
+            {expressAvailable && `Fast delivery options available.`}
+          </p>
+        )}
+
       </div>
     </section>
+  );
+}
+
+/* 🔥 Separate clean card (reusable) */
+function ServiceCard({ service }) {
+  return (
+    <div className="bg-white p-5 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition">
+      <div className="mb-3 p-2 bg-blue-50 rounded-lg w-fit">
+        {service.icon}
+      </div>
+
+      <h3 className="text-sm font-semibold text-gray-900 mb-1">
+        {service.title}
+      </h3>
+
+      <p className="text-xs text-gray-600 leading-relaxed">
+        {service.description}
+      </p>
+    </div>
   );
 }

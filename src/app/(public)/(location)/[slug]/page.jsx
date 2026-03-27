@@ -8,8 +8,9 @@ import RelatedBlogs from "@/components/layout/RelatedBlogs";
 import ServiceCategories from "@/components/ui/public/ServiceCategories";
 import ProductCard from "@/components/ui/public/ProductCards";
 import VendorCard from "@/components/ui/public/VendorCard";
+import Link from "next/link";
 
-export const revalidate = 86400;  // ISR (1 hour)
+export const revalidate = 86400; // ISR (1 hour)
 export const dynamic = "force-static";
 
 // 🔥 Dynamic Metadata Generator
@@ -338,6 +339,50 @@ export default async function CityHome({ params }) {
         citySlug={slug}
       />
 
+      {products.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 py-12">
+          {/* HEADER */}
+          <div className="mb-6 flex items-center justify-between">
+            <h2 className="md:text-xl text-base inline-block font-semibold text-gray-900 border-b-4 border-[#003459] pb-2 ">
+              Rental Products in {cityName}
+            </h2>
+
+            <Link
+              href={`/${slug}/products`}
+              className="text-sm font-medium text-gray-900 flex items-center gap-1 hover:gap-2 transition-all"
+            >
+              View More →
+            </Link>
+          </div>
+
+          {/* 🔥 MOBILE: HORIZONTAL SCROLL */}
+          <div className="relative sm:hidden">
+            {/* fade effect (scroll hint 🔥) */}
+            <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-white to-transparent z-10" />
+
+            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+              {products.slice(0, 8).map((product) => (
+                <div key={product._id} className="min-w-[75%]">
+                  <ProductCard product={product} citySlug={slug} />
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 💻 DESKTOP: GRID */}
+          <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {products.slice(0, 8).map((product) => (
+              <ProductCard
+                key={product._id}
+                product={product}
+                citySlug={slug}
+              />
+            ))}
+          </div>
+        </section>
+      )}
+
+
       {/* WHY CHOOSE US */}
       <Services
         city={cityName}
@@ -368,45 +413,41 @@ export default async function CityHome({ params }) {
         citySlug={slug}
       /> */}
 
-      {products.length > 0 && (
-  <section className="max-w-7xl mx-auto px-4 py-12">
+      
+      {vendors.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 py-12">
+          {/* HEADER (MATCH PRODUCTS STYLE) */}
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-gray-900">
+              Trusted Vendors in {cityName}
+            </h2>
+            <p className="text-sm text-gray-500 mt-1">
+              Verified professionals for your event needs
+            </p>
+          </div>
 
-    <h2 className="text-xl font-semibold mb-6">
-      Popular Rental Products in {cityName}
-    </h2>
+          {/* 🔥 MOBILE: HORIZONTAL SCROLL (CONSISTENT UX) */}
+          <div className="relative sm:hidden">
+            {/* scroll hint */}
+            <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-white to-transparent z-10" />
 
-    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {products.map((product) => (
-        <ProductCard
-          key={product._id}
-          product={product}
-          citySlug={slug}
-        />
-      ))}
-    </div>
+            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
+              {vendors.slice(0, 8).map((vendor) => (
+                <div key={vendor._id} className="min-w-[75%]">
+                  <VendorCard vendor={vendor} citySlug={slug} />
+                </div>
+              ))}
+            </div>
+          </div>
 
-  </section>
-)}
-
-{vendors.length > 0 && (
-  <section className="max-w-7xl mx-auto px-4 py-12">
-
-    <h2 className="text-xl font-semibold mb-6">
-      Trusted Vendors in {cityName}
-    </h2>
-
-    <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      {vendors.map((vendor) => (
-        <VendorCard
-          key={vendor._id}
-          vendor={vendor}
-          citySlug={slug}
-        />
-      ))}
-    </div>
-
-  </section>
-)}
+          {/* 💻 DESKTOP GRID */}
+          <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {vendors.slice(0, 8).map((vendor) => (
+              <VendorCard key={vendor._id} vendor={vendor} citySlug={slug} />
+            ))}
+          </div>
+        </section>
+      )}
 
       <ServiceCategories categories={serviceCategories} citySlug={slug} />
 
