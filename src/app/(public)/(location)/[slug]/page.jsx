@@ -9,6 +9,7 @@ import ServiceCategories from "@/components/ui/public/ServiceCategories";
 import ProductCard from "@/components/ui/public/ProductCards";
 import VendorCard from "@/components/ui/public/VendorCard";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 export const revalidate = 86400; // ISR (1 hour)
 export const dynamic = "force-static";
@@ -87,6 +88,8 @@ export async function generateMetadata({ params }) {
 
 export default async function CityHome({ params }) {
   const { slug } = await params;
+
+  if (slug.startsWith(".")) notFound();
 
   const baseUrl = "https://kiraynow.com";
 

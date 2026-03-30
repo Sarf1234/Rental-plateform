@@ -61,12 +61,12 @@ export default function ProductCard({ product, citySlug,  }) {
                 <p className="line-through text-gray-400 text-sm">
                   ₹{minPrice}
                 </p>
-                <p className="text-2xl font-bold text-black">
+                <p className="md:text-2xl text-lg font-bold text-black">
                   ₹{discountedPrice}
                 </p>
               </>
             ) : (
-              <p className="text-2xl font-bold text-black">
+              <p className="md:text-2xl text-lg font-bold text-black">
                 ₹{minPrice}
               </p>
             )}

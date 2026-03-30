@@ -387,11 +387,6 @@ export default async function ProductPage({ params }) {
               pricing={pricing}
               locationContext={locationContext}
             />
-            {locationContext?.seasonalNote && (
-              <div className="mt-6 text-sm text-gray-600">
-                {locationContext.seasonalNote}
-              </div>
-            )}
             <ProductFAQ faqs={faqs} cityData={data?.city} />
             <ProductTerms terms={processedTerms} />
           </div>
