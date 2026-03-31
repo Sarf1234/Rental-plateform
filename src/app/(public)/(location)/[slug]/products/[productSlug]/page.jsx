@@ -43,8 +43,8 @@ export async function generateMetadata({ params }) {
   const cityName = city?.name || slug;
 
   const primaryPrice =
-    product?.pricing?.minPrice ||
     product?.pricing?.discountedPrice ||
+    product?.pricing?.minPrice ||
     product?.pricing?.amount ||
     null;
 
@@ -221,7 +221,7 @@ export default async function ProductPage({ params }) {
   }
 
   const primaryPrice =
-    pricing?.minPrice || pricing?.discountedPrice || pricing?.amount || 1000;
+   pricing?.discountedPrice || pricing?.minPrice ||  pricing?.amount || 1000;
 
   const processedDescription = replaceDynamicTokens(
     description,
