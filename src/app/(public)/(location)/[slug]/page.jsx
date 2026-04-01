@@ -18,6 +18,17 @@ export const dynamic = "force-static";
 export async function generateMetadata({ params }) {
   const { slug } = await params;
 
+  if (!slug || slug.startsWith(".")) {
+    return {
+      title: "Not Found",
+      robots: {
+        index: false,
+        follow: false,
+      },
+    };
+  }
+
+
   try {
     const cityRes = await apiRequest(
       `${process.env.NEXT_PUBLIC_API_URL}/api/cities/${slug}`,
@@ -89,7 +100,9 @@ export async function generateMetadata({ params }) {
 export default async function CityHome({ params }) {
   const { slug } = await params;
 
-  if (slug.startsWith(".")) notFound();
+  if (!slug || slug.startsWith(".")) {
+       return notFound();
+    }
 
   const baseUrl = "https://kiraynow.com";
 
