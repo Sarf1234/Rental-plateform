@@ -14,7 +14,7 @@ export default function ProductDescription({
     .map((a) => a.name)
     .join(", ");
 
-  const primaryPrice = pricing?.minPrice || pricing?.discountedPrice;
+  const primaryPrice = pricing?.discountedPrice || pricing?.minPrice; 
 
   const hasCustomIntro = locationContext?.customIntro?.trim();
 
