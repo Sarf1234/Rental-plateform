@@ -300,7 +300,7 @@ export default async function ProductPage({ params }) {
         "@id": `${productUrl}#product`,
         name: `${title} in ${cityName}`,
         image: images,
-        description: processedDescription
+        description: locationContext?.customIntro ||  processedDescription
           ?.replace(/<[^>]+>/g, "")
           .slice(0, 500),
 
