@@ -10,8 +10,11 @@ export default function ProductInfo({
   locationContext,
   productRating,
   productReviewCount,
+  isMainHeading,
 }) {
   const price = pricing?.discountedPrice || pricing?.minPrice;
+
+  const HeadingTag = isMainHeading ? "h1" : "h2";
 
   const whatsappMessage = `
 Hi KirayNow Team 👋
@@ -36,7 +39,7 @@ Thank you!
     <div className="space-y-8">
       {/* ================= TITLE + BADGES ================= */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 leading-snug">
+        <HeadingTag  className="text-3xl font-bold text-gray-900 leading-snug">
           {title} in {citySlug?.charAt(0).toUpperCase() + citySlug?.slice(1)}
           {productRating > 0 && (
             <div className="flex items-center gap-2 mt-3 text-sm text-gray-600">
@@ -47,7 +50,7 @@ Thank you!
               <span>({productReviewCount} reviews)</span>
             </div>
           )}
-        </h1>
+        </HeadingTag >
 
         {/* {productdescription && (
           <p className="text-sm text-gray-600 mt-3 leading-relaxed">

@@ -302,12 +302,13 @@ export default async function ProductPage({ params }) {
         image: images,
         description: processedDescription
           ?.replace(/<[^>]+>/g, "")
-          .slice(0, 250),
+          .slice(0, 500),
 
         brand: {
-          "@type": "Brand",
-          name: "KirayNow",
-        },
+            "@type": "Organization",
+            name: "KirayNow",
+            url: baseUrl
+          },
 
         seller,
 
@@ -339,7 +340,7 @@ export default async function ProductPage({ params }) {
             {
               "@type": "FAQPage",
               "@id": `${productUrl}#faq`,
-              mainEntity: faqs.slice(0, 5).map((faq) => ({
+              mainEntity: faqs.slice(0, 8).map((faq) => ({
                 "@type": "Question",
                 name: faq.question,
                 acceptedAnswer: {
@@ -378,6 +379,7 @@ export default async function ProductPage({ params }) {
                 locationContext={locationContext}
                 productRating={data?.productRating}
                 productReviewCount={data?.productReviewCount}
+                isMainHeading={true}
               />
             </div>
             <ProductDescription
@@ -404,6 +406,7 @@ export default async function ProductPage({ params }) {
                 locationContext={locationContext}
                 productRating={data?.productRating}
                 productReviewCount={data?.productReviewCount}
+                isMainHeading={false}
               />
             </div>
           </div>

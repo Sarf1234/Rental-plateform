@@ -25,7 +25,7 @@ export default function ProductDescription({
       {/* ===================== */}
       {cityName && (
         <h2 className="text-xl font-semibold mb-3">
-          {title} in {cityName} – Details & Pricing
+          {title} in {cityName} – Price, Delivery & Booking
         </h2>
       )}
 
