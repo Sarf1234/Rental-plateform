@@ -10,6 +10,7 @@ import ProductCard from "@/components/ui/public/ProductCards";
 import VendorCard from "@/components/ui/public/VendorCard";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { isValidSlug } from "@/utils/isValidSlug";
 
 export const revalidate = 86400; // ISR (1 hour)
 export const dynamic = "force-static";
@@ -100,9 +101,9 @@ export async function generateMetadata({ params }) {
 export default async function CityHome({ params }) {
   const { slug } = await params;
 
-  if (!slug || slug.startsWith(".")) {
-       return notFound();
-    }
+  if (!isValidSlug(slug)) {
+      return notFound();
+  }
 
   const baseUrl = "https://kiraynow.com";
 

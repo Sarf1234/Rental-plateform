@@ -3,6 +3,8 @@ import { apiRequest } from "@/lib/api";
 import Link from "next/link";
 import ProductCard from "@/components/ui/public/ProductCards";
 import ServiceGallery from "@/components/ui/public/ServiceGallery";
+import { isValidSlug } from "@/utils/isValidSlug";
+import { notFound } from "next/navigation";
 
 export const revalidate = 3600;
 export const dynamic = "force-static";
@@ -117,6 +119,9 @@ export async function generateMetadata({ params }) {
 
 export default async function ServiceDetailsPage({ params }) {
   const { serviceSlug, slug } = await params;
+  if (!isValidSlug(slug)) {
+    return notFound();
+  }
   let featured = [];
   let cityData = [];
   let locationProfile = null;
