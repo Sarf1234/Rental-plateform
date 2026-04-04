@@ -2,160 +2,164 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import {
-  Phone,
-  MessageCircle,
-  ShieldCheck,
-  MapPin,
-  Star,
-} from "lucide-react";
+import { Phone, MessageCircle, ShieldCheck, MapPin, Star } from "lucide-react";
 
-export default function ProviderCards({ data = [], citySlug }) {
+export default function ProviderCards({
+  data = [],
+  citySlug,
+  productName = "this product",
+}) {
   if (!data || data.length === 0) return null;
 
   return (
-    <section className="max-w-7xl mx-auto py-14">
-      <div className="px-4">
+    <section className="max-w-7xl mx-auto py-6">
+      {/* HEADER */}
+      <div className="mb-4">
+        <h2 className="text-base font-semibold text-gray-900">
+          Compare Rental Prices from Verified Vendors in {citySlug}
+        </h2>
 
-        {/* Header */}
-        <div className="mb-8">
-          <h2 className="text-2xl font-semibold">
-            Rental Providers in {citySlug}
-          </h2>
+        <p className="text-sm text-gray-500 mt-1">
+          Get instant quotes, check availability and contact vendors directly
+        </p>
+      </div>
 
-          <p className="text-sm text-gray-500 mt-1">
-            Compare prices and contact trusted vendors
-          </p>
-        </div>
+      {/* GRID */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {data.map((vendor) => {
+          const phone = vendor?.contact?.phone || vendor?.phone || "";
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          const whatsapp =
+            vendor?.contact?.whatsapp || vendor?.whatsappNumber || phone;
 
-          {data.map((vendor) => {
+          const rating = vendor?.stats?.ratingAvg || 0;
+          const ratingCount = vendor?.stats?.ratingCount || 0;
 
-            const phone =
-              vendor?.contact?.phone || vendor?.phone || "";
+          const price =
+            vendor?.product?.discountedPrice || vendor?.product?.price || null;
 
-            const whatsapp =
-              vendor?.contact?.whatsapp ||
-              vendor?.whatsappNumber ||
-              phone;
+          // 🔥 IMPROVED MESSAGE
+          const whatsappMessage = `
+Hi KirayNow Team 👋
 
-            const rating = vendor?.stats?.ratingAvg || 0;
-            const ratingCount = vendor?.stats?.ratingCount || 0;
+I Want to get Quotation with ${vendor.name} 
 
-            const price =
-              vendor?.product?.discountedPrice ||
-              vendor?.product?.price ||
-              null;
+I'm interested in renting:
 
-            const whatsappLink = whatsapp
-              ? `https://wa.me/${whatsapp}?text=${encodeURIComponent(
-                  `Hi, I found your business on KirayNow for rentals in ${citySlug}.`
-                )}`
-              : null;
+Product: ${productName}
+City: ${citySlug}
 
-            return (
-              <Link
-                key={vendor._id}
-                href={`/${citySlug}/vendors/${vendor.slug}`}
-                className="group bg-white rounded-2xl border border-gray-100 p-6 hover:shadow-lg transition block"
-              >
+Event Date:
+Quantity Required:
+Delivery Location:
 
-                {/* Header */}
-                <div className="flex items-center gap-3">
+Please share availability and best price.
 
-                  {vendor?.logo && (
-                    <Image
-                      src={vendor.logo}
-                      alt={vendor.name}
-                      width={40}
-                      height={40}
-                      className="rounded-md object-cover"
-                    />
+Thanks!
+`;
+
+          const whatsappLink = whatsapp
+            ? `https://wa.me/${whatsapp}?text=${encodeURIComponent(
+                whatsappMessage,
+              )}`
+            : null;
+
+          return (
+            <Link
+              key={vendor._id}
+              href={`/${citySlug}/vendors/${vendor.slug}`}
+              className="group bg-white rounded-2xl border border-gray-100 p-4 hover:shadow-md transition block"
+            >
+              {/* TOP FLEX */}
+              <div className="flex gap-4">
+                {/* IMAGE */}
+                {vendor?.logo && (
+                  <Image
+                    src={vendor.logo}
+                    alt={vendor.name}
+                    width={80}
+                    height={80}
+                    className="rounded-lg object-cover"
+                  />
+                )}
+
+                {/* DETAILS */}
+                <div className="flex-1">
+                  {/* NAME */}
+                  <h3 className="text-base font-semibold text-gray-900 line-clamp-1">
+                    {vendor.name}
+                  </h3>
+
+                  {/* RATING */}
+                  {rating > 0 && (
+                    <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
+                      <Star size={14} className="text-yellow-500" />
+                      {rating} ({ratingCount})
+                    </div>
                   )}
 
+                  {/* VERIFIED */}
+                  {(vendor?.badges?.verified || vendor?.isVerified) && (
+                    <div className="flex items-center gap-1 mt-1 text-green-600 text-xs font-medium">
+                      <ShieldCheck size={14} />
+                      Verified Vendor
+                    </div>
+                  )}
+
+                  {/* LOCATION */}
+                  {vendor?.location?.city && (
+                    <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
+                      <MapPin size={14} />
+                      {vendor.location.city}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* PRICE */}
+              {price && (
+                <div className="mt-3 flex items-center justify-between">
                   <div>
-                    <h3 className="text-sm font-semibold text-gray-900">
-                      {vendor.name}
-                    </h3>
-
-                    {rating > 0 && (
-                      <div className="flex items-center gap-1 text-xs text-gray-500 mt-0.5">
-                        <Star size={14} className="text-yellow-500" />
-                        {rating} ({ratingCount})
-                      </div>
-                    )}
-
-                    {(vendor?.badges?.verified || vendor?.isVerified) && (
-                      <div className="flex items-center gap-1 mt-1 text-green-600 text-xs font-medium">
-                        <ShieldCheck size={14} />
-                        Verified
-                      </div>
-                    )}
-
+                    <p className="text-xs text-gray-500">Starting from</p>
+                    <p className="text-lg font-semibold text-black">₹{price}</p>
                   </div>
+
+                  <span className="text-xs bg-blue-50 text-blue-600 px-2 py-1 rounded-md">
+                    Best Price
+                  </span>
                 </div>
+              )}
 
-                {/* Location */}
-                {vendor?.location?.city && (
-                  <div className="flex items-center gap-1 text-xs text-gray-500 mt-3">
-                    <MapPin size={14} />
-                    {vendor?.location?.street
-                      ? `${vendor.location.street}, `
-                      : ""}
-                    {vendor.location.city}
-                  </div>
+              {/* BUTTONS */}
+              <div
+                className="flex gap-2 mt-4"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* {phone && (
+                  <a
+                    href={`tel:${phone}`}
+                    className="flex-1 flex items-center justify-center gap-2 border rounded-lg py-2 text-sm hover:bg-gray-100 transition"
+                  >
+                    <Phone size={15} />
+                    Call
+                  </a>
+                )} */}
+
+                {whatsappLink && (
+                  <a
+                    href={whatsappLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-2 bg-green-500 text-white rounded-lg py-2 text-sm hover:bg-green-600 transition"
+                  >
+                    <MessageCircle size={15} />
+                    WhatsApp
+                  </a>
                 )}
-
-                {/* Price */}
-                {price && (
-                  <div className="mt-4">
-                    <p className="text-xs text-gray-500">
-                      Starting from
-                    </p>
-
-                    <p className="text-lg font-semibold text-black">
-                      ₹{price}
-                    </p>
-                  </div>
-                )}
-
-                {/* Buttons */}
-                <div
-                  className="flex gap-2 mt-5"
-                  onClick={(e) => e.stopPropagation()}
-                >
-
-                  {phone && (
-                    <a
-                      href={`tel:${phone}`}
-                      className="flex-1 flex items-center justify-center gap-2 border rounded-lg py-2 text-sm hover:bg-gray-100 transition"
-                    >
-                      <Phone size={15} />
-                      Call
-                    </a>
-                  )}
-
-                  {whatsappLink && (
-                    <a
-                      href={whatsappLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 flex items-center justify-center gap-2 bg-green-500 text-white rounded-lg py-2 text-sm hover:bg-green-600 transition"
-                    >
-                      <MessageCircle size={15} />
-                      WhatsApp
-                    </a>
-                  )}
-
-                </div>
-
-              </Link>
-            );
-          })}
-
-        </div>
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </section>
   );

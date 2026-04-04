@@ -382,6 +382,7 @@ export default async function ProductPage({ params }) {
                 isMainHeading={true}
               />
             </div>
+            {vendors.length > 0 && <ProviderCards data={vendors} citySlug={slug} productName={title} />}
             <ProductDescription
               description={processedDescription}
               title={title}
@@ -442,7 +443,7 @@ export default async function ProductPage({ params }) {
         />
       ) : null}
 
-      {vendors.length > 0 && <ProviderCards data={vendors} citySlug={slug} />}
+      
     </div>
   );
 }
