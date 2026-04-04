@@ -19,7 +19,7 @@ export default function ProductDescription({
   const hasCustomIntro = locationContext?.customIntro?.trim();
 
   return (
-    <div className="mt-16">
+    <div className="mt-2">
       {/* ===================== */}
       {/* 🔥 TITLE (ALWAYS SHOW) */}
       {/* ===================== */}

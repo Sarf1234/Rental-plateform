@@ -1,15 +1,21 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Phone, MessageCircle, ShieldCheck, MapPin, Star } from "lucide-react";
+import { MessageCircle, ShieldCheck, MapPin, Star } from "lucide-react";
 
 export default function ProviderCards({
   data = [],
   citySlug,
   productName = "this product",
 }) {
+  const [showAll, setShowAll] = useState(false);
+
   if (!data || data.length === 0) return null;
+
+  // ✅ SHOW FIRST 2 OR ALL
+  const visibleVendors = showAll ? data : data.slice(0, 4);
 
   return (
     <section className="max-w-7xl mx-auto py-6">
@@ -26,7 +32,7 @@ export default function ProviderCards({
 
       {/* GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        {data.map((vendor) => {
+        {visibleVendors.map((vendor) => {
           const phone = vendor?.contact?.phone || vendor?.phone || "";
 
           const whatsapp =
@@ -38,24 +44,15 @@ export default function ProviderCards({
           const price =
             vendor?.product?.discountedPrice || vendor?.product?.price || null;
 
-          // 🔥 IMPROVED MESSAGE
           const whatsappMessage = `
 Hi KirayNow Team 👋
 
 I Want to get Quotation with ${vendor.name} 
 
-I'm interested in renting:
-
 Product: ${productName}
 City: ${citySlug}
 
-Event Date:
-Quantity Required:
-Delivery Location:
-
 Please share availability and best price.
-
-Thanks!
 `;
 
           const whatsappLink = whatsapp
@@ -72,7 +69,6 @@ Thanks!
             >
               {/* TOP FLEX */}
               <div className="flex gap-4">
-                {/* IMAGE */}
                 {vendor?.logo && (
                   <Image
                     src={vendor.logo}
@@ -83,14 +79,11 @@ Thanks!
                   />
                 )}
 
-                {/* DETAILS */}
                 <div className="flex-1">
-                  {/* NAME */}
                   <h3 className="text-base font-semibold text-gray-900 line-clamp-1">
                     {vendor.name}
                   </h3>
 
-                  {/* RATING */}
                   {rating > 0 && (
                     <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
                       <Star size={14} className="text-yellow-500" />
@@ -98,7 +91,6 @@ Thanks!
                     </div>
                   )}
 
-                  {/* VERIFIED */}
                   {(vendor?.badges?.verified || vendor?.isVerified) && (
                     <div className="flex items-center gap-1 mt-1 text-green-600 text-xs font-medium">
                       <ShieldCheck size={14} />
@@ -106,11 +98,10 @@ Thanks!
                     </div>
                   )}
 
-                  {/* LOCATION */}
                   {vendor?.location?.city && (
                     <div className="flex items-center gap-1 text-xs text-gray-500 mt-1">
                       <MapPin size={14} />
-                      {vendor.location.city}
+                      {vendor.location.street} {vendor.location.city}
                     </div>
                   )}
                 </div>
@@ -130,21 +121,11 @@ Thanks!
                 </div>
               )}
 
-              {/* BUTTONS */}
+              {/* BUTTON */}
               <div
                 className="flex gap-2 mt-4"
                 onClick={(e) => e.stopPropagation()}
               >
-                {/* {phone && (
-                  <a
-                    href={`tel:${phone}`}
-                    className="flex-1 flex items-center justify-center gap-2 border rounded-lg py-2 text-sm hover:bg-gray-100 transition"
-                  >
-                    <Phone size={15} />
-                    Call
-                  </a>
-                )} */}
-
                 {whatsappLink && (
                   <a
                     href={whatsappLink}
@@ -161,6 +142,19 @@ Thanks!
           );
         })}
       </div>
+
+      {/* ✅ VIEW MORE BUTTON */}
+      {data.length > 2 && (
+        <div className="flex justify-center mt-5 ">
+          <button
+            onClick={() => setShowAll(!showAll)}
+            className="flex items-center cursor-pointer gap-2 text-sm font-medium text-blue-700 bg-gray-50 hover:bg-gray-100 px-4 py-2 rounded-full transition-all"
+          >
+            {showAll ? "Show Less" : "View More Vendors"}
+            <span className="text-lg leading-none">{showAll ? "↑" : "↓"}</span>
+          </button>
+        </div>
+      )}
     </section>
   );
 }
