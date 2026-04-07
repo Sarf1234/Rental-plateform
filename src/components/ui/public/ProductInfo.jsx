@@ -36,7 +36,7 @@ Thank you!
 `;
 
   return (
-    <div className="space-y-8">
+    <div className="md:space-y-8 space-y-2">
       {/* ================= TITLE + BADGES ================= */}
       <div>
         <HeadingTag  className="text-3xl font-bold text-gray-900 leading-snug">
