@@ -29,6 +29,8 @@ export async function GET(req, { params }) {
       scope: "city",
     }).lean();
 
+    console.log("CITY PROFILE:", cityProfile);
+
     return NextResponse.json({
       success: true,
       data: city,
@@ -43,6 +45,7 @@ export async function GET(req, { params }) {
             seoTitleOverride: cityProfile.seoTitleOverride,
             seoDescriptionOverride:
               cityProfile.seoDescriptionOverride,
+              faq: cityProfile.faq || [],
           }
         : null,
     });

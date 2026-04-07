@@ -9,16 +9,16 @@ import FlagsCards from "@/components/ui/public/FlagsCards";
 import Servicecards from "@/components/ui/public/Servicecards";
 import ProviderCards from "@/components/ui/public/ProviderCards";
 
-export const revalidate = 3600;
-export const dynamic = "force-static";
+// export const revalidate = 3600;
+// export const dynamic = "force-static";
 
 async function getProductData(slug, productSlug) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productSlug}?city=${slug}`,
-    {
-      next: { revalidate: 3600 },
-      cache: "force-cache",
-    }
+    // {
+    //   next: { revalidate: 3600 },
+    //   cache: "force-cache",
+    // }
   );
 
   if (!res.ok) return null;
@@ -159,45 +159,61 @@ export default async function ProductPage({ params }) {
   const cityName = data?.city?.name || slug;
   const productUrl = `${baseUrl}/${slug}/products/${productSlug}`;
 
-  // 🔥 MODIFY FAQ HERE (single source of truth)
-  const pricingKeywords = ["price", "rent", "rental", "cost", "how much"];
+  /* =========================
+   MERGE FAQ (LOCATION + PRODUCT)
+========================= */
 
-  const faqs = rawFaqs?.map((faq) => {
-    let question = faq.question;
-    let answer = faq.answer;
+const locationFaqs = locationContext?.faq || [];
+const productFaqs = rawFaqs || [];
 
-    if (cityName) {
-      // 1️⃣ Placeholder support
-      if (question.includes("{city}")) {
-        question = question.replace("{city}", cityName);
-      }
+// 🔥 Step 1: Process product FAQs (existing logic)
+const processedProductFaqs = productFaqs.map((faq) => {
+  let question = faq.question;
+  let answer = faq.answer;
 
-      if (answer.includes("{city}")) {
-        answer = answer.replace("{city}", cityName);
-      }
+  if (cityName) {
+    // replace {city}
+    question = question.replace(/\{city\}/gi, cityName);
+    answer = answer.replace(/\{city\}/gi, cityName);
 
-      // 2️⃣ Smart injection for pricing intent
-      const lowerQ = question.toLowerCase();
+    // smart pricing injection
+    const pricingKeywords = ["price", "rent", "rental", "cost", "how much"];
+    const lowerQ = question.toLowerCase();
 
-      const shouldInject =
-        pricingKeywords.some((keyword) => lowerQ.includes(keyword)) &&
-        !lowerQ.includes(cityName.toLowerCase());
+    const shouldInject =
+      pricingKeywords.some((k) => lowerQ.includes(k)) &&
+      !lowerQ.includes(cityName.toLowerCase());
 
-      if (shouldInject) {
-        if (question.includes("?")) {
-          question = question.replace("?", ` in ${cityName}?`);
-        } else {
-          question = `${question} in ${cityName}`;
-        }
+    if (shouldInject) {
+      if (question.includes("?")) {
+        question = question.replace("?", ` in ${cityName}?`);
+      } else {
+        question = `${question} in ${cityName}`;
       }
     }
+  }
 
-    return {
-      ...faq,
-      question,
-      answer,
-    };
-  });
+  return { question, answer };
+});
+
+// 🔥 Step 2: Process location FAQs (NEW)
+const processedLocationFaqs = locationFaqs.map((faq) => {
+  let question = faq.question;
+  let answer = faq.answer;
+
+  if (cityName) {
+    question = question.replace(/\{city\}/gi, cityName);
+    answer = answer.replace(/\{city\}/gi, cityName);
+  }
+
+  return { question, answer };
+});
+
+// 🔥 Step 3: Merge (LOCATION FIRST 🚀)
+const faqs = [
+  ...processedLocationFaqs,
+  ...processedProductFaqs,
+].slice(0, 10); // limit for SEO
 
   function replaceDynamicTokens(text, cityName, price) {
     if (!text) return text;

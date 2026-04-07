@@ -114,6 +114,20 @@ const LocationProfileSchema = new Schema(
       type: String,
       trim: true,
     },
+    faq: [
+      {
+        question: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        answer: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+      },
+    ],
   },
   { timestamps: true }
 );

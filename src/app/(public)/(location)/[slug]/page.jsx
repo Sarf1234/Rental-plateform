@@ -29,7 +29,6 @@ export async function generateMetadata({ params }) {
     };
   }
 
-
   try {
     const cityRes = await apiRequest(
       `${process.env.NEXT_PUBLIC_API_URL}/api/cities/${slug}`,
@@ -102,7 +101,7 @@ export default async function CityHome({ params }) {
   const { slug } = await params;
 
   if (!isValidSlug(slug)) {
-      return notFound();
+    return notFound();
   }
 
   const baseUrl = "https://kiraynow.com";
@@ -272,28 +271,21 @@ export default async function CityHome({ params }) {
       //     })),
       //   },
 
-      // 🔹 FAQ
+      ...(locationProfile?.faq.length > 0
+  ? [
       {
         "@type": "FAQPage",
-        mainEntity: [
-          {
-            "@type": "Question",
-            name: `What are the best rental services available in ${cityName}?`,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: `We provide wedding decoration, tent house, catering, lighting and complete event rental services across ${cityName}.`,
-            },
+        mainEntity: locationProfile?.faq?.map((faq) => ({
+          "@type": "Question",
+          name: faq.question,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.answer,
           },
-          {
-            "@type": "Question",
-            name: `How much does event rental cost in ${cityName}?`,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: `Pricing depends on event size and package. Basic packages start from ₹10,000 and premium setups go higher.`,
-            },
-          },
-        ],
+        })),
       },
+    ]
+  : []),
     ],
   };
 
@@ -399,7 +391,6 @@ export default async function CityHome({ params }) {
         </section>
       )}
 
-
       {/* WHY CHOOSE US */}
       <Services
         city={cityName}
@@ -413,6 +404,30 @@ export default async function CityHome({ params }) {
       />
       {/* PRODUCT CATEGORIES */}
       {/* <ProductCategories categories={categories} citySlug={slug} /> */}
+
+      {locationProfile?.faq?.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 py-12">
+          <h2 className="text-xl font-semibold mb-6">
+            Frequently Asked Questions in {cityName}
+          </h2>
+
+          <div className="space-y-4">
+            {locationProfile?.faq?.map((faq, i) => (
+              <details
+                key={i}
+                className="border border-gray-200 rounded-lg p-4 cursor-pointer"
+              >
+                <summary className="font-medium text-gray-900">
+                  {faq.question}
+                </summary>
+                <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+                  {faq.answer}
+                </p>
+              </details>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* TOP BOOKED */}
       {/* <Servicecards
@@ -430,7 +445,6 @@ export default async function CityHome({ params }) {
         citySlug={slug}
       /> */}
 
-      
       {vendors.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 py-12">
           {/* HEADER (MATCH PRODUCTS STYLE) */}

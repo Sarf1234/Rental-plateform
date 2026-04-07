@@ -304,6 +304,7 @@ export async function GET(req, { params }) {
           seoTitleOverride: locationProfile.seoTitleOverride,
           seoDescriptionOverride:
             locationProfile.seoDescriptionOverride,
+            faq: locationProfile.faq || [],
         }
       : null;
 

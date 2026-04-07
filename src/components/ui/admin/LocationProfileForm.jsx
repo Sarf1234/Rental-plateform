@@ -12,104 +12,93 @@ import { Textarea } from "@/components/ui/textarea";
    LOCATION PROFILE FORM
 ========================================================= */
 
-export default function LocationProfileForm({
-  initialData = {},
-  onSubmit,
-}) {
+export default function LocationProfileForm({ initialData = {}, onSubmit }) {
   const [loading, setLoading] = useState(false);
 
   /* CORE */
   const [city, setCity] = useState(initialData.city?._id || "");
   const [scope, setScope] = useState(initialData.scope || "city");
 
-  const [product, setProduct] = useState(
-    initialData.product?._id || ""
-  );
-  const [service, setService] = useState(
-    initialData.service?._id || ""
-  );
+  const [product, setProduct] = useState(initialData.product?._id || "");
+  const [service, setService] = useState(initialData.service?._id || "");
   const [productCategory, setProductCategory] = useState(
-    initialData.productCategory?._id || ""
+    initialData.productCategory?._id || "",
   );
   const [serviceCategory, setServiceCategory] = useState(
-    initialData.serviceCategory?._id || ""
+    initialData.serviceCategory?._id || "",
   );
 
   /* CONTEXT */
   const [priceMultiplier, setPriceMultiplier] = useState(
-    initialData.priceMultiplier || 1
+    initialData.priceMultiplier || 1,
   );
   const [demandLevel, setDemandLevel] = useState(
-    initialData.demandLevel || "medium"
+    initialData.demandLevel || "medium",
   );
-  const [customIntro, setCustomIntro] = useState(
-    initialData.customIntro || ""
-  );
+  const [customIntro, setCustomIntro] = useState(initialData.customIntro || "");
   const [seasonalNote, setSeasonalNote] = useState(
-    initialData.seasonalNote || ""
+    initialData.seasonalNote || "",
   );
   const [deliveryNote, setDeliveryNote] = useState(
-    initialData.deliveryNote || ""
+    initialData.deliveryNote || "",
   );
   const [trendingText, setTrendingText] = useState(
-    initialData.trendingText || ""
+    initialData.trendingText || "",
   );
   const [expressAvailable, setExpressAvailable] = useState(
-    initialData.expressAvailable || false
+    initialData.expressAvailable || false,
   );
 
   /* SEO */
   const [seoTitleOverride, setSeoTitleOverride] = useState(
-    initialData.seoTitleOverride || ""
+    initialData.seoTitleOverride || "",
   );
-  const [seoDescriptionOverride, setSeoDescriptionOverride] =
-    useState(initialData.seoDescriptionOverride || "");
+  const [seoDescriptionOverride, setSeoDescriptionOverride] = useState(
+    initialData.seoDescriptionOverride || "",
+  );
   const [additionalContent, setAdditionalContent] = useState(
-    initialData.additionalContent || ""
+    initialData.additionalContent || "",
+  );
+
+  const [faq, setFaq] = useState(
+    initialData.faq || [{ question: "", answer: "" }],
   );
 
   /* LIST DATA */
   const [allCities, setAllCities] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
   const [allServices, setAllServices] = useState([]);
-  const [allProductCategories, setAllProductCategories] =
-    useState([]);
-  const [allServiceCategories, setAllServiceCategories] =
-    useState([]);
+  const [allProductCategories, setAllProductCategories] = useState([]);
+  const [allServiceCategories, setAllServiceCategories] = useState([]);
 
   useEffect(() => {
-    apiRequest("/api/cities").then((r) =>
-      setAllCities(r.data || [])
-    );
+    apiRequest("/api/cities").then((r) => setAllCities(r.data || []));
     apiRequest("/api/products?limit=500").then((r) =>
-      setAllProducts(r.data || [])
+      setAllProducts(r.data || []),
     );
-    apiRequest("/api/service/admin").then((r) =>
-      setAllServices(r.data || [])
-    );
+    apiRequest("/api/service/admin").then((r) => setAllServices(r.data || []));
     apiRequest("/api/products/categories").then((r) =>
-      setAllProductCategories(r.data || [])
+      setAllProductCategories(r.data || []),
     );
     apiRequest("/api/service-categories").then((r) =>
-      setAllServiceCategories(r.data || [])
+      setAllServiceCategories(r.data || []),
     );
   }, []);
 
   /* RESET TARGETS WHEN SCOPE CHANGES */
- const [isInitialLoad, setIsInitialLoad] = useState(true);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-useEffect(() => {
-  if (isInitialLoad) {
-    setIsInitialLoad(false);
-    return;
-  }
+  useEffect(() => {
+    if (isInitialLoad) {
+      setIsInitialLoad(false);
+      return;
+    }
 
-  setProduct("");
-  setService("");
-  setProductCategory("");
-  setServiceCategory("");
-
-}, [scope]);
+    setProduct("");
+    setService("");
+    setProductCategory("");
+    setServiceCategory("");
+  }, [scope]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -147,9 +136,7 @@ useEffect(() => {
       productCategory:
         scope === "productCategory" ? productCategory : undefined,
       serviceCategory:
-        scope === "serviceCategory"
-          ? serviceCategory
-          : undefined,
+        scope === "serviceCategory" ? serviceCategory : undefined,
       priceMultiplier: Number(priceMultiplier || 1),
       demandLevel,
       customIntro,
@@ -160,6 +147,7 @@ useEffect(() => {
       seoTitleOverride,
       seoDescriptionOverride,
       additionalContent,
+      faq: faq.filter((f) => f.question && f.answer),
     };
 
     try {
@@ -174,37 +162,35 @@ useEffect(() => {
   }
 
   useEffect(() => {
-  if (!initialData || !initialData._id) return;
+    if (!initialData || !initialData._id) return;
 
-  setCity(initialData.city?._id || "");
-  setScope(initialData.scope || "city");
+    setCity(initialData.city?._id || "");
+    setScope(initialData.scope || "city");
 
-  setProduct(initialData.product?._id || "");
-  setService(initialData.service?._id || "");
-  setProductCategory(initialData.productCategory?._id || "");
-  setServiceCategory(initialData.serviceCategory?._id || "");
+    setProduct(initialData.product?._id || "");
+    setService(initialData.service?._id || "");
+    setProductCategory(initialData.productCategory?._id || "");
+    setServiceCategory(initialData.serviceCategory?._id || "");
 
-  setPriceMultiplier(initialData.priceMultiplier || 1);
-  setDemandLevel(initialData.demandLevel || "medium");
-  setCustomIntro(initialData.customIntro || "");
-  setSeasonalNote(initialData.seasonalNote || "");
-  setDeliveryNote(initialData.deliveryNote || "");
-  setTrendingText(initialData.trendingText || "");
-  setExpressAvailable(initialData.expressAvailable || false);
+    setPriceMultiplier(initialData.priceMultiplier || 1);
+    setDemandLevel(initialData.demandLevel || "medium");
+    setCustomIntro(initialData.customIntro || "");
+    setSeasonalNote(initialData.seasonalNote || "");
+    setDeliveryNote(initialData.deliveryNote || "");
+    setTrendingText(initialData.trendingText || "");
+    setExpressAvailable(initialData.expressAvailable || false);
 
-  setSeoTitleOverride(initialData.seoTitleOverride || "");
-  setSeoDescriptionOverride(initialData.seoDescriptionOverride || "");
-  setAdditionalContent(initialData.additionalContent || "");
-
-}, [initialData]);
+    setSeoTitleOverride(initialData.seoTitleOverride || "");
+    setSeoDescriptionOverride(initialData.seoDescriptionOverride || "");
+    setAdditionalContent(initialData.additionalContent || "");
+    setFaq(initialData.faq || [{ question: "", answer: "" }]);
+  }, [initialData]);
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="max-w-5xl mx-auto p-4 space-y-6"
-    >
+    <form onSubmit={handleSubmit} className="max-w-5xl mx-auto p-4 space-y-6">
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* LEFT */}
+
         <div className="space-y-6">
           <div className="bg-white p-4 border rounded-md space-y-3">
             <Label>City *</Label>
@@ -230,21 +216,15 @@ useEffect(() => {
               <option value="city">City</option>
               <option value="product">Product</option>
               <option value="service">Service</option>
-              <option value="productCategory">
-                Product Category
-              </option>
-              <option value="serviceCategory">
-                Service Category
-              </option>
+              <option value="productCategory">Product Category</option>
+              <option value="serviceCategory">Service Category</option>
             </select>
 
             {/* Dynamic Target */}
             {scope === "product" && (
               <select
                 value={product}
-                onChange={(e) =>
-                  setProduct(e.target.value)
-                }
+                onChange={(e) => setProduct(e.target.value)}
                 className="w-full border rounded px-3 py-2"
               >
                 <option value="">Select product</option>
@@ -259,9 +239,7 @@ useEffect(() => {
             {scope === "service" && (
               <select
                 value={service}
-                onChange={(e) =>
-                  setService(e.target.value)
-                }
+                onChange={(e) => setService(e.target.value)}
                 className="w-full border rounded px-3 py-2"
               >
                 <option value="">Select service</option>
@@ -276,9 +254,7 @@ useEffect(() => {
             {scope === "productCategory" && (
               <select
                 value={productCategory}
-                onChange={(e) =>
-                  setProductCategory(e.target.value)
-                }
+                onChange={(e) => setProductCategory(e.target.value)}
                 className="w-full border rounded px-3 py-2"
               >
                 <option value="">Select product category</option>
@@ -293,9 +269,7 @@ useEffect(() => {
             {scope === "serviceCategory" && (
               <select
                 value={serviceCategory}
-                onChange={(e) =>
-                  setServiceCategory(e.target.value)
-                }
+                onChange={(e) => setServiceCategory(e.target.value)}
                 className="w-full border rounded px-3 py-2"
               >
                 <option value="">Select service category</option>
@@ -315,17 +289,13 @@ useEffect(() => {
               type="number"
               step="0.1"
               value={priceMultiplier}
-              onChange={(e) =>
-                setPriceMultiplier(e.target.value)
-              }
+              onChange={(e) => setPriceMultiplier(e.target.value)}
             />
 
             <Label>Demand Level</Label>
             <select
               value={demandLevel}
-              onChange={(e) =>
-                setDemandLevel(e.target.value)
-              }
+              onChange={(e) => setDemandLevel(e.target.value)}
               className="w-full border rounded px-3 py-2"
             >
               <option value="low">Low</option>
@@ -336,42 +306,32 @@ useEffect(() => {
             <Textarea
               placeholder="Custom Intro"
               value={customIntro}
-              onChange={(e) =>
-                setCustomIntro(e.target.value)
-              }
+              onChange={(e) => setCustomIntro(e.target.value)}
             />
 
             <Textarea
               placeholder="Seasonal Note"
               value={seasonalNote}
-              onChange={(e) =>
-                setSeasonalNote(e.target.value)
-              }
+              onChange={(e) => setSeasonalNote(e.target.value)}
             />
 
             <Textarea
               placeholder="Delivery Note"
               value={deliveryNote}
-              onChange={(e) =>
-                setDeliveryNote(e.target.value)
-              }
+              onChange={(e) => setDeliveryNote(e.target.value)}
             />
 
             <Textarea
               placeholder="Trending Text"
               value={trendingText}
-              onChange={(e) =>
-                setTrendingText(e.target.value)
-              }
+              onChange={(e) => setTrendingText(e.target.value)}
             />
 
             <label className="flex items-center gap-2">
               <input
                 type="checkbox"
                 checked={expressAvailable}
-                onChange={() =>
-                  setExpressAvailable(!expressAvailable)
-                }
+                onChange={() => setExpressAvailable(!expressAvailable)}
               />
               Express Available
             </label>
@@ -381,31 +341,68 @@ useEffect(() => {
         {/* RIGHT */}
         <div className="space-y-6">
           <div className="bg-white p-4 border rounded-md space-y-3">
+            <Label>FAQs</Label>
+
+            {faq.map((item, index) => (
+              <div key={index} className="border p-3 rounded space-y-2">
+                <Input
+                  placeholder="Question"
+                  value={item.question}
+                  onChange={(e) => {
+                    const updated = [...faq];
+                    updated[index].question = e.target.value;
+                    setFaq(updated);
+                  }}
+                />
+
+                <Textarea
+                  placeholder="Answer"
+                  value={item.answer}
+                  onChange={(e) => {
+                    const updated = [...faq];
+                    updated[index].answer = e.target.value;
+                    setFaq(updated);
+                  }}
+                />
+
+                <Button
+                  type="button"
+                  variant="destructive"
+                  onClick={() => {
+                    const updated = faq.filter((_, i) => i !== index);
+                    setFaq(updated);
+                  }}
+                >
+                  Remove
+                </Button>
+              </div>
+            ))}
+
+            <Button
+              type="button"
+              onClick={() => setFaq([...faq, { question: "", answer: "" }])}
+            >
+              + Add FAQ
+            </Button>
+          </div>
+          <div className="bg-white p-4 border rounded-md space-y-3">
             <Label>SEO Title Override</Label>
             <Input
               value={seoTitleOverride}
-              onChange={(e) =>
-                setSeoTitleOverride(e.target.value)
-              }
+              onChange={(e) => setSeoTitleOverride(e.target.value)}
             />
 
             <Label>SEO Description Override</Label>
             <Textarea
               value={seoDescriptionOverride}
-              onChange={(e) =>
-                setSeoDescriptionOverride(
-                  e.target.value
-                )
-              }
+              onChange={(e) => setSeoDescriptionOverride(e.target.value)}
             />
 
             <Label>Additional Content</Label>
             <Textarea
               rows={6}
               value={additionalContent}
-              onChange={(e) =>
-                setAdditionalContent(e.target.value)
-              }
+              onChange={(e) => setAdditionalContent(e.target.value)}
             />
           </div>
 
