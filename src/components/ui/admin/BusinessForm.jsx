@@ -539,7 +539,7 @@ export default function BusinessForm({ initialData = {}, onSubmit }) {
         value={pr._id}
         disabled={alreadySelected}
       >
-        {pr.title}
+        {pr.title}-{pr?.pricing?.discountedPrice}
       </option>
     );
   })}
@@ -686,7 +686,7 @@ export default function BusinessForm({ initialData = {}, onSubmit }) {
         value={sv._id}
         disabled={alreadySelected}
       >
-        {sv.title}
+        {sv.title} - {sv?.pricing?.amount}
       </option>
     );
   })}
