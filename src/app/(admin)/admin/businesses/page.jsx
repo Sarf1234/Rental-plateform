@@ -1,7 +1,7 @@
 "use client";
 export const dynamic = "force-dynamic";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/api";
@@ -11,6 +11,28 @@ export default function BusinessesList() {
   const [businesses, setBusinesses] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  /* ================= FILTER STATES ================= */
+  const [selectedCity, setSelectedCity] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [verifiedFilter, setVerifiedFilter] = useState("");
+  const [search, setSearch] = useState("");
+
+  /* ================= LOAD SAVED CITY ================= */
+  useEffect(() => {
+    const savedCity = localStorage.getItem("selectedCity");
+    if (savedCity) setSelectedCity(savedCity);
+  }, []);
+
+  /* ================= SAVE CITY ================= */
+  useEffect(() => {
+    if (selectedCity) {
+      localStorage.setItem("selectedCity", selectedCity);
+    } else {
+      localStorage.removeItem("selectedCity");
+    }
+  }, [selectedCity]);
+
+  /* ================= FETCH DATA ================= */
   useEffect(() => {
     let mounted = true;
 
@@ -31,6 +53,52 @@ export default function BusinessesList() {
     return () => (mounted = false);
   }, []);
 
+  /* ================= UNIQUE CITIES ================= */
+  const allCities = useMemo(() => {
+    const set = new Set();
+    businesses.forEach((b) => {
+      (b.serviceAreas || []).forEach((c) => {
+        if (c?.name) set.add(c.name);
+      });
+    });
+    return Array.from(set);
+  }, [businesses]);
+
+  /* ================= FILTER + SEARCH ================= */
+  const filteredBusinesses = useMemo(() => {
+    return businesses.filter((biz) => {
+      // 🔹 City filter
+      if (selectedCity) {
+        const matchCity = (biz.serviceAreas || []).some(
+          (c) => c.name === selectedCity
+        );
+        if (!matchCity) return false;
+      }
+
+      // 🔹 Status filter
+      if (statusFilter && biz.status !== statusFilter) return false;
+
+      // 🔹 Verified filter
+      if (
+        verifiedFilter &&
+        String(biz.isVerified) !== verifiedFilter
+      )
+        return false;
+
+      // 🔥 SEARCH (manual fast search)
+      if (search) {
+        const text = `${biz.name} ${biz.phone} ${
+          (biz.serviceAreas || []).map((c) => c.name).join(" ")
+        }`.toLowerCase();
+
+        if (!text.includes(search.toLowerCase())) return false;
+      }
+
+      return true;
+    });
+  }, [businesses, selectedCity, statusFilter, verifiedFilter, search]);
+
+  /* ================= ACTION ================= */
   async function handleDeactivate(slug) {
     if (!confirm("Deactivate this business?")) return;
     try {
@@ -44,7 +112,7 @@ export default function BusinessesList() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* Header */}
+      {/* HEADER */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-indigo-600">
@@ -62,27 +130,86 @@ export default function BusinessesList() {
         </Link>
       </div>
 
-      {/* Loading */}
+      {/* ================= FILTER BAR ================= */}
+      <div className="flex flex-wrap gap-3 mb-6">
+        
+        {/* 🔍 SEARCH */}
+        <input
+          type="text"
+          placeholder="Search business..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="border px-3 py-2 rounded w-60"
+        />
+
+        {/* CITY */}
+        <select
+          value={selectedCity}
+          onChange={(e) => setSelectedCity(e.target.value)}
+          className="border px-3 py-2 rounded"
+        >
+          <option value="">All Cities</option>
+          {allCities.map((city) => (
+            <option key={city} value={city}>
+              {city}
+            </option>
+          ))}
+        </select>
+
+        {/* STATUS */}
+        <select
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+          className="border px-3 py-2 rounded"
+        >
+          <option value="">All Status</option>
+          <option value="active">Active</option>
+          <option value="inactive">Inactive</option>
+        </select>
+
+        {/* VERIFIED */}
+        <select
+          value={verifiedFilter}
+          onChange={(e) => setVerifiedFilter(e.target.value)}
+          className="border px-3 py-2 rounded"
+        >
+          <option value="">All</option>
+          <option value="true">Verified</option>
+          <option value="false">Pending</option>
+        </select>
+
+        {/* RESET */}
+        <Button
+          variant="outline"
+          onClick={() => {
+            setSelectedCity("");
+            setStatusFilter("");
+            setVerifiedFilter("");
+            setSearch("");
+          }}
+        >
+          Reset
+        </Button>
+      </div>
+
+      {/* LOADING */}
       {loading && (
         <div className="text-sm text-gray-500">
           Loading businesses…
         </div>
       )}
 
-      {/* Empty */}
-      {!loading && businesses.length === 0 && (
+      {/* EMPTY */}
+      {!loading && filteredBusinesses.length === 0 && (
         <div className="border border-dashed rounded-lg p-10 text-center bg-indigo-50">
           <h2 className="text-lg font-medium text-indigo-600">
             No businesses found
           </h2>
-          <p className="text-sm text-gray-500 mt-1">
-            Create your first business listing
-          </p>
         </div>
       )}
 
-      {/* Table */}
-      {!loading && businesses.length > 0 && (
+      {/* TABLE */}
+      {!loading && filteredBusinesses.length > 0 && (
         <div className="overflow-x-auto border rounded-lg bg-white">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
@@ -97,86 +224,40 @@ export default function BusinessesList() {
             </thead>
 
             <tbody>
-              {businesses.map((biz) => (
-                <tr
-                  key={biz._id}
-                  className="border-b hover:bg-gray-50 transition"
-                >
-                  {/* Name */}
-                  <td className="px-4 py-3 font-medium text-gray-800">
+              {filteredBusinesses.map((biz) => (
+                <tr key={biz._id} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-3 font-medium">
                     {biz.name}
                   </td>
 
-                  {/* Phone */}
-                  <td className="px-4 py-3 text-gray-600">
-                    {biz.phone}
-                  </td>
+                  <td className="px-4 py-3">{biz.phone}</td>
 
-                  {/* Cities */}
-                  <td className="px-4 py-3 text-gray-600">
+                  <td className="px-4 py-3">
                     {(biz.serviceAreas || [])
                       .map((c) => c.name)
                       .join(", ") || "—"}
                   </td>
 
-                  {/* Status */}
                   <td className="px-4 py-3">
-                    {biz.status === "active" ? (
-                      <span className="px-2 py-0.5 text-xs rounded-full bg-green-100 text-green-700">
-                        Active
-                      </span>
-                    ) : (
-                      <span className="px-2 py-0.5 text-xs rounded-full bg-gray-200 text-gray-600">
-                        Inactive
-                      </span>
-                    )}
+                    {biz.status === "active" ? "Active" : "Inactive"}
                   </td>
 
-                  {/* Verified */}
                   <td className="px-4 py-3">
-                    {biz.isVerified ? (
-                      <span className="px-2 py-0.5 text-xs rounded-full bg-blue-100 text-blue-700">
-                        Verified
-                      </span>
-                    ) : (
-                      <span className="px-2 py-0.5 text-xs rounded-full bg-yellow-100 text-yellow-700">
-                        Pending
-                      </span>
-                    )}
+                    {biz.isVerified ? "Verified" : "Pending"}
                   </td>
 
-                  {/* Actions */}
-                  <td className="px-4 py-3 text-right flex justify-end gap-2">
+                  <td className="px-4 py-3 text-right flex gap-2 justify-end">
                     <Link href={`/admin/businesses/${biz.slug}/edit`}>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="hover:border-indigo-600 hover:text-indigo-600"
-                      >
+                      <Button size="sm" variant="outline">
                         Edit
                       </Button>
                     </Link>
 
                     <Link href={`/business/${biz.slug}`}>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="hover:border-green-600 hover:text-green-600"
-                      >
+                      <Button size="sm" variant="outline">
                         View
                       </Button>
                     </Link>
-
-                    {/* Optional soft delete */}
-                    {/*
-                    <Button
-                      size="sm"
-                      variant="destructive"
-                      onClick={() => handleDeactivate(biz.slug)}
-                    >
-                      Deactivate
-                    </Button>
-                    */}
                   </td>
                 </tr>
               ))}

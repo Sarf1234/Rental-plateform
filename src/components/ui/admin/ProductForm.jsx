@@ -593,13 +593,7 @@ useEffect(() => {
               <div className="text-sm font-medium text-rose-700">
                 FAQs
               </div>
-              <button
-                type="button"
-                onClick={addFaq}
-                className="text-sm text-rose-600 hover:underline"
-              >
-                + Add FAQ
-              </button>
+              
             </div>
 
             {faqs.map((f, i) => (
@@ -630,6 +624,15 @@ useEffect(() => {
                 </Button>
               </div>
             ))}
+            <button
+                type="button"
+                onClick={addFaq}
+                variant="outline"
+                size="sm"
+                className="text-sm text-rose-600 hover:underline border-rose-50 border p-1 rounded cursor-pointer"
+              >
+                + Add FAQ
+              </button>
           </div>
 
           {/* STATUS */}

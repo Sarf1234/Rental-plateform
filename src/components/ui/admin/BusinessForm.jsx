@@ -54,15 +54,15 @@ function CityMultiSelect({ value, onChange }) {
   }
 
   useEffect(() => {
-  function close(e) {
-    if (ref.current && !ref.current.contains(e.target)) {
-      setOpen(false);
+    function close(e) {
+      if (ref.current && !ref.current.contains(e.target)) {
+        setOpen(false);
+      }
     }
-  }
 
-  document.addEventListener("click", close);
-  return () => document.removeEventListener("click", close);
-}, []);
+    document.addEventListener("click", close);
+    return () => document.removeEventListener("click", close);
+  }, []);
 
   return (
     <div className="relative" ref={ref}>
@@ -106,7 +106,6 @@ function CityMultiSelect({ value, onChange }) {
     </div>
   );
 }
-
 
 /* ================================================= */
 
@@ -165,21 +164,21 @@ export default function BusinessForm({ initialData = {}, onSubmit }) {
   /* PRODUCTS */
 
   const [products, setProducts] = useState(
-  (initialData.products || []).map((p) => ({
-    ...p,
-    product: p.product?._id?.toString() || p.product?.toString() || "",
-  }))
-);
+    (initialData.products || []).map((p) => ({
+      ...p,
+      product: p.product?._id?.toString() || p.product?.toString() || "",
+    })),
+  );
   const [productList, setProductList] = useState([]);
 
   /* SERVICES */
 
   const [services, setServices] = useState(
-  (initialData.services || []).map((s) => ({
-    ...s,
-    service: s.service?._id?.toString() || s.service?.toString() || "",
-  }))
-);
+    (initialData.services || []).map((s) => ({
+      ...s,
+      service: s.service?._id?.toString() || s.service?.toString() || "",
+    })),
+  );
   const [serviceList, setServiceList] = useState([]);
 
   /* STATS */
@@ -506,9 +505,7 @@ export default function BusinessForm({ initialData = {}, onSubmit }) {
         <div className="flex justify-between items-center">
           <div className="font-medium">Products Offered</div>
 
-          <Button type="button" onClick={addProduct}>
-            + Add Product
-          </Button>
+          
         </div>
 
         {products.map((p, i) => (
@@ -522,28 +519,28 @@ export default function BusinessForm({ initialData = {}, onSubmit }) {
               <Label>Product</Label>
 
               <select
-  value={p.product}
-  onChange={(e) => updateProduct(i, "product", e.target.value)}
-  className="border rounded-md p-2 w-full"
->
-  <option value="">Select product</option>
+                value={p.product}
+                onChange={(e) => updateProduct(i, "product", e.target.value)}
+                className="border rounded-md p-2 w-full"
+              >
+                <option value="">Select product</option>
 
-  {productList.map((pr) => {
-    const alreadySelected = products.some(
-      (prod, index) => prod.product === pr._id && index !== i
-    );
+                {productList.map((pr) => {
+                  const alreadySelected = products.some(
+                    (prod, index) => prod.product === pr._id && index !== i,
+                  );
 
-    return (
-      <option
-        key={pr._id}
-        value={pr._id}
-        disabled={alreadySelected}
-      >
-        {pr.title}-{pr?.pricing?.discountedPrice}
-      </option>
-    );
-  })}
-</select>
+                  return (
+                    <option
+                      key={pr._id}
+                      value={pr._id}
+                      disabled={alreadySelected}
+                    >
+                      {pr.title}-{pr?.pricing?.discountedPrice}
+                    </option>
+                  );
+                })}
+              </select>
             </div>
 
             {/* PRICE */}
@@ -645,6 +642,9 @@ export default function BusinessForm({ initialData = {}, onSubmit }) {
             </div>
           </div>
         ))}
+        <Button type="button" onClick={addProduct}>
+            + Add Product
+          </Button>
       </div>
 
       {/* SERVICES */}
@@ -653,9 +653,7 @@ export default function BusinessForm({ initialData = {}, onSubmit }) {
         <div className="flex justify-between items-center">
           <div className="font-medium">Services Offered</div>
 
-          <Button type="button" onClick={addService}>
-            + Add Service
-          </Button>
+          
         </div>
 
         {services.map((s, i) => (
@@ -669,28 +667,28 @@ export default function BusinessForm({ initialData = {}, onSubmit }) {
               <Label>Service</Label>
 
               <select
-  value={s.service}
-  onChange={(e) => updateService(i, "service", e.target.value)}
-  className="border rounded-md p-2 w-full"
->
-  <option value="">Select service</option>
+                value={s.service}
+                onChange={(e) => updateService(i, "service", e.target.value)}
+                className="border rounded-md p-2 w-full"
+              >
+                <option value="">Select service</option>
 
-  {serviceList.map((sv) => {
-    const alreadySelected = services.some(
-      (ser, index) => ser.service === sv._id && index !== i
-    );
+                {serviceList.map((sv) => {
+                  const alreadySelected = services.some(
+                    (ser, index) => ser.service === sv._id && index !== i,
+                  );
 
-    return (
-      <option
-        key={sv._id}
-        value={sv._id}
-        disabled={alreadySelected}
-      >
-        {sv.title} - {sv?.pricing?.amount}
-      </option>
-    );
-  })}
-</select>
+                  return (
+                    <option
+                      key={sv._id}
+                      value={sv._id}
+                      disabled={alreadySelected}
+                    >
+                      {sv.title} - {sv?.pricing?.amount}
+                    </option>
+                  );
+                })}
+              </select>
             </div>
 
             {/* PRICE */}
@@ -762,6 +760,9 @@ export default function BusinessForm({ initialData = {}, onSubmit }) {
             </div>
           </div>
         ))}
+        <Button type="button" onClick={addService}>
+            + Add Service
+        </Button>
       </div>
 
       {/* BUSINESS STATS */}

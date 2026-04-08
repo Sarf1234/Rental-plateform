@@ -147,14 +147,7 @@ function removeSubArea(index) {
     <div className="text-sm font-medium text-blue-700">
       Sub Areas
     </div>
-    <Button
-      type="button"
-      variant="outline"
-      size="sm"
-      onClick={addSubArea}
-    >
-      + Add Area
-    </Button>
+   
   </div>
 
   {subAreas.map((area, i) => (
@@ -195,6 +188,15 @@ function removeSubArea(index) {
       </Button>
     </div>
   ))}
+   <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      onClick={addSubArea}
+      className='cursor-pointer'
+    >
+      + Add Area
+    </Button>
 </div>
 
 

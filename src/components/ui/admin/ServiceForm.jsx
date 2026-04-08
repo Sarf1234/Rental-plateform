@@ -613,18 +613,7 @@ export default function ServiceForm({
               <div className="text-sm font-medium text-rose-700">
                 Features
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() =>
-                  setFeatures([
-                    ...features,
-                    "",
-                  ])
-                }
-              >
-                + Add Feature
-              </Button>
+             
             </div>
 
             {features.map((f, i) => (
@@ -657,6 +646,18 @@ export default function ServiceForm({
                 </Button>
               </div>
             ))}
+             <Button
+                type="button"
+                variant="outline"
+                onClick={() =>
+                  setFeatures([
+                    ...features,
+                    "",
+                  ])
+                }
+              >
+                + Add Feature
+              </Button>
           </div>
 
           {/* SERVICE PROCESS */}
@@ -665,24 +666,7 @@ export default function ServiceForm({
               <div className="text-sm font-medium text-rose-700">
                 Service Process
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() =>
-                  setServiceProcess([
-                    ...serviceProcess,
-                    {
-                      step:
-                        serviceProcess.length +
-                        1,
-                      title: "",
-                      description: "",
-                    },
-                  ])
-                }
-              >
-                + Add Step
-              </Button>
+              
             </div>
 
             {serviceProcess.map((s, i) => (
@@ -749,6 +733,24 @@ export default function ServiceForm({
                 </Button>
               </div>
             ))}
+            <Button
+                type="button"
+                variant="outline"
+                onClick={() =>
+                  setServiceProcess([
+                    ...serviceProcess,
+                    {
+                      step:
+                        serviceProcess.length +
+                        1,
+                      title: "",
+                      description: "",
+                    },
+                  ])
+                }
+              >
+                + Add Step
+              </Button>
           </div>
 
           {/* FAQ */}
@@ -757,22 +759,7 @@ export default function ServiceForm({
               <div className="text-sm font-medium text-rose-700">
                 FAQs
               </div>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() =>
-                  setFaqs([
-                    ...faqs,
-                    {
-                      question: "",
-                      answer: "",
-                      isActive: true,
-                    },
-                  ])
-                }
-              >
-                + Add FAQ
-              </Button>
+             
             </div>
 
             {faqs.map((f, i) => (
@@ -823,6 +810,22 @@ export default function ServiceForm({
                 </Button>
               </div>
             ))}
+             <Button
+                type="button"
+                variant="outline"
+                onClick={() =>
+                  setFaqs([
+                    ...faqs,
+                    {
+                      question: "",
+                      answer: "",
+                      isActive: true,
+                    },
+                  ])
+                }
+              >
+                + Add FAQ
+              </Button>
           </div>
         </div>
 

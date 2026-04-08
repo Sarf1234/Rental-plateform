@@ -548,13 +548,7 @@ export default function PostForm({
           <div>
             <div className="flex justify-between items-center mb-2">
               <Label className="text-sm font-medium text-rose-700">FAQs</Label>
-              <button
-                type="button"
-                onClick={() => setFaqs([...faqs, { question: "", answer: "" }])}
-                className="text-sm text-rose-600 hover:underline"
-              >
-                + Add FAQ
-              </button>
+              
             </div>
 
             {faqs.map((faq, i) => (
@@ -586,6 +580,13 @@ export default function PostForm({
                 </Button>
               </div>
             ))}
+            <button
+                type="button"
+                onClick={() => setFaqs([...faqs, { question: "", answer: "" }])}
+                className="text-sm border bg-amber-200 border-red-200 p-2 cursor-pointer rounded text-rose-600 hover:underline"
+              >
+                + Add FAQ
+              </button>
           </div>
 
           

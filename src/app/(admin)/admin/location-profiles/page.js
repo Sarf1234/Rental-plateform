@@ -1,7 +1,7 @@
 "use client";
 export const dynamic = "force-dynamic";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { apiRequest } from "@/lib/api";
@@ -15,51 +15,99 @@ export default function LocationProfilesList() {
   const [allProducts, setAllProducts] = useState([]);
   const [allServices, setAllServices] = useState([]);
 
-  /* FILTERS */
+  /* ================= FILTER STATES ================= */
   const [cityFilter, setCityFilter] = useState("");
   const [scopeFilter, setScopeFilter] = useState("");
   const [productFilter, setProductFilter] = useState("");
   const [serviceFilter, setServiceFilter] = useState("");
+  const [search, setSearch] = useState("");
 
-  async function loadProfiles() {
-    setLoading(true);
-
-    const params = new URLSearchParams();
-    if (cityFilter) params.append("city", cityFilter);
-    if (scopeFilter) params.append("scope", scopeFilter);
-    if (productFilter) params.append("product", productFilter);
-    if (serviceFilter) params.append("service", serviceFilter);
-
-    try {
-      const res = await apiRequest(
-        `/api/admin/location-profiles?${params.toString()}`
-      );
-      setProfiles(res.data || []);
-    } catch {
-      toast.error("Failed to load profiles");
-    } finally {
-      setLoading(false);
-    }
-  }
-
+  /* ================= LOAD SAVED CITY ================= */
   useEffect(() => {
-    apiRequest("/api/cities").then((r) =>
-      setAllCities(r.data || [])
-    );
-    apiRequest("/api/products?limit=500").then((r) =>
-      setAllProducts(r.data || [])
-    );
-    apiRequest("/api/service/admin?limit=500").then((r) =>
-      setAllServices(r.data || [])
-    );
-
-    loadProfiles();
+    const savedCity = localStorage.getItem("selectedCity");
+    if (savedCity) setCityFilter(savedCity);
   }, []);
 
+  /* ================= SAVE CITY ================= */
   useEffect(() => {
-    loadProfiles();
-  }, [cityFilter, scopeFilter, productFilter, serviceFilter]);
+    if (cityFilter) {
+      localStorage.setItem("selectedCity", cityFilter);
+    } else {
+      localStorage.removeItem("selectedCity");
+    }
+  }, [cityFilter]);
 
+  /* ================= INITIAL LOAD ================= */
+  useEffect(() => {
+    let mounted = true;
+
+    async function load() {
+      try {
+        const [profilesRes, citiesRes, productsRes, servicesRes] =
+          await Promise.all([
+            apiRequest("/api/admin/location-profiles?limit=500"),
+            apiRequest("/api/cities"),
+            apiRequest("/api/products?limit=500"),
+            apiRequest("/api/service/admin?limit=500"),
+          ]);
+
+        if (!mounted) return;
+
+        setProfiles(profilesRes.data || []);
+        setAllCities(citiesRes.data || []);
+        setAllProducts(productsRes.data || []);
+        setAllServices(servicesRes.data || []);
+      } catch (err) {
+        toast.error("Failed to load data");
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    }
+
+    load();
+    return () => (mounted = false);
+  }, []);
+
+  /* ================= FILTER LOGIC ================= */
+  const filteredProfiles = useMemo(() => {
+    return profiles.filter((p) => {
+      // City
+      if (cityFilter && p.city?._id !== cityFilter) return false;
+
+      // Scope
+      if (scopeFilter && p.scope !== scopeFilter) return false;
+
+      // Product
+      if (productFilter && p.product?._id !== productFilter)
+        return false;
+
+      // Service
+      if (serviceFilter && p.service?._id !== serviceFilter)
+        return false;
+
+      // 🔍 Search
+      if (search) {
+        const text = `${p.city?.name || ""} ${p.scope || ""} ${
+          p.product?.title || ""
+        } ${p.service?.title || ""} ${
+          p.productCategory?.name || ""
+        } ${p.serviceCategory?.name || ""}`.toLowerCase();
+
+        if (!text.includes(search.toLowerCase())) return false;
+      }
+
+      return true;
+    });
+  }, [
+    profiles,
+    cityFilter,
+    scopeFilter,
+    productFilter,
+    serviceFilter,
+    search,
+  ]);
+
+  /* ================= DELETE ================= */
   async function handleDelete(id) {
     if (!confirm("Delete this profile?")) return;
 
@@ -68,9 +116,7 @@ export default function LocationProfilesList() {
         `/api/admin/location-profiles/${id}`,
         "DELETE"
       );
-      setProfiles((prev) =>
-        prev.filter((p) => p._id !== id)
-      );
+      setProfiles((prev) => prev.filter((p) => p._id !== id));
       toast.success("Deleted successfully");
     } catch {
       toast.error("Delete failed");
@@ -79,7 +125,7 @@ export default function LocationProfilesList() {
 
   return (
     <div className="p-6 max-w-7xl mx-auto">
-      {/* Header */}
+      {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
         <div>
           <h1 className="text-2xl font-semibold text-rose-600">
@@ -97,8 +143,19 @@ export default function LocationProfilesList() {
         </Link>
       </div>
 
-      {/* Filters */}
-      <div className="bg-white border rounded-md p-4 mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* ================= FILTER BAR ================= */}
+      <div className="bg-white border rounded-md p-4 mb-6 grid grid-cols-1 md:grid-cols-6 gap-4">
+        
+        {/* 🔍 SEARCH */}
+        <input
+          type="text"
+          placeholder="Search profiles..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="border rounded px-3 py-2"
+        />
+
+        {/* CITY */}
         <select
           value={cityFilter}
           onChange={(e) => setCityFilter(e.target.value)}
@@ -112,6 +169,7 @@ export default function LocationProfilesList() {
           ))}
         </select>
 
+        {/* SCOPE */}
         <select
           value={scopeFilter}
           onChange={(e) => setScopeFilter(e.target.value)}
@@ -125,6 +183,7 @@ export default function LocationProfilesList() {
           <option value="serviceCategory">Service Category</option>
         </select>
 
+        {/* PRODUCT */}
         <select
           value={productFilter}
           onChange={(e) => setProductFilter(e.target.value)}
@@ -138,6 +197,7 @@ export default function LocationProfilesList() {
           ))}
         </select>
 
+        {/* SERVICE */}
         <select
           value={serviceFilter}
           onChange={(e) => setServiceFilter(e.target.value)}
@@ -150,20 +210,34 @@ export default function LocationProfilesList() {
             </option>
           ))}
         </select>
+
+        {/* RESET */}
+        <Button
+          variant="outline"
+          onClick={() => {
+            setCityFilter("");
+            setScopeFilter("");
+            setProductFilter("");
+            setServiceFilter("");
+            setSearch("");
+          }}
+        >
+          Reset
+        </Button>
       </div>
 
-      {/* Loading */}
+      {/* LOADING */}
       {loading && <div>Loading...</div>}
 
-      {/* Empty */}
-      {!loading && profiles.length === 0 && (
+      {/* EMPTY */}
+      {!loading && filteredProfiles.length === 0 && (
         <div className="border rounded-md p-10 text-center bg-rose-50">
           No profiles found
         </div>
       )}
 
-      {/* Table */}
-      {!loading && profiles.length > 0 && (
+      {/* TABLE */}
+      {!loading && filteredProfiles.length > 0 && (
         <div className="overflow-x-auto border rounded-lg bg-white">
           <table className="w-full text-sm">
             <thead className="bg-gray-50 border-b">
@@ -177,18 +251,11 @@ export default function LocationProfilesList() {
             </thead>
 
             <tbody>
-              {profiles.map((p) => (
-                <tr
-                  key={p._id}
-                  className="border-b hover:bg-gray-50"
-                >
-                  <td className="px-4 py-3">
-                    {p.city?.name}
-                  </td>
+              {filteredProfiles.map((p) => (
+                <tr key={p._id} className="border-b hover:bg-gray-50">
+                  <td className="px-4 py-3">{p.city?.name}</td>
 
-                  <td className="px-4 py-3 capitalize">
-                    {p.scope}
-                  </td>
+                  <td className="px-4 py-3 capitalize">{p.scope}</td>
 
                   <td className="px-4 py-3">
                     {p.product?.title ||
@@ -198,9 +265,7 @@ export default function LocationProfilesList() {
                       "City"}
                   </td>
 
-                  <td className="px-4 py-3">
-                    {p.demandLevel}
-                  </td>
+                  <td className="px-4 py-3">{p.demandLevel}</td>
 
                   <td className="px-4 py-3 text-right flex justify-end gap-2">
                     <Link
