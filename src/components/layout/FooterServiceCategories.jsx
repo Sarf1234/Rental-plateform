@@ -11,19 +11,28 @@ export default function FooterServiceCategories() {
   const { city } = useCity();
 
   const [categories, setCategories] = useState([]);
+  const [mounted, setMounted] = useState(false);
 
-  /* ================= CITY DETECTION ================= */
+  /* ================= SAFE MOUNT ================= */
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  /* ================= CITY DETECTION (SAFE) ================= */
 
   const VALID_CITIES = ["mumbai", "delhi", "bangalore", "patna"];
 
-  const segments = pathname.split("/").filter(Boolean);
+  // 👉 SAFE pathname (avoid crash during build)
+  const pathnameSafe = pathname || "";
+
+  const segments = pathnameSafe.split("/").filter(Boolean);
   const firstSegment = segments[0];
 
   const urlCity = VALID_CITIES.includes(firstSegment)
     ? firstSegment
     : null;
 
-  const citySlug = urlCity || city?.slug;
+  const citySlug = urlCity || city?.slug || null;
 
   /* ================= FETCH ================= */
 
@@ -35,7 +44,7 @@ export default function FooterServiceCategories() {
         );
         setCategories(res?.data || []);
       } catch (err) {
-        console.error("Footer categories fetch failed");
+        console.error("Footer categories fetch failed", err);
       }
     }
 
@@ -49,7 +58,9 @@ export default function FooterServiceCategories() {
     return `/${citySlug}/service-categories/${slug}`;
   };
 
-  if (!categories.length) return null;
+  /* ================= SAFETY RENDER ================= */
+
+  if (!mounted || !categories.length) return null;
 
   return (
     <ul className="space-y-2 text-gray-600">
