@@ -1,3 +1,4 @@
+'use client'
 import React from "react";
 import Link from "next/link";
 import {
@@ -8,7 +9,12 @@ import {
   Mail,
   MessageCircle,
 } from "lucide-react";
-import FooterServiceCategories from "./FooterServiceCategories";
+import dynamic from "next/dynamic";
+
+const FooterServiceCategories = dynamic(
+  () => import("./FooterServiceCategories"),
+  { ssr: false }
+);
 
 export default function Footer() {
   return (

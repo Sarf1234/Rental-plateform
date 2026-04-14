@@ -45,14 +45,15 @@ export default function Navbar() {
 // check if it's NOT a static route
 const VALID_CITIES = ["mumbai", "delhi", "bangalore", "patna"];
 
-const segments = pathname.split("/").filter(Boolean);
+const pathnameSafe = pathname || "";
+const segments = pathnameSafe.split("/").filter(Boolean);
 const firstSegment = segments[0];
 
 const urlCity = VALID_CITIES.includes(firstSegment)
   ? firstSegment
   : null;
 
-const citySlug = urlCity || city?.slug || queryCity;
+const citySlug = urlCity || city?.slug || queryCity || null;
  
 
 
