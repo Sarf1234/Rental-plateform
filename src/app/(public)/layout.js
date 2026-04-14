@@ -4,6 +4,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { CityProvider } from "@/context/CityContext";
 import { GoogleAnalytics } from '@next/third-parties/google'
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -132,7 +133,9 @@ export default function RootLayout({ children }) {
         <GoogleAnalytics gaId="G-WECCB5R9ZC" />
 
         <CityProvider>
-          <Navbar />
+          <Suspense fallback={null}>
+            <Navbar />
+          </Suspense>
           <main>{children}</main>
           <Footer />
         </CityProvider>

@@ -1,4 +1,3 @@
-'use client'
 import React from "react";
 import Link from "next/link";
 import {
@@ -9,12 +8,8 @@ import {
   Mail,
   MessageCircle,
 } from "lucide-react";
-import dynamic from "next/dynamic";
-
-const FooterServiceCategories = dynamic(
-  () => import("./FooterServiceCategories"),
-  { ssr: false }
-);
+import FooterServiceCategories from "./FooterServiceCategories";
+import { Suspense } from "react";
 
 export default function Footer() {
   return (
@@ -78,8 +73,9 @@ export default function Footer() {
             <h4 className="font-semibold text-gray-900 mb-4 uppercase tracking-wide text-sm">
               Rental Categories
             </h4>
-
-            <FooterServiceCategories />
+            <Suspense fallback={null}>
+              <FooterServiceCategories />
+            </Suspense>
           </div>
           {/* Quick Links */}
           <div>
