@@ -29,7 +29,6 @@ export async function GET(req, { params }) {
       scope: "city",
     }).lean();
 
-    console.log("CITY PROFILE:", cityProfile);
 
     return NextResponse.json({
       success: true,

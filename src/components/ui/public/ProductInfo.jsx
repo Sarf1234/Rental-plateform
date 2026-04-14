@@ -87,11 +87,7 @@ Thank you!
 
           <p className="text-sm text-gray-500">per {pricing?.unit}</p>
         </div>
-        {locationContext?.deliveryNote && (
-          <p className="text-xs text-gray-500 mt-2">
-            {locationContext.deliveryNote}
-          </p>
-        )}
+        
 
         {/* Extra Charges */}
         {/* <div className="space-y-1 text-sm text-gray-600">

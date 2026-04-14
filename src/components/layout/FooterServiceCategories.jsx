@@ -2,14 +2,30 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { usePathname } from "next/navigation";
+import { useCity } from "@/context/CityContext";
 import { apiRequest } from "@/lib/api";
 
 export default function FooterServiceCategories() {
-  const params = useParams();
-  const citySlug = params?.slug;
+  const pathname = usePathname();
+  const { city } = useCity();
 
   const [categories, setCategories] = useState([]);
+
+  /* ================= CITY DETECTION ================= */
+
+  const VALID_CITIES = ["mumbai", "delhi", "bangalore", "patna"];
+
+  const segments = pathname.split("/").filter(Boolean);
+  const firstSegment = segments[0];
+
+  const urlCity = VALID_CITIES.includes(firstSegment)
+    ? firstSegment
+    : null;
+
+  const citySlug = urlCity || city?.slug;
+
+  /* ================= FETCH ================= */
 
   useEffect(() => {
     async function fetchCategories() {
@@ -26,6 +42,13 @@ export default function FooterServiceCategories() {
     fetchCategories();
   }, []);
 
+  /* ================= BUILD HREF ================= */
+
+  const buildCategoryHref = (slug) => {
+    if (!citySlug) return `/service-categories/${slug}`;
+    return `/${citySlug}/service-categories/${slug}`;
+  };
+
   if (!categories.length) return null;
 
   return (
@@ -33,11 +56,7 @@ export default function FooterServiceCategories() {
       {categories.slice(3, 6).map((cat) => (
         <li key={cat._id}>
           <Link
-            href={
-              citySlug
-                ? `/${citySlug}/service-categories/${cat.slug}`
-                : `/service-categories/${cat.slug}`
-            }
+            href={buildCategoryHref(cat.slug)}
             className="hover:text-black transition"
           >
             {cat.name}

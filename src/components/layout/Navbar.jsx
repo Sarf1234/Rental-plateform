@@ -16,6 +16,7 @@ import {
 import CitySelect from "../navbar/CitySelect";
 import { useCity } from "@/context/CityContext";
 import Image from "next/image";
+import { useSearchParams } from "next/navigation";
 
 /* ================= NAV ITEMS ================= */
 
@@ -35,12 +36,24 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
-  
+  const searchParams = useSearchParams();
+  const queryCity = searchParams.get("city");
 
- const segments = pathname.split("/").filter(Boolean);
- const urlCity = segments[0];
+  const STATIC_ROUTES = ["blog", "about", "contact", "terms-and-conditions", "search", "faq", "category","privacy-policy", "tag",];
 
- const citySlug = urlCity || city?.slug;
+
+// check if it's NOT a static route
+const VALID_CITIES = ["mumbai", "delhi", "bangalore", "patna"];
+
+const segments = pathname.split("/").filter(Boolean);
+const firstSegment = segments[0];
+
+const urlCity = VALID_CITIES.includes(firstSegment)
+  ? firstSegment
+  : null;
+
+const citySlug = urlCity || city?.slug || queryCity;
+ 
 
 
   /* ================= SCROLL EFFECT ================= */
@@ -54,7 +67,7 @@ export default function Navbar() {
   /* ================= BUILD HREF ================= */
 
   const buildHref = (slug) => {
-    if (!ready) return "#";
+    if (!ready) return "/";
 
     if (slug === "/") {
       return citySlug ? `/${citySlug}` : "/";
@@ -91,19 +104,22 @@ export default function Navbar() {
 
   /* ================= SEARCH ================= */
 
-  const handleSearch = (e) => {
+ const handleSearch = (e) => {
   e.preventDefault();
 
-  if (searchQuery.trim()) {
-    const url = citySlug
-      ? `/search?q=${encodeURIComponent(searchQuery)}&city=${citySlug}`
-      : `/search?q=${encodeURIComponent(searchQuery)}`;
+  if (!searchQuery.trim()) return;
 
-    router.push(url);
+  const params = new URLSearchParams();
+  params.set("q", searchQuery);
 
-    setSearchQuery("");
-    setOpen(false);
+  if (citySlug) {
+    params.set("city", citySlug);
   }
+
+  router.push(`/search?${params.toString()}`);
+
+  setSearchQuery("");
+  setOpen(false);
 };
 
   const headerStyle = `

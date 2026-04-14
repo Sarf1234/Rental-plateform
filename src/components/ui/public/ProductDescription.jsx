@@ -82,6 +82,11 @@ export default function ProductDescription({
           {locationContext.seasonalNote}
         </div>
       )}
+      {locationContext?.deliveryNote && (
+          <p className="text-xs text-gray-500 mt-2">
+            {locationContext.deliveryNote}
+          </p>
+        )}
     </div>
   );
 }
