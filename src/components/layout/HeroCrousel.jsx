@@ -28,7 +28,7 @@ export default function HeroCarousel({ images, contents }) {
   }, [emblaApi, onSelect]);
 
   return (
-    <section className="max-w-7xl mx-auto md:px-4 mt-20">
+    <section className="max-w-7xl mx-auto md:px-4 md:mt-20 mt-16">
       <div
         className="relative overflow-hidden rounded-xl h-[40vh] md:h-[70vh]"
         ref={emblaRef}
