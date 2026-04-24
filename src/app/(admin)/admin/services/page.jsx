@@ -261,7 +261,7 @@ export default function AdminServicesPage() {
                       </Button>
                     </Link>
 
-                    <Link href={`/services/${s.slug}`}>
+                    {/* <Link href={`/services/${s.slug}`}>
                       <Button
                         size="sm"
                         variant="outline"
@@ -269,7 +269,7 @@ export default function AdminServicesPage() {
                       >
                         View
                       </Button>
-                    </Link>
+                    </Link> */}
                   </td>
                 </tr>
               ))}

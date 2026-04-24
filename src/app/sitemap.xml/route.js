@@ -1,5 +1,8 @@
 // app/sitemap/route.js
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
 import Post from "@/models/Post";
@@ -247,7 +250,7 @@ ${urls
     return new NextResponse(sitemap, {
       headers: {
         "Content-Type": "application/xml",
-        "Cache-Control": "no-store",
+        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
       },
     });
   } catch (err) {

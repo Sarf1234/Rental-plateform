@@ -48,8 +48,7 @@ export default function ProductsList() {
       if (filters.bestDeal && !p.highlights?.isBestDeal) return false;
       if (filters.topRented && !p.highlights?.isTopRented) return false;
       if (filters.newProduct && !p.highlights?.isNewProduct) return false;
-      if (filters.status !== "all" && p.status !== filters.status)
-        return false;
+      if (filters.status !== "all" && p.status !== filters.status) return false;
 
       return true;
     });
@@ -68,9 +67,7 @@ export default function ProductsList() {
     }
 
     if (sort === "latest") {
-      data.sort(
-        (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
-      );
+      data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     }
 
     return data;
@@ -79,7 +76,7 @@ export default function ProductsList() {
   // SEARCH
   const finalProducts = useMemo(() => {
     return sortedProducts.filter((p) =>
-      p.title?.toLowerCase().includes(search.toLowerCase())
+      p.title?.toLowerCase().includes(search.toLowerCase()),
     );
   }, [sortedProducts, search]);
 
@@ -87,9 +84,7 @@ export default function ProductsList() {
     <div className="p-6 max-w-7xl mx-auto">
       {/* HEADER */}
       <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-semibold text-indigo-600">
-          Products
-        </h1>
+        <h1 className="text-2xl font-semibold text-indigo-600">Products</h1>
 
         {!loading && (
           <p className="text-sm text-gray-500 mt-1">
@@ -108,27 +103,21 @@ export default function ProductsList() {
       <div className="flex flex-wrap gap-2 mb-4">
         <Button
           variant={filters.featured ? "default" : "outline"}
-          onClick={() =>
-            setFilters((f) => ({ ...f, featured: !f.featured }))
-          }
+          onClick={() => setFilters((f) => ({ ...f, featured: !f.featured }))}
         >
           Featured
         </Button>
 
         <Button
           variant={filters.bestDeal ? "default" : "outline"}
-          onClick={() =>
-            setFilters((f) => ({ ...f, bestDeal: !f.bestDeal }))
-          }
+          onClick={() => setFilters((f) => ({ ...f, bestDeal: !f.bestDeal }))}
         >
           Best Deal
         </Button>
 
         <Button
           variant={filters.topRented ? "default" : "outline"}
-          onClick={() =>
-            setFilters((f) => ({ ...f, topRented: !f.topRented }))
-          }
+          onClick={() => setFilters((f) => ({ ...f, topRented: !f.topRented }))}
         >
           Top Rented
         </Button>
@@ -185,8 +174,6 @@ export default function ProductsList() {
         </div>
       )}
 
-      
-
       {/* TABLE */}
       {!loading && finalProducts.length > 0 && (
         <div className="border rounded bg-white overflow-x-auto">
@@ -204,7 +191,14 @@ export default function ProductsList() {
               {finalProducts.map((p) => (
                 <tr key={p._id} className="border-t">
                   <td className="px-4 py-3 font-medium">
-                    {p.title}
+                    <div className="font-semibold">{p.title}</div>
+
+                    {/* City Names */}
+                    <div className="text-xs text-gray-500 mt-1">
+                      {p.serviceAreas?.length > 0
+                        ? p.serviceAreas.map((city) => city.name).join(", ")
+                        : "No City Assigned"}
+                    </div>
                   </td>
 
                   <td className="px-4 py-3">
