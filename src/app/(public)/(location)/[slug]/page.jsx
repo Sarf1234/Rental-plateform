@@ -11,6 +11,7 @@ import VendorCard from "@/components/ui/public/VendorCard";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { isValidSlug } from "@/utils/isValidSlug";
+import Script from "next/script";
 
 export const revalidate = 86400; // ISR (1 hour)
 export const dynamic = "force-static";
@@ -121,47 +122,67 @@ export default async function CityHome({ params }) {
   let serviceCategories = [];
 
   try {
-    const serviceCatRes = await apiRequest(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/service-categories`,
-    );
-    serviceCategories = serviceCatRes?.data || [];
-  } catch (err) {
-    console.error("Failed to fetch service categories:", err);
-  }
+  const [
+    serviceCatRes,
+    cityRes,
+    catRes,
+    serviceRes,
+  ] = await Promise.all([
+    apiRequest(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/service-categories`
+    ),
 
-  try {
-    const cityRes = await apiRequest(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/cities/${slug}`,
-    );
-    cityData = cityRes?.data || null;
-    locationProfile = cityRes?.locationContext || null;
-  } catch (err) {
-    console.error("Failed to fetch city:", err);
-  }
+    apiRequest(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/cities/${slug}`
+    ),
 
-  try {
-    const catRes = await apiRequest(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/products/categories`,
-    );
-    categories = catRes?.data || [];
-  } catch (err) {
-    console.error("Failed to fetch product categories:", err);
-  }
+    apiRequest(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/products/categories`
+    ),
 
-  try {
-    const res = await apiRequest(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/service?city=${slug}&type=all&page=1&limit=10`,
-    );
+    apiRequest(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/service?city=${slug}&type=all&page=1&limit=10`
+    ),
+  ]);
 
-    featured = res.featured || [];
-    top = res.top || [];
-    best = res.best || [];
-    all = res.all || [];
-    products = res.products || [];
-    vendors = res.vendors || [];
-  } catch (err) {
-    console.error("Failed to fetch services:", err);
-  }
+  /* Assign Data */
+
+  serviceCategories =
+    serviceCatRes?.data || [];
+
+  cityData =
+    cityRes?.data || null;
+
+  locationProfile =
+    cityRes?.locationContext || null;
+
+  categories =
+    catRes?.data || [];
+
+  featured =
+    serviceRes?.featured || [];
+
+  top =
+    serviceRes?.top || [];
+
+  best =
+    serviceRes?.best || [];
+
+  all =
+    serviceRes?.all || [];
+
+  products =
+    serviceRes?.products || [];
+
+  vendors =
+    serviceRes?.vendors || [];
+
+} catch (err) {
+  console.error(
+    "Parallel fetch failed:",
+    err
+  );
+}
 
   if (!cityData) {
     return <div className="mt-20 text-center">City not found</div>;
@@ -294,14 +315,18 @@ export default async function CityHome({ params }) {
   // =========================
 
   return (
-    <div className="min-h-screen mt-16">
-      {/* 🔥 JSON-LD Injection */}
-      <script
+    <>
+    {/* 🔥 JSON-LD Injection */}
+      <Script
+        id="city-schema"
         type="application/ld+json"
+        strategy="beforeInteractive"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(structuredData),
         }}
       />
+    <div className="min-h-screen mt-16">
+      
 
       {/* HERO */}
       <HeroCarousel images={imagesLink} contents={carouselContent} />
@@ -506,5 +531,6 @@ export default async function CityHome({ params }) {
         </section>
       )}
     </div>
+    </>
   );
 }

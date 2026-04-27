@@ -1,127 +1,257 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, {
+  useState,
+  useEffect,
+} from "react";
+
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import Image from "next/image";
+
+import {
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
+
 import {
   Menu,
   X,
   Search,
-  Home,
   Phone,
-  BookOpen,
-  User,
-  ShoppingBag,
 } from "lucide-react";
+
 import CitySelect from "../navbar/CitySelect";
 import { useCity } from "@/context/CityContext";
-import Image from "next/image";
-import { useSearchParams } from "next/navigation";
 
-/* ================= NAV ITEMS ================= */
+/* =========================
+   NAV ITEMS
+========================= */
 
 const NAV_ITEMS = [
-  { name: "Home", slug: "/" },
-  { name: "Products", slug: "/products" },
-  { name: "Blogs", slug: "/blog" },
-  // { name: "Contact Us", slug: "/contact" },
+  {
+    name: "Home",
+    slug: "/",
+  },
+  {
+    name: "Products",
+    slug: "/products",
+  },
+  {
+    name: "Blogs",
+    slug: "/blog",
+  },
 ];
 
 export default function Navbar() {
-  const pathname = usePathname();
-  const router = useRouter();
-  const { city, ready } = useCity();
+  const pathname =
+    usePathname();
 
-  const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const router =
+    useRouter();
 
-  const searchParams = useSearchParams();
-  const queryCity = searchParams.get("city");
+  const searchParams =
+    useSearchParams();
 
-  const STATIC_ROUTES = ["blog", "about", "contact", "terms-and-conditions", "search", "faq", "category","privacy-policy", "tag",];
+  const {
+    city,
+    ready,
+  } = useCity();
 
+  const [mounted, setMounted] =
+    useState(false);
 
-// check if it's NOT a static route
-const VALID_CITIES = ["mumbai", "delhi", "bangalore", "patna"];
+  const [open, setOpen] =
+    useState(false);
 
-const pathnameSafe = pathname || "";
-const segments = pathnameSafe.split("/").filter(Boolean);
-const firstSegment = segments[0];
+  const [scrolled, setScrolled] =
+    useState(false);
 
-const urlCity = VALID_CITIES.includes(firstSegment)
-  ? firstSegment
-  : null;
+  const [searchQuery, setSearchQuery] =
+    useState("");
 
-const citySlug = urlCity || city?.slug || queryCity || null;
- 
+  const queryCity =
+    searchParams.get(
+      "city"
+    );
 
+  const VALID_CITIES = [
+    "mumbai",
+    "delhi",
+    "bangalore",
+    "patna",
+  ];
 
-  /* ================= SCROLL EFFECT ================= */
+  const pathnameSafe =
+    pathname || "";
+
+  const segments =
+    pathnameSafe
+      .split("/")
+      .filter(Boolean);
+
+  const firstSegment =
+    segments[0];
+
+  const urlCity =
+    VALID_CITIES.includes(
+      firstSegment
+    )
+      ? firstSegment
+      : null;
+
+  /* =========================
+     HYDRATION SAFE
+  ========================= */
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
+    setMounted(true);
   }, []);
 
-  /* ================= BUILD HREF ================= */
+  /* =========================
+     SCROLL EFFECT
+  ========================= */
 
-  const buildHref = (slug) => {
-    if (!ready) return "/";
+  useEffect(() => {
+    const onScroll =
+      () =>
+        setScrolled(
+          window.scrollY >
+            40
+        );
+
+    window.addEventListener(
+      "scroll",
+      onScroll
+    );
+
+    return () =>
+      window.removeEventListener(
+        "scroll",
+        onScroll
+      );
+  }, []);
+
+  /* =========================
+     CITY SLUG SAFE
+  ========================= */
+
+  const citySlug =
+    mounted
+      ? urlCity ||
+        city?.slug ||
+        queryCity ||
+        null
+      : null;
+
+  /* =========================
+     BUILD LINKS
+  ========================= */
+
+  function buildHref(
+    slug
+  ) {
+    if (
+      !mounted ||
+      !ready
+    )
+      return "/";
 
     if (slug === "/") {
-      return citySlug ? `/${citySlug}` : "/";
+      return citySlug
+        ? `/${citySlug}`
+        : "/";
     }
 
-    if (slug === "/products") {
+    if (
+      slug ===
+      "/products"
+    ) {
       return citySlug
         ? `/${citySlug}/products`
         : "/products";
     }
 
     return slug;
-  };
+  }
 
-  /* ================= ACTIVE STATE ================= */
+  /* =========================
+     ACTIVE STATE
+  ========================= */
 
-  const isActive = (slug) => {
-    if (!ready) return false;
+  function isActive(
+    slug
+  ) {
+    if (
+      !mounted ||
+      !ready
+    )
+      return false;
 
     if (slug === "/") {
       return citySlug
-        ? pathname === `/${citySlug}`
-        : pathname === "/";
+        ? pathname ===
+            `/${citySlug}`
+        : pathname ===
+            "/";
     }
 
-    if (slug === "/products") {
+    if (
+      slug ===
+      "/products"
+    ) {
       return citySlug
-        ? pathname === `/${citySlug}/products`
-        : pathname === "/products";
+        ? pathname ===
+            `/${citySlug}/products`
+        : pathname ===
+            "/products";
     }
 
-    return pathname === slug;
-  };
-
-  /* ================= SEARCH ================= */
-
- const handleSearch = (e) => {
-  e.preventDefault();
-
-  if (!searchQuery.trim()) return;
-
-  const params = new URLSearchParams();
-  params.set("q", searchQuery);
-
-  if (citySlug) {
-    params.set("city", citySlug);
+    return (
+      pathname === slug
+    );
   }
 
-  router.push(`/search?${params.toString()}`);
+  /* =========================
+     SEARCH
+  ========================= */
 
-  setSearchQuery("");
-  setOpen(false);
-};
+  function handleSearch(
+    e
+  ) {
+    e.preventDefault();
+
+    if (
+      !searchQuery.trim()
+    )
+      return;
+
+    const params =
+      new URLSearchParams();
+
+    params.set(
+      "q",
+      searchQuery
+    );
+
+    if (citySlug) {
+      params.set(
+        "city",
+        citySlug
+      );
+    }
+
+    router.push(
+      `/search?${params.toString()}`
+    );
+
+    setSearchQuery("");
+    setOpen(false);
+  }
+
+  /* =========================
+     STYLE
+  ========================= */
 
   const headerStyle = `
     fixed top-0 z-50 w-full transition-all duration-300
@@ -133,12 +263,18 @@ const citySlug = urlCity || city?.slug || queryCity || null;
   `;
 
   return (
-    <header className={headerStyle}>
+    <header
+      className={
+        headerStyle
+      }
+    >
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
 
-        {/* ================= LOGO ================= */}
+        {/* LOGO */}
         <Link
-          href={buildHref("/")}
+          href={buildHref(
+            "/"
+          )}
           className="flex items-center flex-shrink-0"
         >
           <Image
@@ -151,144 +287,225 @@ const citySlug = urlCity || city?.slug || queryCity || null;
           />
         </Link>
 
-        {/* ================= DESKTOP SEARCH ================= */}
+        {/* SEARCH DESKTOP */}
         <div className="hidden md:flex flex-1 max-w-xl mx-6">
-          <form onSubmit={handleSearch} className="w-full relative">
+          <form
+            onSubmit={
+              handleSearch
+            }
+            className="w-full relative"
+          >
             <Search
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
               size={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
             />
+
             <input
               type="text"
               placeholder="Search rental products..."
+              value={
+                searchQuery
+              }
+              onChange={(
+                e
+              ) =>
+                setSearchQuery(
+                  e.target.value
+                )
+              }
               className="w-full h-10 pl-10 pr-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </form>
         </div>
 
-        {/* ================= RIGHT SIDE ================= */}
+        {/* RIGHT */}
         <div className="flex items-center gap-4">
+
           <CitySelect />
 
-          {/* ===== Desktop Nav ===== */}
+          {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-2 text-sm font-medium">
-            {NAV_ITEMS.map((item) => (
-              <Link
-                key={item.slug}
-                href={buildHref(item.slug)}
-                className={`px-4 py-2 rounded-md transition ${
-                  isActive(item.slug)
-                    ? "bg-blue-50 text-blue-600 font-semibold"
-                    : "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
-                }`}
-              >
-                {item.name}
-              </Link>
-            ))}
+            {NAV_ITEMS.map(
+              (
+                item
+              ) => (
+                <Link
+                  key={
+                    item.slug
+                  }
+                  href={buildHref(
+                    item.slug
+                  )}
+                  className={`px-4 py-2 rounded-md transition ${
+                    isActive(
+                      item.slug
+                    )
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : "text-gray-700 hover:bg-gray-100 hover:text-blue-600"
+                  }`}
+                >
+                  {
+                    item.name
+                  }
+                </Link>
+              )
+            )}
           </nav>
 
-          {/* ===== Desktop Login ===== */}
-          <div className="hidden lg:flex items-center ml-4">
-            <button className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition">
-              <Phone size={18} />
-              <span className="text-sm font-medium">Login</span>
-            </button>
+          {/* Call Button */}
+          <div className="hidden lg:flex">
+            <a
+              href="tel:7672876321"
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition"
+            >
+              <Phone
+                size={18}
+              />
+              <span className="text-sm font-medium">
+                Call
+                Us
+              </span>
+            </a>
           </div>
 
-          {/* ===== Mobile Menu Button ===== */}
+          {/* Mobile Menu */}
           <button
-            aria-label="Open menu"
-            className="lg:hidden text-gray-700"
-            onClick={() => setOpen(true)}
+            aria-label="Open Menu"
+            className="lg:hidden"
+            onClick={() =>
+              setOpen(
+                true
+              )
+            }
           >
-            <Menu size={24} />
+            <Menu
+              size={24}
+            />
           </button>
         </div>
       </div>
 
-      {/* ================= MOBILE MENU ================= */}
+      {/* MOBILE MENU */}
       {open && (
         <div className="fixed inset-0 z-[60] bg-white flex flex-col">
 
-          {/* Mobile Header */}
+          {/* Header */}
           <div className="flex items-center justify-between p-4 border-b">
             <Link
-              href={buildHref("/")}
-              onClick={() => setOpen(false)}
-              className="flex items-center gap-2"
+              href={buildHref(
+                "/"
+              )}
+              onClick={() =>
+                setOpen(
+                  false
+                )
+              }
             >
               <Image
-            src="https://res.cloudinary.com/dlwcvgox7/image/upload/v1771352145/posts/hjrudbleo4u5omzm3ami.png"
-            alt="KirayNow Logo"
-            width={120}
-            height={32}
-            priority
-            className="object-contain h-8 w-auto"
-          />
+                src="https://res.cloudinary.com/dlwcvgox7/image/upload/v1771352145/posts/hjrudbleo4u5omzm3ami.png"
+                alt="KirayNow Logo"
+                width={120}
+                height={32}
+                className="object-contain h-8 w-auto"
+              />
             </Link>
 
-            <button onClick={() => setOpen(false)}>
-              <X size={24} />
+            <button
+              onClick={() =>
+                setOpen(
+                  false
+                )
+              }
+            >
+              <X
+                size={24}
+              />
             </button>
           </div>
 
-          {/* Mobile Search */}
+          {/* Search */}
           <div className="p-4 border-b">
-            <form onSubmit={handleSearch} className="relative">
+            <form
+              onSubmit={
+                handleSearch
+              }
+              className="relative"
+            >
               <Search
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
                 size={18}
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
               />
+
               <input
                 type="text"
                 placeholder="Search..."
-                className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={
+                  searchQuery
+                }
+                onChange={(
+                  e
+                ) =>
+                  setSearchQuery(
+                    e.target.value
+                  )
+                }
+                className="w-full pl-10 pr-4 py-3 border rounded-lg"
               />
             </form>
           </div>
 
-          {/* Mobile Nav Links */}
-          <div className="flex flex-col h-full">
-
-  {/* MENU ITEMS */}
-  <div className="flex-1 overflow-y-auto p-4 space-y-1">
-    {NAV_ITEMS.map((item) => (
-      <Link
-        key={item.slug}
-        href={buildHref(item.slug)}
-        onClick={() => setOpen(false)}
-        className={`block px-4 py-3 rounded-lg transition ${
-          isActive(item.slug)
-            ? "bg-blue-50 text-blue-600"
-            : "text-gray-700 hover:bg-gray-100"
-        }`}
-      >
-        {item.name}
-      </Link>
-    ))}
-  </div>
-
-  {/* CALL BUTTON SECTION */}
-  <div className="p-4 border-t bg-white">
-    <a
-      href="tel:7672876321"
-      onClick={() => setOpen(false)}
-      className="flex items-center justify-center gap-2 w-full bg-blue-800 text-white py-3 rounded-xl font-medium shadow-md hover:scale-[1.02] transition duration-200"
-    >
-      <Phone size={18} />
-      Call Us
-    </a>
-  </div>
-
-</div>
+          {/* Links */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            {NAV_ITEMS.map(
+              (
+                item
+              ) => (
+                <Link
+                  key={
+                    item.slug
+                  }
+                  href={buildHref(
+                    item.slug
+                  )}
+                  onClick={() =>
+                    setOpen(
+                      false
+                    )
+                  }
+                  className={`block px-4 py-3 rounded-lg ${
+                    isActive(
+                      item.slug
+                    )
+                      ? "bg-blue-50 text-blue-600"
+                      : "hover:bg-gray-100 text-gray-700"
+                  }`}
+                >
+                  {
+                    item.name
+                  }
+                </Link>
+              )
+            )}
+          </div>
 
           {/* Footer */}
-          <div className="border-t p-4 text-center text-sm text-gray-500">
-            © {new Date().getFullYear()} KirayNow. All rights reserved.
+          <div className="p-4 border-t space-y-3">
+            <a
+              href="tel:7672876321"
+              className="flex items-center justify-center gap-2 w-full bg-blue-800 text-white py-3 rounded-xl"
+            >
+              <Phone
+                size={18}
+              />
+              Call Us
+            </a>
+
+            <div className="text-center text-sm text-gray-500">
+              © 2026
+              KirayNow.
+              All rights
+              reserved.
+            </div>
           </div>
         </div>
       )}
