@@ -9,43 +9,19 @@ import {
 } from "react";
 
 import { usePathname } from "next/navigation";
-import { apiRequest } from "@/lib/api";
 
 const CityContext = createContext(null);
 
-export function CityProvider({ children }) {
+export function CityProvider({
+  children,
+  initialCities = [],
+}) {
   const pathname = usePathname();
 
-  const [cities, setCities] = useState([]);
+  const [cities] = useState(initialCities);
   const [city, setCity] = useState(null);
   const [ready, setReady] = useState(false);
 
-  // fetch only once
-  useEffect(() => {
-    let mounted = true;
-
-    async function loadCities() {
-      try {
-        const res = await apiRequest(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/cities?page=1&limit=100`
-        );
-
-        if (mounted) {
-          setCities(res?.data || []);
-        }
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
-    loadCities();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
-
-  // route/local storage sync
   useEffect(() => {
     if (!cities.length) return;
 
@@ -58,18 +34,18 @@ export function CityProvider({ children }) {
 
     if (routeCity) {
       setCity(routeCity);
+
       localStorage.setItem(
         "selectedCity",
         JSON.stringify(routeCity)
       );
+
       setReady(true);
       return;
     }
 
     const saved =
-      localStorage.getItem(
-        "selectedCity"
-      );
+      localStorage.getItem("selectedCity");
 
     if (saved) {
       try {
@@ -79,7 +55,7 @@ export function CityProvider({ children }) {
       } catch {}
     }
 
-    setCity(cities[0] || null);
+    setCity(cities[0]);
     setReady(true);
   }, [pathname, cities]);
 

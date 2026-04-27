@@ -5,6 +5,7 @@ import Footer from "@/components/layout/Footer";
 import { CityProvider } from "@/context/CityContext";
 import { GoogleAnalytics } from '@next/third-parties/google'
 import { Suspense } from "react";
+import { getCities } from "@/lib/getCities";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -78,8 +79,9 @@ export const viewport = {
   themeColor: "#fafafa",
 }
 
-export default function RootLayout({ children }) {
+export default async function RootLayout({ children }) {
   const baseUrl = "https://kiraynow.com";
+  const cities = await getCities();
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -132,7 +134,7 @@ export default function RootLayout({ children }) {
 
         <GoogleAnalytics gaId="G-WECCB5R9ZC" />
 
-        <CityProvider>
+        <CityProvider initialCities={cities}>
           <Suspense fallback={null}>
             <Navbar />
           </Suspense>

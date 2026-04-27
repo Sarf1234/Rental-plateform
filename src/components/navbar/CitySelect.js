@@ -7,29 +7,15 @@ import { apiRequest } from "@/lib/api";
 import { MapPin, Search } from "lucide-react";
 
 export default function CitySelect() {
-  const { city, updateCity, ready } = useCity();
+  const { city, cities, updateCity, ready } = useCity();
 
-  const [cities, setCities] = useState([]);
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
 
   const router = useRouter();
   const pathname = usePathname();
 
-  /* LOAD CITIES */
-  useEffect(() => {
-    async function loadCities() {
-      try {
-        const res = await apiRequest(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/cities?page=1&limit=100`
-        );
-        setCities(res?.data || []);
-      } catch (error) {
-        console.error("City load failed:", error);
-      }
-    }
-    loadCities();
-  }, []);
+
 
   /* CHANGE CITY */
   function handleChange(selectedCity) {
