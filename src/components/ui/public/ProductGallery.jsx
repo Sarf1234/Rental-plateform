@@ -46,6 +46,7 @@ export default function ProductGallery({ images = [], title }) {
                 src={img}
                 alt={`${title} thumbnail ${i + 1}`}
                 fill
+                loading="lazy"
                 sizes="90px"
                 className="object-cover object-center"
               />
@@ -70,20 +71,17 @@ export default function ProductGallery({ images = [], title }) {
           "
         >
           <Image
-            src={activeImage}
-            alt={title}
-            fill
-            priority
-            sizes="(max-width: 768px) 100vw, 700px"
-            className="
-              object-cover
-              md:object-contain
-              object-center
-              transition-transform
-              duration-500
-              group-hover:scale-105
-            "
-          />
+  src={activeImage}
+  alt={title}
+  fill
+  priority
+  fetchPriority="high"
+  loading="eager"
+  placeholder="blur"
+  blurDataURL="data:image..."
+  sizes="(max-width:768px) 100vw, 700px"
+  className="object-cover md:object-contain"
+/>
         </div>
 
       </div>

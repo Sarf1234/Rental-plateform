@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 import FlagsCards from "@/components/ui/public/FlagsCards";
 import Servicecards from "@/components/ui/public/Servicecards";
 import ProviderCards from "@/components/ui/public/ProviderCards";
+import { Suspense } from "react";
 
 export const revalidate = 3600;
 export const dynamic = "force-static";
@@ -18,7 +19,7 @@ async function getProductData(slug, productSlug) {
     {
       next: { revalidate: 3600 },
       cache: "force-cache",
-    }
+    },
   );
 
   if (!res.ok) return null;
@@ -163,57 +164,54 @@ export default async function ProductPage({ params }) {
    MERGE FAQ (LOCATION + PRODUCT)
 ========================= */
 
-const locationFaqs = locationContext?.faq || [];
-const productFaqs = rawFaqs || [];
+  const locationFaqs = locationContext?.faq || [];
+  const productFaqs = rawFaqs || [];
 
-// 🔥 Step 1: Process product FAQs (existing logic)
-const processedProductFaqs = productFaqs.map((faq) => {
-  let question = faq.question;
-  let answer = faq.answer;
+  // 🔥 Step 1: Process product FAQs (existing logic)
+  const processedProductFaqs = productFaqs.map((faq) => {
+    let question = faq.question;
+    let answer = faq.answer;
 
-  if (cityName) {
-    // replace {city}
-    question = question.replace(/\{city\}/gi, cityName);
-    answer = answer.replace(/\{city\}/gi, cityName);
+    if (cityName) {
+      // replace {city}
+      question = question.replace(/\{city\}/gi, cityName);
+      answer = answer.replace(/\{city\}/gi, cityName);
 
-    // smart pricing injection
-    const pricingKeywords = ["price", "rent", "rental", "cost", "how much"];
-    const lowerQ = question.toLowerCase();
+      // smart pricing injection
+      const pricingKeywords = ["price", "rent", "rental", "cost", "how much"];
+      const lowerQ = question.toLowerCase();
 
-    const shouldInject =
-      pricingKeywords.some((k) => lowerQ.includes(k)) &&
-      !lowerQ.includes(cityName.toLowerCase());
+      const shouldInject =
+        pricingKeywords.some((k) => lowerQ.includes(k)) &&
+        !lowerQ.includes(cityName.toLowerCase());
 
-    if (shouldInject) {
-      if (question.includes("?")) {
-        question = question.replace("?", ` in ${cityName}?`);
-      } else {
-        question = `${question} in ${cityName}`;
+      if (shouldInject) {
+        if (question.includes("?")) {
+          question = question.replace("?", ` in ${cityName}?`);
+        } else {
+          question = `${question} in ${cityName}`;
+        }
       }
     }
-  }
 
-  return { question, answer };
-});
+    return { question, answer };
+  });
 
-// 🔥 Step 2: Process location FAQs (NEW)
-const processedLocationFaqs = locationFaqs.map((faq) => {
-  let question = faq.question;
-  let answer = faq.answer;
+  // 🔥 Step 2: Process location FAQs (NEW)
+  const processedLocationFaqs = locationFaqs.map((faq) => {
+    let question = faq.question;
+    let answer = faq.answer;
 
-  if (cityName) {
-    question = question.replace(/\{city\}/gi, cityName);
-    answer = answer.replace(/\{city\}/gi, cityName);
-  }
+    if (cityName) {
+      question = question.replace(/\{city\}/gi, cityName);
+      answer = answer.replace(/\{city\}/gi, cityName);
+    }
 
-  return { question, answer };
-});
+    return { question, answer };
+  });
 
-// 🔥 Step 3: Merge (LOCATION FIRST 🚀)
-const faqs = [
-  ...processedLocationFaqs,
-  ...processedProductFaqs,
-].slice(0, 10); // limit for SEO
+  // 🔥 Step 3: Merge (LOCATION FIRST 🚀)
+  const faqs = [...processedLocationFaqs, ...processedProductFaqs].slice(0, 10); // limit for SEO
 
   function replaceDynamicTokens(text, cityName, price) {
     if (!text) return text;
@@ -237,7 +235,7 @@ const faqs = [
   }
 
   const primaryPrice =
-   pricing?.discountedPrice || pricing?.minPrice ||  pricing?.amount || 1000;
+    pricing?.discountedPrice || pricing?.minPrice || pricing?.amount || 1000;
 
   const processedDescription = replaceDynamicTokens(
     description,
@@ -316,15 +314,15 @@ const faqs = [
         "@id": `${productUrl}#product`,
         name: `${title} in ${cityName}`,
         image: images,
-        description: locationContext?.customIntro ||  processedDescription
-          ?.replace(/<[^>]+>/g, "")
-          .slice(0, 500),
+        description:
+          locationContext?.customIntro ||
+          processedDescription?.replace(/<[^>]+>/g, "").slice(0, 500),
 
         brand: {
-            "@type": "Organization",
-            name: "KirayNow",
-            url: baseUrl
-          },
+          "@type": "Organization",
+          name: "KirayNow",
+          url: baseUrl,
+        },
 
         seller,
 
@@ -398,16 +396,33 @@ const faqs = [
                 isMainHeading={true}
               />
             </div>
-            {vendors.length > 0 && <ProviderCards data={vendors} citySlug={slug} productName={title} />}
-            <ProductDescription
-              description={processedDescription}
-              title={title}
-              cityData={data?.city}
-              pricing={pricing}
-              locationContext={locationContext}
-            />
-            <ProductFAQ faqs={faqs} cityData={data?.city} />
-            <ProductTerms terms={processedTerms} />
+            <Suspense fallback={<div className="h-24" />}>
+              {vendors.length > 0 && (
+                <ProviderCards
+                  data={vendors}
+                  citySlug={slug}
+                  productName={title}
+                />
+              )}
+            </Suspense>
+
+            <Suspense fallback={<div className="h-32" />}>
+              <ProductDescription
+                description={processedDescription}
+                title={title}
+                cityData={data?.city}
+                pricing={pricing}
+                locationContext={locationContext}
+              />
+            </Suspense>
+
+            <Suspense fallback={<div className="h-24" />}>
+              <ProductFAQ faqs={faqs} cityData={data?.city} />
+            </Suspense>
+
+            <Suspense fallback={<div className="h-24" />}>
+              <ProductTerms terms={processedTerms} />
+            </Suspense>
           </div>
 
           {/* RIGHT SIDE (STICKY CARD) */}
@@ -429,37 +444,39 @@ const faqs = [
           </div>
         </div>
       </div>
-      {suggestedProducts.length > 0 ? (
-        <FlagsCards
-          data={suggestedProducts}
-          citySlug={slug}
-          title={`Related Rental Products in ${city?.name}`}
-        />
-      ) : relatedProducts.length > 0 ? (
-        <FlagsCards
-          data={relatedProducts}
-          citySlug={slug}
-          title={`Related Rental Products in ${city?.name}`}
-        />
-      ) : null}
+      <Suspense fallback={<div className="h-40" />}>
+        {suggestedProducts.length > 0 ? (
+          <FlagsCards
+            data={suggestedProducts}
+            citySlug={slug}
+            title={`Related Rental Products in ${city?.name}`}
+          />
+        ) : relatedProducts.length > 0 ? (
+          <FlagsCards
+            data={relatedProducts}
+            citySlug={slug}
+            title={`Related Rental Products in ${city?.name}`}
+          />
+        ) : null}
+      </Suspense>
 
-      {suggestedServices.length > 0 ? (
-        <Servicecards
-          data={suggestedServices}
-          citySlug={slug}
-          title={`Services That Use This Product in ${city?.name}`}
-          subtitle={`Top-rated services in ${city?.name} that use this product`}
-        />
-      ) : relatedServices.length > 0 ? (
-        <Servicecards
-          data={relatedServices}
-          citySlug={slug}
-          title={`Services That Use This Product in ${city?.name}`}
-          subtitle={`Top-rated services in ${city?.name} that use this product`}
-        />
-      ) : null}
-
-      
+      <Suspense fallback={<div className="h-40" />}>
+        {suggestedServices.length > 0 ? (
+          <Servicecards
+            data={suggestedServices}
+            citySlug={slug}
+            title={`Services That Use This Product in ${city?.name}`}
+            subtitle={`Top-rated services in ${city?.name}`}
+          />
+        ) : relatedServices.length > 0 ? (
+          <Servicecards
+            data={relatedServices}
+            citySlug={slug}
+            title={`Services That Use This Product in ${city?.name}`}
+            subtitle={`Top-rated services in ${city?.name}`}
+          />
+        ) : null}
+      </Suspense>
     </div>
   );
 }
