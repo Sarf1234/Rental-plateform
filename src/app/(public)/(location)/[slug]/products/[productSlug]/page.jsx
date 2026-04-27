@@ -8,6 +8,7 @@ import { notFound } from "next/navigation";
 import FlagsCards from "@/components/ui/public/FlagsCards";
 import Servicecards from "@/components/ui/public/Servicecards";
 import ProviderCards from "@/components/ui/public/ProviderCards";
+import { Suspense } from "react";
 
 export const revalidate = 3600;
 export const dynamic = "force-static";
@@ -429,37 +430,38 @@ const faqs = [
           </div>
         </div>
       </div>
-      {suggestedProducts.length > 0 ? (
-        <FlagsCards
-          data={suggestedProducts}
-          citySlug={slug}
-          title={`Related Rental Products in ${city?.name}`}
-        />
-      ) : relatedProducts.length > 0 ? (
-        <FlagsCards
-          data={relatedProducts}
-          citySlug={slug}
-          title={`Related Rental Products in ${city?.name}`}
-        />
-      ) : null}
+      <Suspense fallback={<div className="h-40" />}>
+        {suggestedProducts.length > 0 ? (
+          <FlagsCards
+            data={suggestedProducts}
+            citySlug={slug}
+            title={`Related Rental Products in ${city?.name}`}
+          />
+        ) : relatedProducts.length > 0 ? (
+          <FlagsCards
+            data={relatedProducts}
+            citySlug={slug}
+            title={`Related Rental Products in ${city?.name}`}
+          />
+        ) : null}
 
-      {suggestedServices.length > 0 ? (
-        <Servicecards
-          data={suggestedServices}
-          citySlug={slug}
-          title={`Services That Use This Product in ${city?.name}`}
-          subtitle={`Top-rated services in ${city?.name} that use this product`}
-        />
-      ) : relatedServices.length > 0 ? (
-        <Servicecards
-          data={relatedServices}
-          citySlug={slug}
-          title={`Services That Use This Product in ${city?.name}`}
-          subtitle={`Top-rated services in ${city?.name} that use this product`}
-        />
-      ) : null}
+        {suggestedServices.length > 0 ? (
+          <Servicecards
+            data={suggestedServices}
+            citySlug={slug}
+            title={`Services That Use This Product in ${city?.name}`}
+            subtitle={`Top-rated services in ${city?.name} that use this product`}
+          />
+        ) : relatedServices.length > 0 ? (
+          <Servicecards
+            data={relatedServices}
+            citySlug={slug}
+            title={`Services That Use This Product in ${city?.name}`}
+            subtitle={`Top-rated services in ${city?.name} that use this product`}
+          />
+        ) : null}
 
-      
+      </Suspense>
     </div>
   );
 }
