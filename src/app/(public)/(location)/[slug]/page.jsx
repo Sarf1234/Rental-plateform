@@ -333,7 +333,7 @@ export default async function CityHome({ params }) {
       {/* SEO H1 + SHORT INTRO */}
       <section className="max-w-5xl mx-auto px-4 py-12 text-center">
         <h1 className="text-3xl md:text-4xl font-semibold text-gray-900">
-          Birthday, Wedding & Party Rental Services in {cityName}
+          Events, Party, Wedding & Birthday Rental Services in {cityName}
         </h1>
 
         <p className="mt-5 text-gray-600 leading-relaxed text-sm md:text-base">
