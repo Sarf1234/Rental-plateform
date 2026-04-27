@@ -66,43 +66,51 @@ export async function PUT(req, { params }) {
     const body = await req.json();
 
     const city = await City.findOne({ slug });
+
     if (!city) {
       return NextResponse.json(
         { success: false, message: "City not found" },
-        { status: 404 },
+        { status: 404 }
       );
-    }
-
-    // slug update
-    if (body.slug || body.name) {
-      const newSlug = body.slug ? createSlug(body.slug) : createSlug(body.name);
-
-      if (newSlug !== city.slug) {
-        const exists = await City.findOne({ slug: newSlug });
-
-        if (exists) {
-          return NextResponse.json(
-            { success: false, message: "City already exists" },
-            { status: 409 },
-          );
-        }
-
-        city.slug = newSlug;
-      }
     }
 
     if (body.name !== undefined) city.name = body.name;
     if (body.state !== undefined) city.state = body.state;
-    if (body.seo !== undefined) city.seo = body.seo;
-    if (body.geo !== undefined) city.geo = body.geo;
-    if (body.isActive !== undefined) city.isActive = !!body.isActive;
+
+   if (body.footer !== undefined) {
+  if (!city.footer) {
+    city.footer = {};
+  }
+
+  city.footer = {
+    ...city.footer,
+    ...body.footer,
+  };
+
+  city.markModified("footer");
+}
+
+    if (body.seo !== undefined) {
+      city.seo = body.seo;
+      city.markModified("seo");
+    }
+
+    if (body.geo !== undefined) {
+      city.geo = body.geo;
+      city.markModified("geo");
+    }
+
+    if (body.isActive !== undefined) {
+      city.isActive = !!body.isActive;
+    }
 
     if (Array.isArray(body.subAreas)) {
       city.subAreas = body.subAreas.map((a) => ({
         name: a.name?.trim(),
         isActive: a.isActive !== false,
-        priority: a.priority || 0,
+        priority: a.priority ?? 0,
       }));
+      city.markModified("subAreas");
     }
 
     await city.save();
@@ -113,18 +121,9 @@ export async function PUT(req, { params }) {
       message: "City updated",
     });
   } catch (err) {
-    console.error("PUT /api/cities/[slug] error:", err);
-
-    if (err.code === 11000) {
-      return NextResponse.json(
-        { success: false, message: "Duplicate slug" },
-        { status: 409 },
-      );
-    }
-
     return NextResponse.json(
       { success: false, message: err.message },
-      { status: 500 },
+      { status: 500 }
     );
   }
 }

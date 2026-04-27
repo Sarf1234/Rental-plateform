@@ -26,22 +26,39 @@ const CitySchema = new mongoose.Schema(
     },
 
     subAreas: [
-  {
-    name: {
-      type: String,
-      required: true,
-      trim: true,
+      {
+        name: {
+          type: String,
+          required: true,
+          trim: true,
+        },
+        isActive: {
+          type: Boolean,
+          default: true,
+        },
+        priority: {
+          type: Number,
+          default: 0,
+        },
+      },
+    ],
+
+    footer: {
+      address: String,
+      phone: String,
+      alternatePhone: String,
+      email: String,
+      whatsapp: String,
+      workingHours: String,
+      supportText: String,
+      socialLinks: {
+        facebook: String,
+        instagram: String,
+        twitter: String,
+        youtube: String,
+        linkedin: String,
+      },
     },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
-    priority: {
-      type: Number,
-      default: 0,
-    },
-  },
-],
 
     /* ---------- SEO METADATA ---------- */
     seo: {
@@ -100,10 +117,9 @@ const CitySchema = new mongoose.Schema(
       index: true,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
-const City =
-  mongoose.models.City || mongoose.model("City", CitySchema);
+const City = mongoose.models.City || mongoose.model("City", CitySchema);
 
 export default City;

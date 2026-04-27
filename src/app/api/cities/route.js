@@ -39,7 +39,7 @@ export async function GET(req) {
     const total = await City.countDocuments(filter);
 
     const cities = await City.find(filter)
-      .select("name slug state subAreas seo isActive createdAt")
+      .select("name slug state subAreas footer seo geo isActive createdAt")
       .sort({ state: 1, name: 1 })
       .skip(skip)
       .limit(limit)
@@ -89,7 +89,7 @@ if (exists) {
   );
 }
 
-   const city = await City.create({
+  const city = await City.create({
   name: body.name,
   slug,
   state: body.state,
@@ -101,6 +101,8 @@ if (exists) {
         priority: a.priority || 0,
       }))
     : [],
+
+  footer: body.footer || {},
 
   seo: body.seo || {},
   geo: body.geo || {},

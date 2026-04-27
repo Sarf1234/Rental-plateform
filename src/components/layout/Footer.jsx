@@ -10,8 +10,12 @@ import {
 } from "lucide-react";
 import FooterServiceCategories from "./FooterServiceCategories";
 import { Suspense } from "react";
+import FooterContact from "./FooterContact";
+
 
 export default function Footer() {
+
+ 
   return (
     <footer className="relative bg-gradient-to-b from-gray-50 to-white border-t border-gray-200 ">
       <div className="max-w-7xl mx-auto px-6 py-16">
@@ -126,16 +130,7 @@ export default function Footer() {
             </ul>
 
             {/* Contact Info */}
-            <div className="space-y-3 text-gray-600 text-center md:text-left">
-              <div className="flex items-center justify-center md:justify-start gap-2">
-                <Mail size={16} />
-                <span>kiraynow@gmail.com</span>
-              </div>
-              <div className="flex items-center justify-center md:justify-start gap-2">
-                <Phone size={16} />
-                <span>+91 7672876321</span>
-              </div>
-            </div>
+            <FooterContact />
           </div>
         </div>
 

@@ -20,7 +20,7 @@ export default function CreateCityPage() {
   }
 
   return (
-    <div className="p-6 max-w-5xl mx-auto">
+    <div className="p-6 mx-auto">
       <h2 className="text-2xl font-semibold text-blue-600 mb-4">
         Create City
       </h2>
