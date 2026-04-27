@@ -1,6 +1,13 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+
 import { usePathname } from "next/navigation";
 import { apiRequest } from "@/lib/api";
 
@@ -9,93 +16,94 @@ const CityContext = createContext(null);
 export function CityProvider({ children }) {
   const pathname = usePathname();
 
-  const [city, setCity] = useState(null);
   const [cities, setCities] = useState([]);
+  const [city, setCity] = useState(null);
   const [ready, setReady] = useState(false);
 
+  // fetch only once
   useEffect(() => {
-    async function initCity() {
+    let mounted = true;
+
+    async function loadCities() {
       try {
-
-        /* ================= LOAD CITIES ================= */
-
         const res = await apiRequest(
           `${process.env.NEXT_PUBLIC_API_URL}/api/cities?page=1&limit=100`
         );
 
-        const allCities = res?.data || [];
-
-        setCities(allCities);
-
-        const segments = pathname.split("/").filter(Boolean);
-        const urlCitySlug = segments[0];
-
-        /* ================= URL CITY ================= */
-
-        const urlCity = allCities.find(
-          (c) => c.slug === urlCitySlug
-        );
-
-        if (urlCity) {
-          setCity(urlCity);
-
-          localStorage.setItem(
-            "selectedCity",
-            JSON.stringify(urlCity)
-          );
-
-          setReady(true);
-          return;
+        if (mounted) {
+          setCities(res?.data || []);
         }
-
-        /* ================= LOCAL STORAGE ================= */
-
-        const savedCity = localStorage.getItem("selectedCity");
-
-        if (savedCity) {
-          const parsed = JSON.parse(savedCity);
-          setCity(parsed);
-          setReady(true);
-          return;
-        }
-
-        /* ================= DEFAULT ================= */
-
-        const firstCity = allCities[0];
-
-        if (firstCity) {
-          setCity(firstCity);
-
-          localStorage.setItem(
-            "selectedCity",
-            JSON.stringify(firstCity)
-          );
-        }
-
-        setReady(true);
-
-      } catch (err) {
-        console.error("City init failed:", err);
-        setReady(true);
+      } catch (e) {
+        console.error(e);
       }
     }
 
-    initCity();
-  }, [pathname]);
+    loadCities();
 
-  function updateCity(newCity) {
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  // route/local storage sync
+  useEffect(() => {
+    if (!cities.length) return;
+
+    const slug =
+      pathname.split("/").filter(Boolean)[0];
+
+    const routeCity = cities.find(
+      (c) => c.slug === slug
+    );
+
+    if (routeCity) {
+      setCity(routeCity);
+      localStorage.setItem(
+        "selectedCity",
+        JSON.stringify(routeCity)
+      );
+      setReady(true);
+      return;
+    }
+
+    const saved =
+      localStorage.getItem(
+        "selectedCity"
+      );
+
+    if (saved) {
+      try {
+        setCity(JSON.parse(saved));
+        setReady(true);
+        return;
+      } catch {}
+    }
+
+    setCity(cities[0] || null);
+    setReady(true);
+  }, [pathname, cities]);
+
+  const updateCity = (newCity) => {
     setCity(newCity);
 
     localStorage.setItem(
       "selectedCity",
       JSON.stringify(newCity)
     );
-  }
+  };
+
+  const value = useMemo(
+    () => ({
+      city,
+      cities,
+      ready,
+      updateCity,
+    }),
+    [city, cities, ready]
+  );
 
   return (
-    <CityContext.Provider
-      value={{ city, cities, updateCity, ready }}
-    >
+    <CityContext.Provider value={value}>
       {children}
     </CityContext.Provider>
   );
