@@ -181,21 +181,38 @@ function ImageUpload({ images, setImages }) {
     try {
       const res = await apiRequest("/api/upload", "POST", fd);
       const url = res.data?.url || res.url;
-      setImages((prev) => [...prev, url]);
+
+      setImages((prev) => {
+        if (prev.includes(url)) {
+          toast.error("Duplicate image");
+          return prev;
+        }
+        return [...prev, url];
+      });
+
       toast.success("Image uploaded");
     } catch {
       toast.error("Image upload failed");
     }
   }
 
+  // 🔥 REORDER
+  const moveImage = (from, to) => {
+    const updated = [...images];
+    const [moved] = updated.splice(from, 1);
+    updated.splice(to, 0, moved);
+    setImages(updated);
+  };
+
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <Label className="text-sm font-medium text-rose-700">
         Service Images
       </Label>
 
-      <label className="flex h-40 cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-rose-200 bg-rose-50 text-center hover:bg-rose-100 transition">
-        <div>
+      {/* UPLOAD */}
+      <label className="flex h-40 cursor-pointer flex-col items-center justify-center rounded-md border border-dashed border-rose-200 bg-rose-50 hover:bg-rose-100 transition">
+        <div className="text-center">
           <div className="text-rose-600 font-medium">
             Click to upload image
           </div>
@@ -211,23 +228,104 @@ function ImageUpload({ images, setImages }) {
         />
       </label>
 
+      {/* 🔥 REUSE (PASTE URL) */}
+      <Input
+        placeholder="Paste existing image URL and press Enter"
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            const url = e.target.value.trim();
+
+            if (!url) return;
+
+            if (!url.includes("cloudinary.com")) {
+              toast.error("Invalid image URL");
+              return;
+            }
+
+            if (images.includes(url)) {
+              toast.error("Already added");
+              return;
+            }
+
+            setImages((prev) => [...prev, url]);
+            e.target.value = "";
+          }
+        }}
+      />
+
+      {/* GRID */}
       {images.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-          {images.map((img) => (
-            <div key={img} className="relative group">
+          {images.map((img, index) => (
+            <div
+              key={img + index}
+              className="relative group"
+            >
               <img
                 src={img}
+                onError={(e) => {
+                  e.currentTarget.src =
+                    "/placeholder.png";
+                }}
                 className="h-28 w-full rounded-md object-cover border"
               />
+
+              {/* REMOVE */}
               <button
                 type="button"
                 onClick={() =>
-                  setImages(images.filter((i) => i !== img))
+                  setImages(
+                    images.filter(
+                      (i) => i !== img
+                    )
+                  )
                 }
-                className="absolute top-1 right-1 rounded bg-black/70 px-2 text-white opacity-0 group-hover:opacity-100"
+                className="absolute top-1 right-1 bg-black/70 px-2 text-white text-xs rounded opacity-0 group-hover:opacity-100"
               >
                 ×
               </button>
+
+              {/* MOVE */}
+              <div className="absolute bottom-1 left-1 flex gap-1">
+                {index > 0 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      moveImage(
+                        index,
+                        index - 1
+                      )
+                    }
+                    className="bg-white text-xs px-2 rounded"
+                  >
+                    ↑
+                  </button>
+                )}
+
+                {index <
+                  images.length - 1 && (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      moveImage(
+                        index,
+                        index + 1
+                      )
+                    }
+                    className="bg-white text-xs px-2 rounded"
+                  >
+                    ↓
+                  </button>
+                )}
+              </div>
+
+              {/* THUMBNAIL */}
+              {index === 0 && (
+                <div className="absolute top-1 left-1 bg-green-600 text-white text-xs px-2 rounded">
+                  Thumbnail
+                </div>
+              )}
             </div>
           ))}
         </div>

@@ -61,6 +61,9 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }) {
           <Link href="/admin/services/categories" className="block p-2 rounded hover:bg-gray-100">
             Services categories
           </Link>
+          <Link href="/admin/cloudnary-images" className="block p-2 rounded hover:bg-gray-100">
+            all images
+          </Link>
 
           {/* Users */}
           {/* <div>

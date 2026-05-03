@@ -53,10 +53,7 @@ function MultiSelect({
   }, []);
 
   const filtered = options.filter((o) =>
-    (o.name || "")
-      .toString()
-      .toLowerCase()
-      .includes(q.toLowerCase()),
+    (o.name || "").toString().toLowerCase().includes(q.toLowerCase()),
   );
 
   function toggle(id) {
@@ -94,9 +91,7 @@ function MultiSelect({
             })}
           </div>
         )}
-        <span className="ml-auto text-xs text-rose-500">
-          {value.length}
-        </span>
+        <span className="ml-auto text-xs text-rose-500">{value.length}</span>
       </button>
 
       {open && (
@@ -122,17 +117,13 @@ function MultiSelect({
                     className="w-4 h-4 accent-rose-600"
                   />
                   <div className="text-sm">
-                    <div className="font-medium text-rose-700">
-                      {o.name}
-                    </div>
+                    <div className="font-medium text-rose-700">{o.name}</div>
                   </div>
                 </label>
               );
             })}
             {filtered.length === 0 && (
-              <div className="text-sm text-gray-400 px-2 py-2">
-                No results
-              </div>
+              <div className="text-sm text-gray-400 px-2 py-2">No results</div>
             )}
           </div>
         </div>
@@ -151,9 +142,7 @@ export default function ProductForm({ initialData = {}, onSubmit }) {
   /* CORE */
   const [title, setTitle] = useState(initialData.title || "");
   const [slug, setSlug] = useState(initialData.slug || "");
-  const [description, setDescription] = useState(
-    initialData.description || "",
-  );
+  const [description, setDescription] = useState(initialData.description || "");
 
   /* MEDIA */
   const [images, setImages] = useState(initialData.images || []);
@@ -183,14 +172,10 @@ export default function ProductForm({ initialData = {}, onSubmit }) {
   const [faqs, setFaqs] = useState(initialData.faqs || []);
 
   /* TERMS */
-  const [terms, setTerms] = useState(
-    initialData.termsAndConditions || "",
-  );
+  const [terms, setTerms] = useState(initialData.termsAndConditions || "");
 
   /* STATUS */
-  const [status, setStatus] = useState(
-    initialData.status || "draft",
-  );
+  const [status, setStatus] = useState(initialData.status || "draft");
 
   /* HIGHLIGHTS */
   const [highlights, setHighlights] = useState({
@@ -214,49 +199,45 @@ export default function ProductForm({ initialData = {}, onSubmit }) {
   const [allTags, setAllTags] = useState([]);
   const [allCities, setAllCities] = useState([]);
   const [suggestedProducts, setSuggestedProducts] = useState(
-  (initialData.suggestedProducts || []).map((p) => p._id || p)
-);
+    (initialData.suggestedProducts || []).map((p) => p._id || p),
+  );
 
-const [suggestedServices, setSuggestedServices] = useState(
-  (initialData.suggestedServices || []).map((s) => s._id || s)
-);
-const [allProducts, setAllProducts] = useState([]);
-const [allServices, setAllServices] = useState([]);
+  const [suggestedServices, setSuggestedServices] = useState(
+    (initialData.suggestedServices || []).map((s) => s._id || s),
+  );
+  const [allProducts, setAllProducts] = useState([]);
+  const [allServices, setAllServices] = useState([]);
   const fileInputRef = useRef(null);
 
-useEffect(() => {
-  apiRequest("/api/products/categories").then((r) =>
-    setAllCategories(r.data || [])
-  );
+  useEffect(() => {
+    apiRequest("/api/products/categories").then((r) =>
+      setAllCategories(r.data || []),
+    );
 
-  apiRequest("/api/products/tags").then((r) =>
-    setAllTags(r.data || [])
-  );
+    apiRequest("/api/products/tags").then((r) => setAllTags(r.data || []));
 
-  apiRequest("/api/cities").then((r) =>
-    setAllCities(r.data || [])
-  );
+    apiRequest("/api/cities").then((r) => setAllCities(r.data || []));
 
-  apiRequest("/api/products?limit=200").then((r) => {
-    const products =
-      r.data?.map((p) => ({
-        ...p,
-        name: p.title,
-      })) || [];
+    apiRequest("/api/products?limit=200").then((r) => {
+      const products =
+        r.data?.map((p) => ({
+          ...p,
+          name: p.title,
+        })) || [];
 
-    setAllProducts(products);
-  });
+      setAllProducts(products);
+    });
 
-  apiRequest("/api/service/admin?limit=200").then((r) => {
-    const services =
-      r.data?.map((s) => ({
-        ...s,
-        name: s.title,
-      })) || [];
+    apiRequest("/api/service/admin?limit=200").then((r) => {
+      const services =
+        r.data?.map((s) => ({
+          ...s,
+          name: s.title,
+        })) || [];
 
-    setAllServices(services);
-  });
-}, []);
+      setAllServices(services);
+    });
+  }, []);
 
   useEffect(() => {
     if (!initialData.slug) setSlug(createSlug(title));
@@ -274,7 +255,13 @@ useEffect(() => {
       const res = await apiRequest("/api/upload", "POST", fd);
       const url = res.data?.url || res.url;
 
-      setImages((prev) => [...prev, url]);
+      setImages((prev) => {
+        if (prev.includes(url)) {
+          toast.error("Image already exists (reuse karo)");
+          return prev;
+        }
+        return [...prev, url];
+      });
 
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
@@ -367,11 +354,15 @@ useEffect(() => {
     }
   }
 
+  const moveImage = (from, to) => {
+    const updated = [...images];
+    const [moved] = updated.splice(from, 1);
+    updated.splice(to, 0, moved);
+    setImages(updated);
+  };
+
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="max-w-7xl mx-auto p-4"
-    >
+    <form onSubmit={handleSubmit} className="max-w-7xl mx-auto p-4">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* LEFT */}
         <div className="lg:col-span-2 space-y-6">
@@ -395,18 +386,14 @@ useEffect(() => {
 
           {/* IMAGES */}
           <div className="bg-white border border-rose-50 rounded-md p-4 shadow-sm space-y-4">
-            <div className="text-sm font-medium text-rose-700">
-              Images *
-            </div>
+            <div className="text-sm font-medium text-rose-700">Images *</div>
 
             <label className="w-full flex items-center justify-center border border-dashed border-rose-200 rounded-md p-6 bg-rose-50 text-center cursor-pointer">
               <div>
                 <div className="text-rose-600 font-medium">
                   Upload product image
                 </div>
-                <div className="text-xs text-gray-500 mt-1">
-                  PNG/JPG/WEBP
-                </div>
+                <div className="text-xs text-gray-500 mt-1">PNG/JPG/WEBP</div>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -417,17 +404,36 @@ useEffect(() => {
               </div>
             </label>
 
+            <Input
+              placeholder="Paste existing image URL and press Enter"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  const url = e.target.value.trim();
+
+                  if (!url) return;
+
+                  if (images.includes(url)) {
+                    toast.error("Already added");
+                    return;
+                  }
+
+                  setImages((prev) => [...prev, url]);
+                  e.target.value = "";
+                }
+              }}
+            />
+
             {images.length > 0 && (
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                {images.map((img) => (
-                  <div
-                    key={img}
-                    className="relative group"
-                  >
+                {images.map((img, index) => (
+                  <div key={img} className="relative group">
                     <img
                       src={img}
                       className="h-28 w-full object-cover rounded-md border"
                     />
+
+                    {/* REMOVE */}
                     <button
                       type="button"
                       onClick={() => removeImage(img)}
@@ -435,6 +441,36 @@ useEffect(() => {
                     >
                       ×
                     </button>
+
+                    {/* MOVE */}
+                    <div className="absolute bottom-1 left-1 flex gap-1">
+                      {index > 0 && (
+                        <button
+                          type="button"
+                          onClick={() => moveImage(index, index - 1)}
+                          className="bg-white text-xs px-2 rounded shadow"
+                        >
+                          ↑
+                        </button>
+                      )}
+
+                      {index < images.length - 1 && (
+                        <button
+                          type="button"
+                          onClick={() => moveImage(index, index + 1)}
+                          className="bg-white text-xs px-2 rounded shadow"
+                        >
+                          ↓
+                        </button>
+                      )}
+                    </div>
+
+                    {/* THUMBNAIL */}
+                    {index === 0 && (
+                      <div className="absolute top-1 left-1 bg-green-600 text-white text-xs px-2 rounded">
+                        Thumbnail
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -443,9 +479,7 @@ useEffect(() => {
 
           {/* PRICING */}
           <div className="bg-white border border-rose-50 rounded-md p-4 shadow-sm space-y-4">
-            <div className="text-sm font-medium text-rose-700">
-              Pricing
-            </div>
+            <div className="text-sm font-medium text-rose-700">Pricing</div>
 
             <select
               className="w-full px-3 py-2 border border-rose-100 rounded-md"
@@ -535,10 +569,7 @@ useEffect(() => {
               Terms & Conditions *
             </div>
             <div className="border rounded-md">
-              <JoditEditor
-                value={terms}
-                onBlur={(c) => setTerms(c)}
-              />
+              <JoditEditor value={terms} onBlur={(c) => setTerms(c)} />
             </div>
           </div>
         </div>
@@ -571,29 +602,26 @@ useEffect(() => {
             />
 
             <MultiSelect
-                label="Suggested Products"
-                options={allProducts}
-                value={suggestedProducts}
-                onChange={setSuggestedProducts}
-                placeholder="Select suggested products"
-              />
+              label="Suggested Products"
+              options={allProducts}
+              value={suggestedProducts}
+              onChange={setSuggestedProducts}
+              placeholder="Select suggested products"
+            />
 
-              <MultiSelect
-                label="Suggested Services"
-                options={allServices}
-                value={suggestedServices}
-                onChange={setSuggestedServices}
-                placeholder="Select suggested services"
-              />
+            <MultiSelect
+              label="Suggested Services"
+              options={allServices}
+              value={suggestedServices}
+              onChange={setSuggestedServices}
+              placeholder="Select suggested services"
+            />
           </div>
 
           {/* FAQ */}
           <div className="bg-white border border-rose-50 rounded-md p-4 shadow-sm space-y-4">
             <div className="flex items-center justify-between">
-              <div className="text-sm font-medium text-rose-700">
-                FAQs
-              </div>
-              
+              <div className="text-sm font-medium text-rose-700">FAQs</div>
             </div>
 
             {faqs.map((f, i) => (
@@ -604,16 +632,12 @@ useEffect(() => {
                 <Input
                   placeholder="Question"
                   value={f.question}
-                  onChange={(e) =>
-                    updateFaq(i, "question", e.target.value)
-                  }
+                  onChange={(e) => updateFaq(i, "question", e.target.value)}
                 />
                 <Textarea
                   placeholder="Answer"
                   value={f.answer}
-                  onChange={(e) =>
-                    updateFaq(i, "answer", e.target.value)
-                  }
+                  onChange={(e) => updateFaq(i, "answer", e.target.value)}
                 />
                 <Button
                   type="button"
@@ -625,21 +649,19 @@ useEffect(() => {
               </div>
             ))}
             <button
-                type="button"
-                onClick={addFaq}
-                variant="outline"
-                size="sm"
-                className="text-sm text-rose-600 hover:underline border-rose-50 border p-1 rounded cursor-pointer"
-              >
-                + Add FAQ
-              </button>
+              type="button"
+              onClick={addFaq}
+              variant="outline"
+              size="sm"
+              className="text-sm text-rose-600 hover:underline border-rose-50 border p-1 rounded cursor-pointer"
+            >
+              + Add FAQ
+            </button>
           </div>
 
           {/* STATUS */}
           <div className="bg-white border border-rose-50 rounded-md p-4 shadow-sm">
-            <Label className="text-sm font-medium text-rose-700">
-              Status
-            </Label>
+            <Label className="text-sm font-medium text-rose-700">Status</Label>
             <select
               className="mt-2 w-full px-3 py-2 border border-rose-100 rounded-md"
               value={status}
@@ -653,9 +675,7 @@ useEffect(() => {
 
           {/* HIGHLIGHTS */}
           <div className="bg-white border border-rose-50 rounded-md p-4 shadow-sm space-y-3">
-            <div className="text-sm font-medium text-rose-700">
-              Highlights
-            </div>
+            <div className="text-sm font-medium text-rose-700">Highlights</div>
             {Object.keys(highlights).map((k) => (
               <label
                 key={k}
@@ -679,16 +699,12 @@ useEffect(() => {
 
           {/* SEO */}
           <div className="bg-white border border-rose-50 rounded-md p-4 shadow-sm space-y-3">
-            <div className="text-sm font-medium text-rose-700">
-              SEO
-            </div>
+            <div className="text-sm font-medium text-rose-700">SEO</div>
 
             <Input
               placeholder="Meta title"
               value={seo.metaTitle}
-              onChange={(e) =>
-                setSeo({ ...seo, metaTitle: e.target.value })
-              }
+              onChange={(e) => setSeo({ ...seo, metaTitle: e.target.value })}
             />
             <Textarea
               placeholder="Meta description"
@@ -714,9 +730,7 @@ useEffect(() => {
               <input
                 type="checkbox"
                 checked={seo.noIndex}
-                onChange={() =>
-                  setSeo({ ...seo, noIndex: !seo.noIndex })
-                }
+                onChange={() => setSeo({ ...seo, noIndex: !seo.noIndex })}
                 className="w-4 h-4 accent-rose-600"
               />
               No Index
