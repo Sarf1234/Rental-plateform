@@ -65,15 +65,22 @@ export async function getAllImages(folder = "posts") {
         max_results: 100,
         prefix: folder ? `${folder}/` : undefined,
         next_cursor: nextCursor || undefined,
+        direction: "desc",
       });
 
       allImages = [...allImages, ...result.resources];
       nextCursor = result.next_cursor;
     } while (nextCursor);
 
+    // safety sort
+    allImages.sort(
+      (a, b) => new Date(b.created_at) - new Date(a.created_at)
+    );
+
     return allImages.map((img) => ({
       url: img.secure_url,
       public_id: img.public_id,
+      created_at: img.created_at,
     }));
   } catch (error) {
     console.error(error);
