@@ -507,10 +507,6 @@ export default async function CityHome({ params }) {
 
       <ServiceCategories categories={serviceCategories} citySlug={slug} />
 
-      <RelatedBlogs
-        title="Wedding & Event Planning Guides"
-        subtitle="Explore helpful articles to plan your event smarter."
-      />
 
       {/* SUB AREAS FOOTER BLOCK */}
       {subAreas.length > 0 && (

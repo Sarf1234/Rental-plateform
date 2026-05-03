@@ -158,10 +158,9 @@ export default function Navbar() {
       return "/";
 
     if (slug === "/") {
-      return citySlug
-        ? `/${citySlug}`
-        : "/";
+      return "/";
     }
+
 
     if (
       slug ===
