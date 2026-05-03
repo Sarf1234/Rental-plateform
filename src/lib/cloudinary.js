@@ -51,26 +51,32 @@ export async function deleteImage(publicId) {
 }
 
 
-export async function getAllImages(folder = process.env.CLOUDINARY_FOLDER) {
+export async function getAllImages(folder = "posts") {
   configureCloudinary();
 
   try {
-    const result = await cloudinary.api.resources({
-      type: "upload",
-      // folder filter (optional)
-      max_results: 100,
-    });
+    let allImages = [];
+    let nextCursor = null;
 
-    return result.resources.map((img) => ({
+    do {
+      const result = await cloudinary.api.resources({
+        type: "upload",
+        resource_type: "image",
+        max_results: 100,
+        prefix: folder ? `${folder}/` : undefined,
+        next_cursor: nextCursor || undefined,
+      });
+
+      allImages = [...allImages, ...result.resources];
+      nextCursor = result.next_cursor;
+    } while (nextCursor);
+
+    return allImages.map((img) => ({
       url: img.secure_url,
       public_id: img.public_id,
-      width: img.width,
-      height: img.height,
-      format: img.format,
-      created_at: img.created_at,
     }));
   } catch (error) {
-    console.error("Cloudinary Fetch Error:", error);
+    console.error(error);
     throw new Error("Failed to fetch images");
   }
 }
