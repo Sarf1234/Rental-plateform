@@ -113,7 +113,7 @@ export default async function HomePage() {
       <div className="mt-16">
 
         {/* 🔥 HERO (FINAL FIXED) */}
-        <section className="relative w-full bg-[#0B1C3D]">
+        <section className=" w-full bg-[#0B1C3D]">
           <div className="relative max-w-7xl mx-auto">
 
             <Image
@@ -126,16 +126,32 @@ export default async function HomePage() {
             />
 
             {/* Overlay Content */}
-            <div className="absolute inset-0 flex items-center justify-center text-center px-4">
-              <div className="bg-black/5 backdrop-blur-sm p-6 rounded-xl max-w-xl">
+           
 
-                <h1 className="text-xl md:text-4xl font-bold text-white">
+          </div>
+        </section>
+
+        {/* 🔥 SEO INTRO */}
+
+         <div className=" flex mx-auto items-center justify-center text-center px-2 md:max-w-4xl">
+              <div className=" md:p-6 px-2 py-6">
+
+                <h1 className="text-xl md:text-4xl font-bold ">
                   Event, Party & Wedding Rentals Across India
                 </h1>
 
-                <p className="mt-3 text-sm md:text-base text-gray-200">
+                <p className="mt-3 text-sm md:text-base ">
                   Book decoration, furniture, sound systems and more with verified vendors.
                 </p>
+                 <p className="text-gray-600 leading-relaxed">
+            KirayNow helps you find trusted event and party services across India.
+            Whether you need birthday decoration at home, wedding setup, tent house services, or furniture rental,
+            you can compare vendors, pricing, and book the best option for your event.
+          </p>
+
+          <p className="text-sm text-gray-500">
+            Popular services: Birthday Decoration • Wedding Setup • Tent House • Chair Rental • Sound System • Lighting Setup
+          </p>
 
                 <Link
                   href="/mumbai"
@@ -146,24 +162,11 @@ export default async function HomePage() {
 
               </div>
             </div>
-
-          </div>
-        </section>
-
-        {/* 🔥 SEO INTRO */}
-        <section className="max-w-5xl mx-auto px-4 md:py-10 py-4 text-center">
-          <p className="text-gray-600 leading-relaxed">
-            KirayNow helps you find trusted event and party services across India.
-            Whether you need birthday decoration at home, wedding setup, tent house services, or furniture rental,
-            you can compare vendors, pricing, and book the best option for your event.
-          </p>
-        </section>
+      
 
         {/* 🔥 KEYWORD BOOST (SEO) */}
         <section className="max-w-5xl mx-auto px-4 py-2 md:py-6 text-center">
-          <p className="text-sm text-gray-500">
-            Popular services: Birthday Decoration • Wedding Setup • Tent House • Chair Rental • Sound System • Lighting Setup
-          </p>
+          
         </section>
 
         {/* 🔥 CITY CARDS */}
