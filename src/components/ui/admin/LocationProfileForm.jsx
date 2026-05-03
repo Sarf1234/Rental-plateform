@@ -73,7 +73,7 @@ export default function LocationProfileForm({ initialData = {}, onSubmit }) {
 
   useEffect(() => {
     apiRequest("/api/cities").then((r) => setAllCities(r.data || []));
-    apiRequest("/api/products?limit=500").then((r) =>
+    apiRequest("/api/products/admin?page=1&limit=500").then((r) =>
       setAllProducts(r.data || []),
     );
     apiRequest("/api/service/admin").then((r) => setAllServices(r.data || []));
