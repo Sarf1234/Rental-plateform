@@ -170,7 +170,7 @@ export default async function HomePage() {
         </section>
 
         {/* 🔥 CITY CARDS */}
-        <section className="max-w-6xl mx-auto px-4 py-4 md:py-16">
+        <section className="max-w-7xl mx-auto px-4 py-4 md:py-16">
           <h2 className="text-2xl font-semibold mb-8 text-center">
             Explore Services by City
           </h2>
@@ -204,7 +204,7 @@ export default async function HomePage() {
         
 
         {/* 🔥 WHY US (UPGRADED) */}
-        <section className="max-w-6xl mx-auto px-4 py-16 text-center">
+        <section className="max-w-7xl mx-auto px-4 py-16 text-center">
           <h2 className="text-2xl font-semibold mb-6">
             Why Choose KirayNow?
           </h2>
@@ -223,7 +223,7 @@ export default async function HomePage() {
           />
 
         {/* 🔥 FAQ */}
-        <section className="max-w-5xl mx-auto px-4 py-12">
+        <section className="max-w-7xl mx-auto px-4 py-12">
           <h2 className="text-xl font-semibold mb-6">
             Frequently Asked Questions
           </h2>
