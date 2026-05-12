@@ -115,6 +115,8 @@ export default async function CityHome({ params }) {
   let products = [];
   let vendors = [];
 
+  let banners = [];
+
   let categories = [];
   let cityData = null;
   let locationProfile = null;
@@ -127,6 +129,7 @@ export default async function CityHome({ params }) {
     cityRes,
     catRes,
     serviceRes,
+    bannerRes,
   ] = await Promise.all([
     apiRequest(
       `${process.env.NEXT_PUBLIC_API_URL}/api/service-categories`
@@ -142,6 +145,9 @@ export default async function CityHome({ params }) {
 
     apiRequest(
       `${process.env.NEXT_PUBLIC_API_URL}/api/service?city=${slug}&type=all&page=1&limit=10`
+    ),
+    apiRequest(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/banners?placement=citypage&city=${slug}`
     ),
   ]);
 
@@ -176,6 +182,9 @@ export default async function CityHome({ params }) {
 
   vendors =
     serviceRes?.vendors || [];
+
+   banners =
+      bannerRes?.data || [];
 
 } catch (err) {
   console.error(
@@ -329,7 +338,7 @@ export default async function CityHome({ params }) {
       
 
       {/* HERO */}
-      <HeroCarousel images={imagesLink} contents={carouselContent} />
+      <HeroCarousel banners={banners} />
       {/* SEO H1 + SHORT INTRO */}
       <section className="max-w-5xl mx-auto px-4 py-12 text-center">
         <h1 className="text-3xl md:text-4xl font-semibold text-gray-900">

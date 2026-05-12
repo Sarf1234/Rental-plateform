@@ -34,6 +34,9 @@ export default function AdminSidebar({ sidebarOpen, setSidebarOpen }) {
           <Link href="/admin/dashboard" className="block p-2 rounded hover:bg-gray-100">
             Dashboard
           </Link>
+          <Link href="/admin/banners" className="block p-2 rounded hover:bg-gray-100">
+            Banners
+          </Link>
           <Link href="/admin/posts" className="block p-2 rounded hover:bg-gray-100">
             posts
           </Link>
