@@ -2,7 +2,6 @@ import Link from "next/link";
 import Script from "next/script";
 import Image from "next/image";
 import RelatedBlogs from "@/components/layout/RelatedBlogs";
-import HeroCarousel from "@/components/layout/HeroCrousel";
 
 export const revalidate = 604800; // 7 days SSG
 export const dynamic = "force-static";
@@ -12,24 +11,15 @@ export const metadata = {
   description:
     "Book birthday decoration, wedding setup, tent house, furniture and event rental services across India with verified vendors.",
 };
+
 export default async function HomePage() {
-    const res = await fetch(
+  const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/cities?page=1&limit=100`,
     { next: { revalidate: 604800 } }
   );
 
-  const bannerres = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/banners?placement=homepage`,
-    // { next: { revalidate: 604800 } }
-  );
-
   const data = await res.json();
   const cities = data?.data || [];
-  console.log(bannerres)
-  const bannerData = await bannerres.json();
-  const banners = bannerData?.data
-  console.log(banners)
-
 
   const cityImages = {
     mumbai:
@@ -123,7 +113,23 @@ export default async function HomePage() {
       <div className="mt-16">
 
         {/* 🔥 HERO (FINAL FIXED) */}
-        <HeroCarousel banners={banners} />
+        <section className=" w-full bg-[#0B1C3D]">
+          <div className="relative max-w-7xl mx-auto">
+
+            <Image
+              src="https://res.cloudinary.com/dlwcvgox7/image/upload/q_auto,f_auto/v1777803627/posts/guuw7ektuy8lvxezyxnv.png"
+              alt="KirayNow Event Rental Banner"
+              width={1920}
+              height={900}
+              priority
+              className="w-full h-auto object-contain"
+            />
+
+            {/* Overlay Content */}
+           
+
+          </div>
+        </section>
 
         {/* 🔥 SEO INTRO */}
 
