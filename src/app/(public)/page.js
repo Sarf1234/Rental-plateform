@@ -13,38 +13,23 @@ export const metadata = {
     "Book birthday decoration, wedding setup, tent house, furniture and event rental services across India with verified vendors.",
 };
 export default async function HomePage() {
-const [cityRes, bannerRes] =
-  await Promise.all([
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/cities?page=1&limit=100`,
-      {
-        next: {
-          revalidate: 604800,
-        },
-      }
-    ),
+    const res = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/cities?page=1&limit=100`,
+    { next: { revalidate: 604800 } }
+  );
 
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/banners?placement=homepage`,
-      {
-        next: {
-          revalidate: 3600,
-        },
-      }
-    ),
-  ]);
+  const bannerres = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/banners?placement=homepage`,
+    // { next: { revalidate: 604800 } }
+  );
 
-const cityData =
-  await cityRes.json();
+  const data = await res.json();
+  const cities = data?.data || [];
+  console.log(bannerres)
+  const bannerData = await bannerres.json();
+  const banners = bannerData?.data
+  console.log(banners)
 
-const bannerData =
-  await bannerRes.json();
-
-const cities =
-  cityData?.data || [];
-
-const banners =
-  bannerData?.data || [];
 
   const cityImages = {
     mumbai:

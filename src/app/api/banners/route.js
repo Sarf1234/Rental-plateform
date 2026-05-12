@@ -4,12 +4,12 @@ import { connectDB } from "@/lib/db";
 import City from "@/models/CityModels";
 import Banner from "@/models/Banner";
 
-
 export async function GET(req) {
   try {
     await connectDB();
 
-    const { searchParams } = new URL(req.url);
+    const { searchParams } =
+      new URL(req.url);
 
     const placement =
       searchParams.get("placement");
@@ -20,9 +20,10 @@ export async function GET(req) {
     let cityId = null;
 
     if (citySlug) {
-      const city = await City.findOne({
-        slug: citySlug,
-      }).select("_id");
+      const city =
+        await City.findOne({
+          slug: citySlug,
+        }).select("_id");
 
       cityId = city?._id || null;
     }
@@ -36,9 +37,11 @@ export async function GET(req) {
         placement,
         city: cityId,
         isActive: true,
-      }).sort({
-        displayOrder: 1,
-      });
+      })
+        .sort({
+          displayOrder: 1,
+        })
+        .lean();
     }
 
     /* FALLBACK */
@@ -48,9 +51,11 @@ export async function GET(req) {
         placement,
         city: null,
         isActive: true,
-      }).sort({
-        displayOrder: 1,
-      });
+      })
+        .sort({
+          displayOrder: 1,
+        })
+        .lean();
     }
 
     return NextResponse.json({
@@ -63,7 +68,8 @@ export async function GET(req) {
     return NextResponse.json(
       {
         success: false,
-        message: "Failed to fetch banners",
+        message:
+          "Failed to fetch banners",
       },
       {
         status: 500,
