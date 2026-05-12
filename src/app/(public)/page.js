@@ -2,6 +2,8 @@ import Link from "next/link";
 import Script from "next/script";
 import Image from "next/image";
 import RelatedBlogs from "@/components/layout/RelatedBlogs";
+import HeroCarousel from "@/components/layout/HeroCrousel";
+import { apiRequest } from "@/lib/api";
 
 export const revalidate = 604800; // 7 days SSG
 export const dynamic = "force-static";
@@ -11,15 +13,27 @@ export const metadata = {
   description:
     "Book birthday decoration, wedding setup, tent house, furniture and event rental services across India with verified vendors.",
 };
-
 export default async function HomePage() {
-  const res = await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/cities?page=1&limit=100`,
-    { next: { revalidate: 604800 } }
-  );
+  let cities = [];
+  let banners = [];
 
-  const data = await res.json();
-  const cities = data?.data || [];
+  try {
+    const [cityRes, bannerRes] = await Promise.all([
+      apiRequest(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/cities?page=1&limit=100`,
+      ),
+
+      apiRequest(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/banners?placement=homepage`,
+      ),
+    ]);
+
+    cities = cityRes?.data || [];
+
+    banners = bannerRes?.data || [];
+  } catch (err) {
+    console.error("Homepage fetch failed:", err);
+  }
 
   const cityImages = {
     mumbai:
@@ -59,23 +73,19 @@ export default async function HomePage() {
     },
     {
       question: "Which cities are available?",
-      answer:
-        "Currently available in Mumbai and Patna, expanding soon.",
+      answer: "Currently available in Mumbai and Patna, expanding soon.",
     },
     {
       question: "Do you support large events?",
-      answer:
-        "Yes, from small parties to weddings and corporate events.",
+      answer: "Yes, from small parties to weddings and corporate events.",
     },
     {
       question: "Is pricing transparent?",
-      answer:
-        "Yes, you can compare vendors and pricing easily.",
+      answer: "Yes, you can compare vendors and pricing easily.",
     },
     {
       question: "How do I choose the best vendor?",
-      answer:
-        "Compare services, pricing, and availability.",
+      answer: "Compare services, pricing, and availability.",
     },
   ];
 
@@ -111,63 +121,44 @@ export default async function HomePage() {
       />
 
       <div className="mt-16">
-
         {/* 🔥 HERO (FINAL FIXED) */}
-        <section className=" w-full bg-[#0B1C3D]">
-          <div className="relative max-w-7xl mx-auto">
-
-            <Image
-              src="https://res.cloudinary.com/dlwcvgox7/image/upload/q_auto,f_auto/v1777803627/posts/guuw7ektuy8lvxezyxnv.png"
-              alt="KirayNow Event Rental Banner"
-              width={1920}
-              height={900}
-              priority
-              className="w-full h-auto object-contain"
-            />
-
-            {/* Overlay Content */}
-           
-
-          </div>
-        </section>
+        <HeroCarousel banners={banners} />
 
         {/* 🔥 SEO INTRO */}
 
-         <div className=" flex mx-auto items-center justify-center text-center px-2 md:max-w-4xl">
-              <div className=" md:p-6 px-2 py-6">
+        <div className=" flex mx-auto items-center justify-center text-center px-2 md:max-w-4xl">
+          <div className=" md:p-6 px-2 py-6">
+            <h1 className="text-xl md:text-4xl font-bold ">
+              Event, Party & Wedding Rentals Across India
+            </h1>
 
-                <h1 className="text-xl md:text-4xl font-bold ">
-                  Event, Party & Wedding Rentals Across India
-                </h1>
+            <p className="mt-3 text-sm md:text-base ">
+              Book decoration, furniture, sound systems and more with verified
+              vendors.
+            </p>
+            <p className="text-gray-600 leading-relaxed">
+              KirayNow helps you find trusted event and party services across
+              India. Whether you need birthday decoration at home, wedding
+              setup, tent house services, or furniture rental, you can compare
+              vendors, pricing, and book the best option for your event.
+            </p>
 
-                <p className="mt-3 text-sm md:text-base ">
-                  Book decoration, furniture, sound systems and more with verified vendors.
-                </p>
-                 <p className="text-gray-600 leading-relaxed">
-            KirayNow helps you find trusted event and party services across India.
-            Whether you need birthday decoration at home, wedding setup, tent house services, or furniture rental,
-            you can compare vendors, pricing, and book the best option for your event.
-          </p>
+            <p className="text-sm text-gray-500">
+              Popular services: Birthday Decoration • Wedding Setup • Tent House
+              • Chair Rental • Sound System • Lighting Setup
+            </p>
 
-          <p className="text-sm text-gray-500">
-            Popular services: Birthday Decoration • Wedding Setup • Tent House • Chair Rental • Sound System • Lighting Setup
-          </p>
-
-                <Link
-                  href="/mumbai"
-                  className="inline-block mt-4 bg-yellow-500 text-black px-6 py-2 rounded-lg font-semibold hover:bg-yellow-400 transition"
-                >
-                  Explore Services
-                </Link>
-
-              </div>
-            </div>
-      
+            <Link
+              href="/mumbai"
+              className="inline-block mt-4 bg-yellow-500 text-black px-6 py-2 rounded-lg font-semibold hover:bg-yellow-400 transition"
+            >
+              Explore Services
+            </Link>
+          </div>
+        </div>
 
         {/* 🔥 KEYWORD BOOST (SEO) */}
-        <section className="max-w-5xl mx-auto px-4 py-2 md:py-6 text-center">
-          
-        </section>
+        <section className="max-w-5xl mx-auto px-4 py-2 md:py-6 text-center"></section>
 
         {/* 🔥 CITY CARDS */}
         <section className="max-w-7xl mx-auto px-4 py-4 md:py-16">
@@ -201,26 +192,24 @@ export default async function HomePage() {
           </div>
         </section>
 
-        
-
         {/* 🔥 WHY US (UPGRADED) */}
         <section className="max-w-7xl mx-auto px-4 py-16 text-center">
-          <h2 className="text-2xl font-semibold mb-6">
-            Why Choose KirayNow?
-          </h2>
+          <h2 className="text-2xl font-semibold mb-6">Why Choose KirayNow?</h2>
 
           <p className="text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            KirayNow is a trusted rental marketplace connecting users with verified event service providers.
-            From birthday decoration at home to wedding setups and furniture rentals, we help you compare options,
-            find the best pricing, and book services easily. Our platform simplifies event planning across cities like
-            Mumbai and Patna with reliable vendors and fast support.
+            KirayNow is a trusted rental marketplace connecting users with
+            verified event service providers. From birthday decoration at home
+            to wedding setups and furniture rentals, we help you compare
+            options, find the best pricing, and book services easily. Our
+            platform simplifies event planning across cities like Mumbai and
+            Patna with reliable vendors and fast support.
           </p>
         </section>
 
-         <RelatedBlogs
-            title="Wedding & Event Planning Guides"
-            subtitle="Explore helpful articles to plan your event smarter."
-          />
+        <RelatedBlogs
+          title="Wedding & Event Planning Guides"
+          subtitle="Explore helpful articles to plan your event smarter."
+        />
 
         {/* 🔥 FAQ */}
         <section className="max-w-7xl mx-auto px-4 py-12">
@@ -234,16 +223,11 @@ export default async function HomePage() {
                 <summary className="font-medium cursor-pointer">
                   {f.question}
                 </summary>
-                <p className="mt-2 text-sm text-gray-600">
-                  {f.answer}
-                </p>
+                <p className="mt-2 text-sm text-gray-600">{f.answer}</p>
               </details>
             ))}
           </div>
         </section>
-
-       
-
       </div>
     </>
   );

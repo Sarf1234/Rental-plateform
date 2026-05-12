@@ -15,7 +15,6 @@ import Autoplay from "embla-carousel-autoplay";
 export default function HeroCarousel({
   banners = [],
 }) {
-
   const autoplay =
     Autoplay({
       delay: 5000,
@@ -44,17 +43,14 @@ export default function HeroCarousel({
 
   const onSelect =
     useCallback(() => {
-
       if (!emblaApi) return;
 
       setSelectedIndex(
         emblaApi.selectedScrollSnap()
       );
-
     }, [emblaApi]);
 
   useEffect(() => {
-
     if (!emblaApi) return;
 
     emblaApi.on(
@@ -63,7 +59,6 @@ export default function HeroCarousel({
     );
 
     onSelect();
-
   }, [
     emblaApi,
     onSelect,
@@ -74,12 +69,28 @@ export default function HeroCarousel({
   /* -------------------------------- */
 
   function handleImageLoad(index) {
-
     setLoadedImages((prev) => ({
       ...prev,
       [index]: true,
     }));
   }
+
+  /* -------------------------------- */
+  /* FAILSAFE LOADER */
+  /* -------------------------------- */
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      banners.forEach((_, i) => {
+        setLoadedImages((prev) => ({
+          ...prev,
+          [i]: true,
+        }));
+      });
+    }, 4000);
+
+    return () => clearTimeout(timer);
+  }, [banners]);
 
   /* -------------------------------- */
   /* EMPTY */
@@ -131,10 +142,31 @@ export default function HeroCarousel({
                     <img
                       src={banner.desktopImage}
                       alt={banner.title}
-                      loading={i === 0 ? "eager" : "lazy"}
+                      loading={
+                        i === 0
+                          ? "eager"
+                          : "lazy"
+                      }
+                      fetchPriority={
+                        i === 0
+                          ? "high"
+                          : "auto"
+                      }
+                      decoding="async"
+
                       onLoad={() =>
                         handleImageLoad(i)
                       }
+
+                      onError={() => {
+                        console.error(
+                          "Image failed:",
+                          banner.desktopImage
+                        );
+
+                        handleImageLoad(i);
+                      }}
+
                       className={`absolute inset-0 h-full w-full object-cover transition-all duration-700 ${
                         isLoaded
                           ? "opacity-100 scale-100"
@@ -155,14 +187,6 @@ export default function HeroCarousel({
                     <div className="w-full max-w-7xl mx-auto px-5 md:px-10">
 
                       <div className="max-w-2xl">
-
-                        {/* SMALL LABEL */}
-
-                        {/* <div className="inline-flex items-center rounded-full bg-white/10 backdrop-blur-md border border-white/15 px-4 py-2 text-white/90 text-xs md:text-sm font-medium mb-5">
-
-                          Trusted Rental Marketplace
-
-                        </div> */}
 
                         {/* TITLE */}
 
@@ -241,7 +265,7 @@ export default function HeroCarousel({
                 }
                 className={`rounded-full transition-all duration-300 ${
                   selectedIndex === index
-                    ? "w-8 h-2 bg-black"
+                    ? "w-4 h-2 bg-black"
                     : "w-2 h-2 bg-gray-300 hover:bg-gray-400"
                 }`}
                 aria-label={`Go to slide ${index + 1}`}
