@@ -206,118 +206,229 @@ export default async function CityHome({ params }) {
   // ==========================
 
   const structuredData = {
-    "@context": "https://schema.org",
-    "@graph": [
-      // 🔹 Organization
-      {
-        "@type": "WebSite",
-        "@id": `${baseUrl}/#website`,
-        url: baseUrl,
-        name: "KirayNow",
-        publisher: {
-          "@id": `${baseUrl}/#organization`,
-        },
-        potentialAction: {
-          "@type": "SearchAction",
-          target: `${baseUrl}/search?q={search_term_string}`,
-          "query-input": "required name=search_term_string",
-        },
-      },
+  "@context": "https://schema.org",
 
-      {
-        "@type": "Organization",
+  "@graph": [
+    /* =========================================================
+       WEBSITE
+    ========================================================= */
+    {
+      "@type": "WebSite",
+
+      "@id": `${baseUrl}/#website`,
+
+      url: baseUrl,
+
+      name: "KirayNow",
+
+      publisher: {
         "@id": `${baseUrl}/#organization`,
-        name: "KirayNow",
-        url: baseUrl,
-        logo: "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
-        description:
-          "KirayNow is a trusted event rental marketplace offering birthday decoration, wedding setups and party rental services across multiple cities in India.",
-        contactPoint: {
-          "@type": "ContactPoint",
-          telephone: "+91-7672876321",
-          contactType: "customer support",
-          areaServed: "IN",
-          availableLanguage: ["English", "Hindi"],
-        },
       },
 
-      // 🔹 LocalBusiness
-      {
-        "@type": "Service",
-        "@id": `${baseUrl}/${slug}#service`,
-        name: `Birthday, Wedding & Party Rentals in ${cityName}`,
-        provider: {
-          "@id": `${baseUrl}/#organization`,
-        },
-        areaServed: {
-          "@type": "City",
-          name: cityName,
-        },
-        url: `${baseUrl}/${slug}`,
-        image:
-          "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
+      potentialAction: {
+        "@type": "SearchAction",
+
+        target: `${baseUrl}/search?q={search_term_string}`,
+
+        "query-input": "required name=search_term_string",
+      },
+    },
+
+    /* =========================================================
+       ORGANIZATION
+    ========================================================= */
+    {
+      "@type": "Organization",
+
+      "@id": `${baseUrl}/#organization`,
+
+      name: "KirayNow",
+
+      url: baseUrl,
+
+      logo:
+        "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
+
+      description:
+        "KirayNow is a trusted event rental marketplace offering wedding decoration, birthday setup, party rentals and event services across multiple cities in India.",
+
+      contactPoint: {
+        "@type": "ContactPoint",
+
+        telephone:
+          cityData?.footer?.phone || "+91-7672876321",
+
+        contactType: "customer support",
+
+        areaServed: "IN",
+
+        availableLanguage: ["English", "Hindi"],
+      },
+    },
+
+    /* =========================================================
+       WEBPAGE
+    ========================================================= */
+    {
+      "@type": "WebPage",
+
+      "@id": `${baseUrl}/${slug}#webpage`,
+
+      url: `${baseUrl}/${slug}`,
+
+      name:
+        locationProfile?.seoTitleOverride ||
+        `Event Rentals in ${cityName}`,
+
+      description:
+        locationProfile?.seoDescriptionOverride ||
+        `Book wedding decoration, birthday setup and rental services in ${cityName}.`,
+
+      isPartOf: {
+        "@id": `${baseUrl}/#website`,
       },
 
-      // 🔹 Breadcrumb
-      {
-        "@type": "BreadcrumbList",
-        "@id": `${baseUrl}/${slug}#breadcrumb`,
-        itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "Home",
-            item: baseUrl,
-          },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: cityName,
-            item: `${baseUrl}/${slug}`,
-          },
-        ],
+      about: {
+        "@id": `${baseUrl}/${slug}#localbusiness`,
+      },
+    },
+
+    /* =========================================================
+       LOCAL BUSINESS
+    ========================================================= */
+    {
+      "@type": "LocalBusiness",
+
+      "@id": `${baseUrl}/${slug}#localbusiness`,
+
+      name: `KirayNow ${cityName}`,
+
+      url: `${baseUrl}/${slug}`,
+
+      image:
+        "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
+
+      description:
+        locationProfile?.seoDescriptionOverride ||
+        `Event rental and wedding setup services in ${cityName}.`,
+
+      telephone:
+        cityData?.footer?.phone || "+91-7672876321",
+
+      address: {
+        "@type": "PostalAddress",
+
+        addressLocality: cityName,
+
+        addressRegion: cityData?.state,
+
+        addressCountry: "IN",
       },
 
-      // 🔹 Services List
-      {
-        "@type": "ItemList",
-        name: `Rental Services in ${cityName}`,
-        itemListElement: all?.data?.slice(0, 10).map((service, index) => ({
+      areaServed: {
+        "@type": "City",
+
+        name: cityName,
+      },
+
+      priceRange: "₹₹",
+    },
+
+    /* =========================================================
+       SERVICE
+    ========================================================= */
+    {
+      "@type": "Service",
+
+      "@id": `${baseUrl}/${slug}#service`,
+
+      name:
+        locationProfile?.seoTitleOverride ||
+        `Event Rental & Wedding Services in ${cityName}`,
+
+      provider: {
+        "@id": `${baseUrl}/#organization`,
+      },
+
+      areaServed: {
+        "@type": "City",
+
+        name: cityName,
+      },
+
+      serviceArea: subAreas
+        ?.slice(0, 5)
+        ?.map((area) => ({
+          "@type": "Place",
+
+          name: area.name,
+        })),
+
+      url: `${baseUrl}/${slug}`,
+
+      image:
+        "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
+    },
+
+    /* =========================================================
+       BREADCRUMB
+    ========================================================= */
+    {
+      "@type": "BreadcrumbList",
+
+      "@id": `${baseUrl}/${slug}#breadcrumb`,
+
+      itemListElement: [
+        {
           "@type": "ListItem",
-          position: index + 1,
-          url: `${baseUrl}/${slug}/${service.slug}`,
-          name: service.title,
-        })),
-      },
 
-      // {
-      //   "@type": "ItemList",
-      //     name: `Service Categories in ${cityName}`,
-      //     itemListElement: serviceCategories.slice(0, 10).map((cat, index) => ({
-      //       "@type": "ListItem",
-      //       position: index + 1,
-      //       url: `${baseUrl}/${slug}/service-categories/${cat.slug}`,
-      //       name: cat.name,
-      //     })),
-      //   },
+          position: 1,
 
-      ...(locationProfile?.faq.length > 0
-  ? [
-      {
-        "@type": "FAQPage",
-        mainEntity: locationProfile?.faq?.map((faq) => ({
-          "@type": "Question",
-          name: faq.question,
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: faq.answer,
+          name: "Home",
+
+          item: baseUrl,
+        },
+
+        {
+          "@type": "ListItem",
+
+          position: 2,
+
+          name: cityName,
+
+          item: `${baseUrl}/${slug}`,
+        },
+      ],
+    },
+
+    /* =========================================================
+       FAQ
+    ========================================================= */
+    ...(locationProfile?.faq?.length > 0
+      ? [
+          {
+            "@type": "FAQPage",
+
+            "@id": `${baseUrl}/${slug}#faq`,
+
+            mainEntity: locationProfile?.faq?.map(
+              (faq) => ({
+                "@type": "Question",
+
+                name: faq.question,
+
+                acceptedAnswer: {
+                  "@type": "Answer",
+
+                  text: faq.answer,
+                },
+              })
+            ),
           },
-        })),
-      },
-    ]
-  : []),
-    ],
-  };
+        ]
+      : []),
+  ],
+};
 
   // =========================
   // 🔥 SCHEMA SECTION END
@@ -340,39 +451,20 @@ export default async function CityHome({ params }) {
       {/* HERO */}
       <HeroCarousel banners={banners} />
       {/* SEO H1 + SHORT INTRO */}
-      <section className="max-w-5xl mx-auto px-4 py-12 text-center">
-        <h1 className="text-3xl md:text-4xl font-semibold text-gray-900">
-          Events, Party, Wedding & Birthday Rental Services in {cityName}
-        </h1>
 
-        <p className="mt-5 text-gray-600 leading-relaxed text-sm md:text-base">
-          {locationProfile?.customIntro
-            ? locationProfile.customIntro
-            : `Book trusted rental services in ${cityName}${
-                subAreas.length > 0
-                  ? ` including ${subAreas
-                      .slice(0, 3)
-                      .map((a) => a.name)
-                      .join(", ")}`
-                  : ""
-              }. Explore ${totalServices}+ verified service options with transparent pricing and professional event support.`}
-        </p>
+      {locationProfile?.additionalContent && (
+        <section className="max-w-5xl mx-auto px-4 py-14">
+          <div className="prose max-w-none">
+            <h2>
+              Event Planning & Rental Services in {cityName}
+            </h2>
 
-        {/* Optional intelligence layer */}
-        {(locationProfile?.demandLevel === "high" ||
-          locationProfile?.expressAvailable) && (
-          <div className="mt-6 text-xs uppercase tracking-wider text-gray-500 space-y-1">
-            {locationProfile?.demandLevel === "high" && (
-              <div>
-                {cityName} is currently experiencing strong rental demand.
-              </div>
-            )}
-            {locationProfile?.expressAvailable && (
-              <div>Fast fulfillment and priority delivery available.</div>
-            )}
+            <div className="text-gray-700 leading-8 whitespace-pre-line">
+              {locationProfile.additionalContent}
+            </div>
           </div>
-        )}
-      </section>
+        </section>
+      )}
 
       {/* FEATURED */}
       <Servicecards
