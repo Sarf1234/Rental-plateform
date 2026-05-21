@@ -466,13 +466,6 @@ export default async function CityHome({ params }) {
         </section>
       )}
 
-      {/* FEATURED */}
-      <Servicecards
-        data={featured}
-        title={`Featured Rental Services in ${cityName}`}
-        subtitle={`Handpicked decoration and event rental services trusted by customers in ${cityName}.`}
-        citySlug={slug}
-      />
 
       {products.length > 0 && (
         <section className="max-w-7xl mx-auto px-4 py-12">
@@ -516,6 +509,15 @@ export default async function CityHome({ params }) {
           </div>
         </section>
       )}
+
+
+      {/* FEATURED */}
+      <Servicecards
+        data={featured}
+        title={`Featured Rental Services in ${cityName}`}
+        subtitle={`Handpicked decoration and event rental services trusted by customers in ${cityName}.`}
+        citySlug={slug}
+      />
 
       {/* WHY CHOOSE US */}
       <Services
