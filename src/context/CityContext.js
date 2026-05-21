@@ -55,7 +55,7 @@ export function CityProvider({
       } catch {}
     }
 
-    setCity(cities[0]);
+    setCity(null);
     setReady(true);
   }, [pathname, cities]);
 
