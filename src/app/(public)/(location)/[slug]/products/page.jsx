@@ -100,6 +100,7 @@ export default async function CityProductsPage({ params }) {
   let cityData = null;
   let categories = [];
   let locationContext = null;
+  let banners = [];
 
   try {
     const catRes = await apiRequest(
@@ -128,8 +129,16 @@ export default async function CityProductsPage({ params }) {
     const cityRes = await apiRequest(
       `${process.env.NEXT_PUBLIC_API_URL}/api/cities/${slug}`,
     );
+
+    
     cityData = cityRes?.data || null;
     locationContext = cityRes?.locationContext;
+
+    const bannerRes = await apiRequest(
+      `${process.env.NEXT_PUBLIC_API_URL}/api/banners?placement=products&city=${slug}`,
+    );
+
+    banners = bannerRes?.data || [];
   } catch (err) {
     console.log(locationContext);
     console.error("Failed to fetch city:", err);
@@ -266,7 +275,7 @@ export default async function CityProductsPage({ params }) {
       />
 
       {/* HERO */}
-      <HeroCarousel images={imagesLink} contents={carouselContent} />
+      <HeroCarousel banners={banners} />
 
       {/* 🔹 SEO H1 + INTRO */}
       <section className="max-w-7xl mx-auto px-4 py-10 text-center">
