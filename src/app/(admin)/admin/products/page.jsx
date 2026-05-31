@@ -28,7 +28,7 @@ export default function ProductsList() {
 
     async function load() {
       try {
-        const res = await apiRequest("/api/products/admin?page=1&limit=50");
+        const res = await apiRequest("/api/products/admin?page=1&limit=100");
         if (mounted) setProducts(res.data || []);
       } catch {
         toast.error("Failed to load products");
