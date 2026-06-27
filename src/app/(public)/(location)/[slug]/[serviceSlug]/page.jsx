@@ -501,21 +501,23 @@ function CenterContent({ service, city, cityData, locationProfile, modifiedFaqs 
       </div>
 
       {/* ================= PRODUCTS ================= */}
-      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <h3 className="text-2xl font-semibold text-gray-900 mb-8">
-          Rental Products
-        </h3>
+      {Array.isArray(service?.products) && service.products.length > 0 && (
+  <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+    <h3 className="text-2xl font-semibold text-gray-900 mb-8">
+      Rental Products
+    </h3>
 
-        <div className="grid md:grid-cols-2 gap-8">
-          {service.products?.map((product) => (
-    <ProductCard
-      key={product._id}
-      product={product}
-      citySlug={city}
-    />
-  ))}
-        </div>
-      </div>
+    <div className="grid md:grid-cols-2 gap-8">
+      {service.products.map((product) => (
+        <ProductCard
+          key={product._id}
+          product={product}
+          citySlug={city}
+        />
+      ))}
+    </div>
+  </div>
+)}
 
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <h3 className="text-xl font-semibold text-gray-900 mb-6">
