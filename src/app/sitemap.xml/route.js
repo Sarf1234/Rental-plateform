@@ -1,7 +1,7 @@
 // app/sitemap/route.js
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+
+export const revalidate = 86400; // 24 Hours
 
 import { NextResponse } from "next/server";
 import { connectDB } from "@/lib/db";
@@ -249,9 +249,10 @@ ${urls
 
     return new NextResponse(sitemap, {
       headers: {
-        "Content-Type": "application/xml",
-        "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0",
-      },
+          "Content-Type": "application/xml",
+          "Cache-Control":
+            "public, s-maxage=86400, stale-while-revalidate=43200",
+        },
     });
   } catch (err) {
     console.error("Failed to generate sitemap", err);
