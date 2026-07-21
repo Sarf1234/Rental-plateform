@@ -72,19 +72,23 @@ export async function GET(req) {
       ] = await Promise.all([
 
         Product.find({ ...baseFilter, "highlights.isFeatured": true })
-          .limit(6)
-          .lean(),
+        .sort({ createdAt: -1 })  
+        .limit(8)
+        .lean(),
 
         Product.find({ ...baseFilter, "highlights.isTopRented": true })
-          .limit(6)
+          .sort({ createdAt: -1 })
+          .limit(8)
           .lean(),
 
         Product.find({ ...baseFilter, "highlights.isBestDeal": true })
-          .limit(6)
+          .sort({ createdAt: -1 })
+          .limit(8)
           .lean(),
 
         Product.find({ ...baseFilter, "highlights.isNewProduct": true })
-          .limit(6)
+          .sort({ createdAt: -1 })  
+          .limit(8)
           .lean(),
 
         Product.find(baseFilter)
@@ -321,16 +325,16 @@ export async function POST(req) {
     const exists = await Product.findOne({ slug });
     if (exists) slug = `${slug}-${Date.now()}`;
 
-    if (body.suggestedProducts?.length > 6) {
+    if (body.suggestedProducts?.length > 10) {
   return NextResponse.json(
-    { success: false, message: "Maximum 6 suggested products allowed" },
+    { success: false, message: "Maximum 10 suggested products allowed" },
     { status: 400 }
   );
 }
 
-if (body.suggestedServices?.length > 6) {
+if (body.suggestedServices?.length > 10) {
   return NextResponse.json(
-    { success: false, message: "Maximum 6 suggested services allowed" },
+    { success: false, message: "Maximum 10 suggested services allowed" },
     { status: 400 }
   );
 }

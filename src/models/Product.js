@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 import { nanoid } from "nanoid";
 
 function limitSuggestions(val) {
-  return !val || val.length <= 6;
+  return !val || val.length <= 10;
 }
 
 
@@ -27,7 +27,6 @@ const ProductSchema = new mongoose.Schema(
     productCode: {
       type: String,
       unique: true,
-      index: true,
     },
     description: { type: String, required: true },
 
@@ -41,7 +40,6 @@ const ProductSchema = new mongoose.Schema(
     type: mongoose.Schema.Types.ObjectId,
     ref: "ProductCategory",
     required: true,
-    index: true,
   },
 ],
 
@@ -49,7 +47,6 @@ tags: [
   {
     type: mongoose.Schema.Types.ObjectId,
     ref: "ProductTag",
-    index: true,
   },
 ],
 
@@ -80,7 +77,7 @@ tags: [
       ref: "Product",
     },
   ],
-  validate: [limitSuggestions, "Maximum 6 suggested products allowed"],
+  validate: [limitSuggestions, "Maximum 10 suggested products allowed"],
 },
 
 suggestedServices: {
@@ -90,7 +87,7 @@ suggestedServices: {
       ref: "Service",
     },
   ],
-  validate: [limitSuggestions, "Maximum 6 suggested services allowed"],
+  validate: [limitSuggestions, "Maximum 10 suggested services allowed"],
 },
 
     /* ---------- FAQ ---------- */

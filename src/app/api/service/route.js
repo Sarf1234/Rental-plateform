@@ -145,7 +145,7 @@ export async function GET(req) {
         serviceAreas: { $in: [city._id] },
         "highlights.isFeatured": true,
       })
-        .sort({ priority: -1, createdAt: -1 })
+        .sort({ createdAt: -1 })
         .limit(8)
         .lean();
     }

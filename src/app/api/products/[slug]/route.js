@@ -40,7 +40,7 @@ export async function GET(req, { params }) {
       .populate({
         path: "suggestedServices",
         select: "title slug images pricing serviceAreas",
-        options: { limit: 6 },
+        options: { limit: 8 },
       })
       .lean();
 
