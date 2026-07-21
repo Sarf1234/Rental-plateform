@@ -139,16 +139,16 @@ export async function GET(req) {
     }
 
     /* ---------- PRODUCTS ---------- */
-    // if (type === "products" || type === "all") {
-    //   products = await Product.find({
-    //     status: "published",
-    //     serviceAreas: { $in: [city._id] },
-    //     "highlights.isFeatured": true,
-    //   })
-    //     .sort({ priority: -1, createdAt: -1 })
-    //     .limit(8)
-    //     .lean();
-    // }
+    if (type === "products" || type === "all") {
+      products = await Product.find({
+        status: "published",
+        serviceAreas: { $in: [city._id] },
+        "highlights.isFeatured": true,
+      })
+        .sort({ priority: -1, createdAt: -1 })
+        .limit(8)
+        .lean();
+    }
 
     /* ---------- VENDORS ---------- */
     if (type === "vendors" || type === "all") {
