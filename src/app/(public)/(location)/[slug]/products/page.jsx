@@ -289,14 +289,15 @@ export default async function CityProductsPage({ params }) {
         </p>
       </section>
 
-      {/* FEATURED */}
-      {featured.length > 0 && (
+      {/* TOP */}
+      {top.length > 0 && (
         <FlagsCards
-          data={featured}
-          title={`Featured Rental Products in ${cityName}`}
+          data={top}
+          title={`Most Booked Products in ${cityName}`}
           citySlug={slug}
         />
       )}
+
 
       {(locationContext?.seasonalNote || locationContext?.deliveryNote) && (
         <section className="max-w-7xl mx-auto px-4 py-10 text-center">
@@ -328,13 +329,7 @@ export default async function CityProductsPage({ params }) {
       />
 
       {/* TOP */}
-      {top.length > 0 && (
-        <FlagsCards
-          data={top}
-          title={`Most Booked Products in ${cityName}`}
-          citySlug={slug}
-        />
-      )}
+      
 
       {/* BEST */}
       {best.length > 0 && (
