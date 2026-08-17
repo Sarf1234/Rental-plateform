@@ -115,7 +115,7 @@ Thanks!
 
             {/* TRUST */}
 
-            <div className="flex items-center gap-1 text-[11px] text-green-700">
+            {/* <div className="flex items-center gap-1 text-[11px] text-green-700">
               <ShieldCheck
                 size={15}
                 strokeWidth={2}
@@ -124,7 +124,7 @@ Thanks!
               <span>
                 Verified providers
               </span>
-            </div>
+            </div> */}
 
           </div>
 
