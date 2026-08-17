@@ -61,7 +61,16 @@ export async function GET(req, { params }) {
         slug: citySlug,
         isActive: true,
       })
-        .select("name slug subAreas")
+        .select(`
+                name
+                slug
+                state
+                subAreas
+                footer
+                seo
+                geo
+                isActive
+              `)
         .lean();
 
       if (!city) {
@@ -292,21 +301,67 @@ export async function GET(req, { params }) {
 
     /* ================= LOCATION CONTEXT DATA ================= */
 
-    const locationContext = locationProfile
-      ? {
-          demandLevel: locationProfile.demandLevel,
-          customIntro: locationProfile.customIntro,
-          seasonalNote: locationProfile.seasonalNote,
-          deliveryNote: locationProfile.deliveryNote,
-          trendingText: locationProfile.trendingText,
-          expressAvailable: locationProfile.expressAvailable,
-          additionalContent: locationProfile.additionalContent,
-          seoTitleOverride: locationProfile.seoTitleOverride,
-          seoDescriptionOverride:
-            locationProfile.seoDescriptionOverride,
-            faq: locationProfile.faq || [],
-        }
-      : null;
+    const locationContext = city
+  ? {
+      /* ================= LOCATION PROFILE ================= */
+
+      demandLevel:
+        locationProfile?.demandLevel || null,
+
+      customIntro:
+        locationProfile?.customIntro || null,
+
+      seasonalNote:
+        locationProfile?.seasonalNote || null,
+
+      deliveryNote:
+        locationProfile?.deliveryNote || null,
+
+      trendingText:
+        locationProfile?.trendingText || null,
+
+      expressAvailable:
+        locationProfile?.expressAvailable || false,
+
+      additionalContent:
+        locationProfile?.additionalContent || null,
+
+      /* ================= SEO ================= */
+
+      seoTitleOverride:
+        locationProfile?.seoTitleOverride || null,
+
+      seoDescriptionOverride:
+        locationProfile?.seoDescriptionOverride || null,
+
+      /* ================= FAQ ================= */
+
+      faq:
+        locationProfile?.faq || [],
+
+      /* ================= CITY CONTACT ================= */
+
+      contact: {
+        phone:
+          city.footer?.phone || null,
+
+        alternatePhone:
+          city.footer?.alternatePhone || null,
+
+        whatsapp:
+          city.footer?.whatsapp || null,
+
+        email:
+          city.footer?.email || null,
+
+        workingHours:
+          city.footer?.workingHours || null,
+
+        supportText:
+          city.footer?.supportText || null,
+      },
+    }
+  : null;
 
     /* ================= RESPONSE ================= */
 

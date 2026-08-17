@@ -18,7 +18,7 @@ async function getProductData(slug, productSlug) {
     {
       next: { revalidate: 3600 },
       cache: "force-cache",
-    }
+    },
   );
 
   if (!res.ok) return null;
@@ -163,57 +163,54 @@ export default async function ProductPage({ params }) {
    MERGE FAQ (LOCATION + PRODUCT)
 ========================= */
 
-const locationFaqs = locationContext?.faq || [];
-const productFaqs = rawFaqs || [];
+  const locationFaqs = locationContext?.faq || [];
+  const productFaqs = rawFaqs || [];
 
-// 🔥 Step 1: Process product FAQs (existing logic)
-const processedProductFaqs = productFaqs.map((faq) => {
-  let question = faq.question;
-  let answer = faq.answer;
+  // 🔥 Step 1: Process product FAQs (existing logic)
+  const processedProductFaqs = productFaqs.map((faq) => {
+    let question = faq.question;
+    let answer = faq.answer;
 
-  if (cityName) {
-    // replace {city}
-    question = question.replace(/\{city\}/gi, cityName);
-    answer = answer.replace(/\{city\}/gi, cityName);
+    if (cityName) {
+      // replace {city}
+      question = question.replace(/\{city\}/gi, cityName);
+      answer = answer.replace(/\{city\}/gi, cityName);
 
-    // smart pricing injection
-    const pricingKeywords = ["price", "rent", "rental", "cost", "how much"];
-    const lowerQ = question.toLowerCase();
+      // smart pricing injection
+      const pricingKeywords = ["price", "rent", "rental", "cost", "how much"];
+      const lowerQ = question.toLowerCase();
 
-    const shouldInject =
-      pricingKeywords.some((k) => lowerQ.includes(k)) &&
-      !lowerQ.includes(cityName.toLowerCase());
+      const shouldInject =
+        pricingKeywords.some((k) => lowerQ.includes(k)) &&
+        !lowerQ.includes(cityName.toLowerCase());
 
-    if (shouldInject) {
-      if (question.includes("?")) {
-        question = question.replace("?", ` in ${cityName}?`);
-      } else {
-        question = `${question} in ${cityName}`;
+      if (shouldInject) {
+        if (question.includes("?")) {
+          question = question.replace("?", ` in ${cityName}?`);
+        } else {
+          question = `${question} in ${cityName}`;
+        }
       }
     }
-  }
 
-  return { question, answer };
-});
+    return { question, answer };
+  });
 
-// 🔥 Step 2: Process location FAQs (NEW)
-const processedLocationFaqs = locationFaqs.map((faq) => {
-  let question = faq.question;
-  let answer = faq.answer;
+  // 🔥 Step 2: Process location FAQs (NEW)
+  const processedLocationFaqs = locationFaqs.map((faq) => {
+    let question = faq.question;
+    let answer = faq.answer;
 
-  if (cityName) {
-    question = question.replace(/\{city\}/gi, cityName);
-    answer = answer.replace(/\{city\}/gi, cityName);
-  }
+    if (cityName) {
+      question = question.replace(/\{city\}/gi, cityName);
+      answer = answer.replace(/\{city\}/gi, cityName);
+    }
 
-  return { question, answer };
-});
+    return { question, answer };
+  });
 
-// 🔥 Step 3: Merge (LOCATION FIRST 🚀)
-const faqs = [
-  ...processedLocationFaqs,
-  ...processedProductFaqs,
-].slice(0, 10); // limit for SEO
+  // 🔥 Step 3: Merge (LOCATION FIRST 🚀)
+  const faqs = [...processedLocationFaqs, ...processedProductFaqs].slice(0, 10); // limit for SEO
 
   function replaceDynamicTokens(text, cityName, price) {
     if (!text) return text;
@@ -237,7 +234,7 @@ const faqs = [
   }
 
   const primaryPrice =
-   pricing?.discountedPrice || pricing?.minPrice ||  pricing?.amount || 1000;
+    pricing?.discountedPrice || pricing?.minPrice || pricing?.amount || 1000;
 
   const processedDescription = replaceDynamicTokens(
     description,
@@ -316,15 +313,15 @@ const faqs = [
         "@id": `${productUrl}#product`,
         name: `${title} in ${cityName}`,
         image: images,
-        description: locationContext?.customIntro ||  processedDescription
-          ?.replace(/<[^>]+>/g, "")
-          .slice(0, 500),
+        description:
+          locationContext?.customIntro ||
+          processedDescription?.replace(/<[^>]+>/g, "").slice(0, 500),
 
         brand: {
-            "@type": "Organization",
-            name: "KirayNow",
-            url: baseUrl
-          },
+          "@type": "Organization",
+          name: "KirayNow",
+          url: baseUrl,
+        },
 
         seller,
 
@@ -372,7 +369,7 @@ const faqs = [
 
   return (
     <div className="bg-gray-50">
-      <div className="max-w-7xl mx-auto p-4 mt-16">
+      <div className="max-w-7xl mx-auto p-4 mt-16 pb-28 md:pb-4">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -384,7 +381,7 @@ const faqs = [
           <div className="lg:col-span-7">
             <ProductGallery images={images} title={title} />
             <div className="mt-3 text-sm text-gray-600"></div>
-            <div className="block md:hidden">
+            <div className="md:hidden">
               <ProductInfo
                 title={title}
                 pricing={pricing}
@@ -395,10 +392,17 @@ const faqs = [
                 locationContext={locationContext}
                 productRating={data?.productRating}
                 productReviewCount={data?.productReviewCount}
-                isMainHeading={true}
+                isMainHeading={false}
+                mobileSticky={true}
               />
             </div>
-            {vendors.length > 0 && <ProviderCards data={vendors} citySlug={slug} productName={title} />}
+            {vendors.length > 0 && (
+              <ProviderCards
+                data={vendors}
+                citySlug={slug}
+                productName={title}
+              />
+            )}
             <ProductDescription
               description={processedDescription}
               title={title}
@@ -412,7 +416,7 @@ const faqs = [
 
           {/* RIGHT SIDE (STICKY CARD) */}
           <div className="lg:col-span-5">
-            <div className="lg:sticky lg:top-24 md:block hidden">
+            <div className="hidden md:block lg:sticky lg:top-24">
               <ProductInfo
                 title={title}
                 pricing={pricing}
@@ -458,8 +462,6 @@ const faqs = [
           subtitle={`Top-rated services in ${city?.name} that use this product`}
         />
       ) : null}
-
-      
     </div>
   );
 }
