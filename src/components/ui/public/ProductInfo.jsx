@@ -48,14 +48,15 @@ export default function ProductInfo({
   /* ================= WHATSAPP MESSAGE ================= */
 
   const whatsappMessage = `
-Hi KirayNow 👋
+Hi KirayNow 
 
-Interested in:
-📦 ${title} | 📍 ${citySlug}
+I'm interested in:
+ ${title} In  ${citySlug}
 
-📅 Event Date:
-🔢 Quantity:
-📍 Delivery Location:
+Event Date:
+Quantity:
+Delivery Address:
+Return Date:
 
 Please share availability & best price.
 
