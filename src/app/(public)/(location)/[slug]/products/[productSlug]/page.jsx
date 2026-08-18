@@ -9,14 +9,14 @@ import FlagsCards from "@/components/ui/public/FlagsCards";
 import Servicecards from "@/components/ui/public/Servicecards";
 import ProviderCards from "@/components/ui/public/ProviderCards";
 
-export const revalidate = 3600;
+export const revalidate = 172800;
 export const dynamic = "force-static";
 
 async function getProductData(slug, productSlug) {
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/products/${productSlug}?city=${slug}`,
     {
-      next: { revalidate: 3600 },
+      next: { revalidate: 172800 },
       cache: "force-cache",
     },
   );
