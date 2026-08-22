@@ -1,7 +1,7 @@
 import { apiRequest } from "@/lib/api";
 import AllProductClient from "@/components/ui/public/AllProductClient";
 
-export const revalidate = 3600;
+export const revalidate = 78600;
 
 export async function generateMetadata({ params }) {
   const { slug } = await params;
@@ -94,7 +94,7 @@ export default async function AllProductPage({ params }) {
 
   try {
     const productRes = await apiRequest(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/products?city=${slug}&page=1&limit=24&sort=newest`
+      `${process.env.NEXT_PUBLIC_API_URL}/api/products?city=${slug}&page=1&limit=100&sort=newest`
     );
 
     products = productRes?.data || [];
