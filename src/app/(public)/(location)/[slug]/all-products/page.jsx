@@ -256,8 +256,8 @@ export default async function AllProductPage({ params }) {
     mx-auto
     max-w-7xl
     px-4
-    py-10
-    md:py-14
+    py-5
+    md:py-5
   ">
 
     <div className="max-w-3xl">
@@ -273,7 +273,7 @@ export default async function AllProductPage({ params }) {
         border-white/20
         bg-white/10
         px-3
-        py-1.5
+        py-1
         backdrop-blur-sm
       ">
 
