@@ -3,11 +3,24 @@ export const STORAGE_KEY =
 
 export const DEFAULT_TERMS = [
   "This is a Proforma Invoice and not a Tax Invoice.",
-  "Booking will be confirmed only after receipt of the agreed advance payment.",
-  "Balance payment must be cleared before or at the time of delivery/pickup unless otherwise agreed in writing.",
-  "Any additional transportation, loading, unloading, labour, overtime or other applicable charges will be billed separately.",
-  "Cancellation charges, if applicable, will be as per the agreed booking terms.",
-  "Any damage or loss to rented items may be charged separately.",
+
+  "70% advance payment is required to confirm the booking. The remaining 30% must be paid at the time of delivery.",
+
+  "Rental charges are based on the quantity, number of rental days and rates mentioned in this invoice. Additional rental days will be charged separately.",
+
+  "If the payment remains pending for more than 1 day after the due date, applicable late payment/penalty charges will be payable by the client.",
+
+  "Transportation, loading, unloading, labour, setup, dismantling, waiting, parking, tolls or additional trips beyond the agreed scope will be charged separately.",
+
+  "The client is responsible for any loss, theft, damage, breakage or missing rental items during the rental period, except for normal wear and tear.",
+
+  "Cancellation or rescheduling charges, if applicable, will be as per the agreed booking terms. Approved refunds will be made after applicable deductions.",
+
+  "Additional charges arising from changes in quantity, rental days, venue, timing or service requirements will be billed separately.",
+
+  "KirayNow shall not be liable for delays or non-performance caused by circumstances beyond its reasonable control, including weather, accidents, venue restrictions or government actions.",
+
+  "By confirming the booking, making payment or accepting delivery, the client agrees to these terms and conditions.",
 ];
 
 export function createId() {
