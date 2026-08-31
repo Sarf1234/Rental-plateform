@@ -10,6 +10,12 @@ export const DEFAULT_TERMS = [
   "Any damage or loss to rented items may be charged separately.",
 ];
 
+/*
+|--------------------------------------------------------------------------
+| ID
+|--------------------------------------------------------------------------
+*/
+
 export function createId() {
   try {
     if (
@@ -25,15 +31,26 @@ export function createId() {
     .slice(2, 10)}`;
 }
 
+
+/*
+|--------------------------------------------------------------------------
+| NUMBER HELPERS
+|--------------------------------------------------------------------------
+*/
+
 export function safeNumber(value) {
   const number = Number(value);
 
-  if (!Number.isFinite(number) || number < 0) {
+  if (
+    !Number.isFinite(number) ||
+    number < 0
+  ) {
     return 0;
   }
 
   return number;
 }
+
 
 export function roundMoney(value) {
   const number = Number(value);
@@ -47,16 +64,33 @@ export function roundMoney(value) {
   ) / 100;
 }
 
+
+/*
+|--------------------------------------------------------------------------
+| CURRENCY
+|--------------------------------------------------------------------------
+*/
+
 export function formatCurrency(value) {
   const amount = roundMoney(value);
 
-  return new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: "INR",
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  }).format(amount);
+  return new Intl.NumberFormat(
+    "en-IN",
+    {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }
+  ).format(amount);
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| DATE
+|--------------------------------------------------------------------------
+*/
 
 export function formatDate(value) {
   if (!value) {
@@ -65,30 +99,53 @@ export function formatDate(value) {
 
   const date = new Date(value);
 
-  if (Number.isNaN(date.getTime())) {
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
     return "-";
   }
 
-  return date.toLocaleDateString("en-IN", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
+  return date.toLocaleDateString(
+    "en-IN",
+    {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }
+  );
 }
+
 
 export function getTodayInputValue() {
   const date = new Date();
 
-  const year = date.getFullYear();
+  const year =
+    date.getFullYear();
+
   const month = String(
     date.getMonth() + 1
   ).padStart(2, "0");
+
   const day = String(
     date.getDate()
   ).padStart(2, "0");
 
   return `${year}-${month}-${day}`;
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| INVOICE NUMBER
+|--------------------------------------------------------------------------
+|
+| Example:
+|
+| KN-PI-310826-001
+|
+*/
 
 export function generateInvoiceNumber() {
   const now = new Date();
@@ -105,14 +162,18 @@ export function generateInvoiceNumber() {
     now.getFullYear()
   ).slice(-2);
 
-  const dateKey = `${year}${month}${day}`;
+  const dateKey =
+    `${year}${month}${day}`;
 
   const sequenceKey =
     `kiraynow_pi_sequence_${dateKey}`;
 
   let sequence = 0;
 
-  if (typeof window !== "undefined") {
+  if (
+    typeof window !==
+    "undefined"
+  ) {
     try {
       sequence = Number(
         window.localStorage.getItem(
@@ -121,7 +182,9 @@ export function generateInvoiceNumber() {
       );
 
       if (
-        !Number.isFinite(sequence) ||
+        !Number.isFinite(
+          sequence
+        ) ||
         sequence < 0
       ) {
         sequence = 0;
@@ -145,62 +208,246 @@ export function generateInvoiceNumber() {
   ).padStart(3, "0")}`;
 }
 
-export function calculateInvoice(invoice) {
-  const items = Array.isArray(invoice?.items)
-    ? invoice.items
-    : [];
 
-  const subtotal = roundMoney(
-    items.reduce((total, item) => {
-      const quantity = safeNumber(
-        item?.quantity
-      );
+/*
+|--------------------------------------------------------------------------
+| GET ADDITIONAL CHARGES
+|--------------------------------------------------------------------------
+|
+| Supports both:
+|
+| labour
+| transportation
+|
+| and also:
+|
+| labor
+| transport
+|
+| This makes the code safer if your
+| current form uses American spelling.
+|--------------------------------------------------------------------------
+*/
 
-      const rate = safeNumber(
-        item?.rate
-      );
-
-      return total + quantity * rate;
-    }, 0)
+export function getAdditionalCharges(
+  invoice
+) {
+  const labour = roundMoney(
+    safeNumber(
+      invoice?.labour ??
+        invoice?.labor ??
+        invoice?.labourCharge ??
+        invoice?.laborCharge
+    )
   );
 
-  const gstRate = invoice?.gstEnabled
-    ? safeNumber(invoice?.gstRate)
-    : 0;
-
-  const gstAmount = invoice?.gstEnabled
-    ? roundMoney(
-        (subtotal * gstRate) / 100
+  const transportation =
+    roundMoney(
+      safeNumber(
+        invoice?.transportation ??
+          invoice?.transport ??
+          invoice?.transportationCharge ??
+          invoice?.transportCharge
       )
-    : 0;
+    );
 
-  const grandTotal = roundMoney(
-    subtotal + gstAmount
+  return {
+    labour,
+    transportation,
+  };
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| CALCULATE INVOICE
+|--------------------------------------------------------------------------
+|
+| Calculation:
+|
+| Items
+| + Labour
+| + Transportation
+| = Taxable Subtotal
+|
+| GST is applied to the COMPLETE subtotal.
+|
+| Grand Total =
+| Subtotal + GST
+|
+|--------------------------------------------------------------------------
+*/
+
+export function calculateInvoice(
+  invoice
+) {
+  const items =
+    Array.isArray(
+      invoice?.items
+    )
+      ? invoice.items
+      : [];
+
+
+  /*
+   * PRODUCT / RENTAL ITEMS
+   */
+
+  const itemsSubtotal =
+    roundMoney(
+      items.reduce(
+        (
+          total,
+          item
+        ) => {
+          const quantity =
+            safeNumber(
+              item?.quantity
+            );
+
+          const rate =
+            safeNumber(
+              item?.rate
+            );
+
+          return (
+            total +
+            quantity * rate
+          );
+        },
+        0
+      )
+    );
+
+
+  /*
+   * LABOUR + TRANSPORTATION
+   */
+
+  const {
+    labour,
+    transportation,
+  } = getAdditionalCharges(
+    invoice
   );
 
-  const advancePaid = Math.min(
-    safeNumber(invoice?.advancePaid),
-    grandTotal
-  );
 
-  const balance = roundMoney(
-    grandTotal - advancePaid
-  );
+  /*
+   * COMPLETE TAXABLE SUBTOTAL
+   */
+
+  const subtotal =
+    roundMoney(
+      itemsSubtotal +
+        labour +
+        transportation
+    );
+
+
+  /*
+   * GST
+   */
+
+  const gstRate =
+    invoice?.gstEnabled
+      ? safeNumber(
+          invoice?.gstRate
+        )
+      : 0;
+
+
+  const gstAmount =
+    invoice?.gstEnabled
+      ? roundMoney(
+          (subtotal *
+            gstRate) /
+            100
+        )
+      : 0;
+
+
+  /*
+   * GRAND TOTAL
+   */
+
+  const grandTotal =
+    roundMoney(
+      subtotal +
+        gstAmount
+    );
+
+
+  /*
+   * ADVANCE
+   *
+   * Never allow advance > grand total.
+   */
+
+  const advancePaid =
+    Math.min(
+      safeNumber(
+        invoice?.advancePaid
+      ),
+      grandTotal
+    );
+
+
+  /*
+   * BALANCE
+   */
+
+  const balance =
+    roundMoney(
+      Math.max(
+        0,
+        grandTotal -
+          advancePaid
+      )
+    );
+
+
+  /*
+   * STATUS
+   */
 
   let status = "UNPAID";
+
 
   if (
     grandTotal > 0 &&
     balance <= 0
   ) {
     status = "PAID";
-  } else if (advancePaid > 0) {
-    status = "PARTIALLY PAID";
+  } else if (
+    advancePaid > 0
+  ) {
+    status =
+      "PARTIALLY PAID";
   }
 
+
   return {
+    /*
+     * Existing field
+     */
     subtotal,
+
+    /*
+     * New detailed fields
+     */
+    itemsSubtotal,
+    labour,
+    transportation,
+
+    /*
+     * Tax
+     */
+    gstRate,
     gstAmount,
+
+    /*
+     * Final
+     */
     grandTotal,
     advancePaid,
     balance,
@@ -208,8 +455,18 @@ export function calculateInvoice(invoice) {
   };
 }
 
+
+/*
+|--------------------------------------------------------------------------
+| LOCAL STORAGE
+|--------------------------------------------------------------------------
+*/
+
 export function loadInvoices() {
-  if (typeof window === "undefined") {
+  if (
+    typeof window ===
+    "undefined"
+  ) {
     return [];
   }
 
@@ -223,9 +480,12 @@ export function loadInvoices() {
       return [];
     }
 
-    const parsed = JSON.parse(raw);
+    const parsed =
+      JSON.parse(raw);
 
-    if (!Array.isArray(parsed)) {
+    if (
+      !Array.isArray(parsed)
+    ) {
       return [];
     }
 
@@ -240,15 +500,23 @@ export function loadInvoices() {
   }
 }
 
-export function saveInvoices(invoices) {
-  if (typeof window === "undefined") {
+
+export function saveInvoices(
+  invoices
+) {
+  if (
+    typeof window ===
+    "undefined"
+  ) {
     return false;
   }
 
   try {
     window.localStorage.setItem(
       STORAGE_KEY,
-      JSON.stringify(invoices)
+      JSON.stringify(
+        invoices
+      )
     );
 
     return true;
@@ -261,3 +529,4 @@ export function saveInvoices(invoices) {
     return false;
   }
 }
+

@@ -6,116 +6,134 @@ import {
   formatDate,
 } from "../../../../utils/invoice-utils";
 
+
 export default function InvoicePreview({
   invoice,
   onClose,
   onEdit,
   onAbort,
 }) {
-  const totals = calculateInvoice(invoice);
-
-  /*
-   * ============================================================
-   * PRINT
-   * ============================================================
-   *
-   * IMPORTANT:
-   *
-   * We do NOT copy Tailwind CSS.
-   *
-   * We generate a completely standalone HTML document.
-   *
-   * Therefore:
-   *
-   * Tailwind loaded     -> irrelevant
-   * Tailwind not loaded -> irrelevant
-   *
-   * Print document has its own CSS.
-   */
-
-  function handlePrint() {
-    const printWindow = window.open(
-      "",
-      "_blank",
-      "width=900,height=1000"
+  const totals =
+    calculateInvoice(
+      invoice
     );
 
+
+  /*
+  |--------------------------------------------------------------------------
+  | PRINT
+  |--------------------------------------------------------------------------
+  */
+
+  function handlePrint() {
+    const printWindow =
+      window.open(
+        "",
+        "_blank",
+        "width=900,height=1000"
+      );
+
+
     if (!printWindow) {
-      alert(
+      window.alert(
         "Please allow pop-ups for KirayNow to print the invoice."
       );
 
       return;
     }
 
-    const html = buildPrintDocument(
-      invoice,
-      totals
-    );
+
+    const html =
+      buildPrintDocument(
+        invoice,
+        totals
+      );
+
 
     printWindow.document.open();
-    printWindow.document.write(html);
+
+    printWindow.document.write(
+      html
+    );
+
     printWindow.document.close();
 
+
     /*
-     * Wait for browser to render the document.
+     * Give browser time to
+     * render complete document.
      */
+
     setTimeout(() => {
       try {
         printWindow.focus();
         printWindow.print();
       } catch (error) {
         console.error(
-          "Print failed:",
+          "KirayNow print error:",
           error
         );
       }
-    }, 500);
+    }, 600);
+
 
     /*
-     * Close after print dialog.
+     * Close print window
+     * after printing.
      */
-    printWindow.onafterprint = () => {
-      setTimeout(() => {
-        try {
-          printWindow.close();
-        } catch (error) {}
-      }, 100);
-    };
+
+    printWindow.onafterprint =
+      () => {
+        setTimeout(() => {
+          try {
+            printWindow.close();
+          } catch (error) {}
+        }, 100);
+      };
   }
 
+
   /*
-   * ============================================================
-   * ABORT
-   * ============================================================
-   */
+  |--------------------------------------------------------------------------
+  | ABORT
+  |--------------------------------------------------------------------------
+  */
 
   function handleAbort() {
-    const confirmed = window.confirm(
-      `Are you sure you want to abort ${invoice.invoiceNumber}?\n\nThis invoice will be permanently removed from the local invoice list.`
-    );
+    const confirmed =
+      window.confirm(
+        `Are you sure you want to abort ${invoice.invoiceNumber}?\n\nThis invoice will be permanently removed from the local invoice list.`
+      );
+
 
     if (!confirmed) {
       return;
     }
 
-    onAbort(invoice.id);
+
+    onAbort(
+      invoice.id
+    );
   }
+
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 p-3 sm:p-6">
 
       <div className="mx-auto max-w-5xl">
 
-        {/* =====================================================
+        {/* ==================================================
             ACTION BAR
-        ====================================================== */}
+        =================================================== */}
 
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white p-4 shadow-xl">
 
           <div>
+
             <p className="font-black text-slate-900">
-              {invoice.invoiceNumber}
+              {
+                invoice.invoiceNumber
+              }
             </p>
 
             <p className="text-xs text-slate-500">
@@ -125,6 +143,7 @@ export default function InvoicePreview({
                   invoice.createdAt
               )}
             </p>
+
           </div>
 
 
@@ -132,8 +151,10 @@ export default function InvoicePreview({
 
             <button
               type="button"
-              onClick={onEdit}
-              className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+              onClick={
+                onEdit
+              }
+              className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50"
             >
               Edit
             </button>
@@ -141,8 +162,10 @@ export default function InvoicePreview({
 
             <button
               type="button"
-              onClick={handlePrint}
-              className="rounded-lg bg-slate-950 px-4 py-2 text-sm font-bold text-white transition hover:bg-slate-800"
+              onClick={
+                handlePrint
+              }
+              className="rounded-lg bg-slate-950 px-4 py-2 text-sm font-bold text-white hover:bg-slate-800"
             >
               Print / Save PDF
             </button>
@@ -150,8 +173,10 @@ export default function InvoicePreview({
 
             <button
               type="button"
-              onClick={handleAbort}
-              className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-bold text-red-600 transition hover:bg-red-100"
+              onClick={
+                handleAbort
+              }
+              className="rounded-lg border border-red-200 bg-red-50 px-4 py-2 text-sm font-bold text-red-600 hover:bg-red-100"
             >
               Abort
             </button>
@@ -159,27 +184,32 @@ export default function InvoicePreview({
 
             <button
               type="button"
-              onClick={onClose}
-              className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-50"
+              onClick={
+                onClose
+              }
+              className="rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-bold text-slate-700 hover:bg-slate-50"
             >
               Close
             </button>
 
           </div>
+
         </div>
 
 
-        {/* =====================================================
+        {/* ==================================================
             SCREEN PREVIEW
-
-            Tailwind is used ONLY here.
-        ====================================================== */}
+        =================================================== */}
 
         <div className="overflow-hidden rounded-sm bg-white text-slate-900 shadow-2xl">
 
           <ScreenInvoice
-            invoice={invoice}
-            totals={totals}
+            invoice={
+              invoice
+            }
+            totals={
+              totals
+            }
           />
 
         </div>
@@ -191,9 +221,11 @@ export default function InvoicePreview({
 }
 
 
-/* =============================================================
-   SCREEN INVOICE
-============================================================= */
+/*
+|--------------------------------------------------------------------------
+| SCREEN INVOICE
+|--------------------------------------------------------------------------
+*/
 
 function ScreenInvoice({
   invoice,
@@ -218,7 +250,7 @@ function ScreenInvoice({
               Rental & Event Solutions
             </p>
 
-            <p className="mt-2 max-w-sm text-xs leading-5 text-slate-500">
+            <p className="mt-5 max-w-sm text-xs leading-5 text-slate-500">
               Professional event rental
               services for weddings,
               corporate events and
@@ -230,15 +262,17 @@ function ScreenInvoice({
 
           <div className="sm:text-right">
 
-            {/* <p className="text-lg font-black">
+            <p className="text-2xl font-black">
               PROFORMA INVOICE
-            </p> */}
+            </p>
 
             <div className="mt-4 space-y-1 text-sm">
 
               <p>
                 <b>PI No:</b>{" "}
-                {invoice.invoiceNumber}
+                {
+                  invoice.invoiceNumber
+                }
               </p>
 
               <p>
@@ -250,8 +284,11 @@ function ScreenInvoice({
 
             </div>
 
+
             <ScreenStatus
-              status={totals.status}
+              status={
+                totals.status
+              }
             />
 
           </div>
@@ -263,114 +300,152 @@ function ScreenInvoice({
 
         <div className="grid border-b border-slate-200 md:grid-cols-2">
 
-          <div className="border-b border-slate-200 py-3 md:border-b-0 md:border-r md:pr-8">
+          <div className="border-b border-slate-200 py-7 md:border-b-0 md:border-r md:pr-8">
 
             <ScreenLabel>
               Bill To
             </ScreenLabel>
 
             <h2 className="text-lg font-bold">
-              {invoice.customer?.name ||
-                "-"}
+              {
+                invoice.customer
+                  ?.name ||
+                "-"
+              }
             </h2>
 
-            {invoice.customer?.company && (
-              <p className="mt-1 text-sm font-semibold">
-                {
-                  invoice.customer
-                    .company
-                }
-              </p>
-            )}
 
-            {invoice.customer?.address && (
-              <p className="mt-3 max-w-sm whitespace-pre-line text-sm leading-5 text-slate-600">
-                {
-                  invoice.customer
-                    .address
-                }
-              </p>
-            )}
+            {
+              invoice.customer
+                ?.company && (
+                <p className="mt-1 text-sm font-semibold">
+                  {
+                    invoice.customer
+                      .company
+                  }
+                </p>
+              )
+            }
 
-            {invoice.customer?.phone && (
-              <p className="mt-3 text-sm">
-                {
-                  invoice.customer
-                    .phone
-                }
-              </p>
-            )}
 
-            {invoice.customer?.email && (
-              <p className="text-sm">
-                {
-                  invoice.customer
-                    .email
-                }
-              </p>
-            )}
+            {
+              invoice.customer
+                ?.address && (
+                <p className="mt-3 max-w-sm whitespace-pre-line text-sm leading-5 text-slate-600">
+                  {
+                    invoice.customer
+                      .address
+                  }
+                </p>
+              )
+            }
 
-            {invoice.customer?.gstin && (
-              <p className="mt-3 text-sm font-bold">
-                GSTIN:{" "}
-                {
-                  invoice.customer
-                    .gstin
-                }
-              </p>
-            )}
+
+            {
+              invoice.customer
+                ?.phone && (
+                <p className="mt-3 text-sm">
+                  {
+                    invoice.customer
+                      .phone
+                  }
+                </p>
+              )
+            }
+
+
+            {
+              invoice.customer
+                ?.email && (
+                <p className="text-sm">
+                  {
+                    invoice.customer
+                      .email
+                  }
+                </p>
+              )
+            }
+
+
+            {
+              invoice.customer
+                ?.gstin && (
+                <p className="mt-3 text-sm font-bold">
+                  GSTIN:{" "}
+                  {
+                    invoice.customer
+                      .gstin
+                  }
+                </p>
+              )
+            }
 
           </div>
 
 
-          <div className="py-3 md:pl-8">
+          <div className="py-7 md:pl-8">
 
             <ScreenLabel>
               Event Details
             </ScreenLabel>
 
-            <div className="space-y-2 text-sm">
 
-              {invoice.eventDetails?.name && (
-                <p>
+            {
+              invoice.eventDetails
+                ?.name && (
+                <p className="text-sm">
                   <b>Event:</b>{" "}
                   {
-                    invoice.eventDetails
+                    invoice
+                      .eventDetails
                       .name
                   }
                 </p>
-              )}
+              )
+            }
 
-              {invoice.eventDetails?.date && (
-                <p>
-                  <b>Event Date:</b>{" "}
+
+            {
+              invoice.eventDetails
+                ?.date && (
+                <p className="mt-2 text-sm">
+                  <b>
+                    Event Date:
+                  </b>{" "}
                   {formatDate(
-                    invoice.eventDetails
+                    invoice
+                      .eventDetails
                       .date
                   )}
                 </p>
-              )}
+              )
+            }
 
-              {invoice.eventDetails?.venue && (
-                <p>
+
+            {
+              invoice.eventDetails
+                ?.venue && (
+                <p className="mt-2 text-sm">
                   <b>Venue:</b>{" "}
                   {
-                    invoice.eventDetails
+                    invoice
+                      .eventDetails
                       .venue
                   }
                 </p>
-              )}
-
-            </div>
+              )
+            }
 
           </div>
 
         </div>
 
 
-        {/* ITEMS */}
+        {/* ==================================================
+            ITEMS
+        =================================================== */}
 
-        <div className="py-4 overflow-x-auto">
+        <div className="overflow-x-auto py-8">
 
           <table className="w-full min-w-[650px] border-collapse text-sm">
 
@@ -405,61 +480,73 @@ function ScreenInvoice({
 
             <tbody>
 
-              {invoice.items?.map(
-                (item, index) => {
+              {
+                invoice.items?.map(
+                  (
+                    item,
+                    index
+                  ) => {
 
-                  const quantity =
-                    Number(
-                      item.quantity
-                    ) || 0;
+                    const quantity =
+                      Number(
+                        item.quantity
+                      ) || 0;
 
-                  const rate =
-                    Number(
-                      item.rate
-                    ) || 0;
+                    const rate =
+                      Number(
+                        item.rate
+                      ) || 0;
 
-                  const amount =
-                    quantity * rate;
+                    const amount =
+                      quantity *
+                      rate;
 
-                  return (
-                    <tr
-                      key={
-                        item.id ||
-                        index
-                      }
-                      className="border-b border-slate-200"
-                    >
 
-                      <td className="py-4 align-top">
-                        {index + 1}
-                      </td>
-
-                      <td className="py-4 align-top font-medium">
-                        {
-                          item.description
+                    return (
+                      <tr
+                        key={
+                          item.id ||
+                          index
                         }
-                      </td>
+                        className="border-b border-slate-200"
+                      >
 
-                      <td className="py-4 text-center align-top">
-                        {quantity}
-                      </td>
+                        <td className="py-4 align-top">
+                          {
+                            index + 1
+                          }
+                        </td>
 
-                      <td className="py-4 text-right align-top">
-                        {formatCurrency(
-                          rate
-                        )}
-                      </td>
+                        <td className="py-4 align-top font-medium">
+                          {
+                            item.description
+                          }
+                        </td>
 
-                      <td className="py-4 text-right align-top font-bold">
-                        {formatCurrency(
-                          amount
-                        )}
-                      </td>
+                        <td className="py-4 text-center align-top">
+                          {
+                            quantity
+                          }
+                        </td>
 
-                    </tr>
-                  );
-                }
-              )}
+                        <td className="py-4 text-right align-top">
+                          {formatCurrency(
+                            rate
+                          )}
+                        </td>
+
+                        <td className="py-4 text-right align-top font-bold">
+                          {formatCurrency(
+                            amount
+                          )}
+                        </td>
+
+                      </tr>
+                    );
+                  }
+                )
+
+              }
 
             </tbody>
 
@@ -468,27 +555,144 @@ function ScreenInvoice({
         </div>
 
 
-        {/* TOTALS */}
+        {/* ==================================================
+            ADDITIONAL CHARGES
+        =================================================== */}
+
+        {
+          (
+            totals.labour >
+              0 ||
+            totals.transportation >
+              0
+          ) && (
+
+            <div className="mb-8 border-t border-slate-200 pt-5">
+
+              <ScreenLabel>
+                Additional Charges
+              </ScreenLabel>
+
+
+              <div className="space-y-3">
+
+                {
+                  totals.labour >
+                    0 && (
+
+                    <div className="flex justify-between border-b border-slate-100 pb-3 text-sm">
+
+                      <span className="font-medium">
+                        Labour Charges
+                      </span>
+
+                      <span className="font-bold">
+                        {formatCurrency(
+                          totals.labour
+                        )}
+                      </span>
+
+                    </div>
+
+                  )
+                }
+
+
+                {
+                  totals.transportation >
+                    0 && (
+
+                    <div className="flex justify-between border-b border-slate-100 pb-3 text-sm">
+
+                      <span className="font-medium">
+                        Transportation Charges
+                      </span>
+
+                      <span className="font-bold">
+                        {formatCurrency(
+                          totals.transportation
+                        )}
+                      </span>
+
+                    </div>
+
+                  )
+                }
+
+              </div>
+
+            </div>
+
+          )
+        }
+
+
+        {/* ==================================================
+            TOTALS
+        =================================================== */}
 
         <div className="flex justify-end border-b border-slate-200 pb-8">
 
           <div className="w-full max-w-sm space-y-3 text-sm">
 
             <ScreenSummary
-              label="Subtotal"
+              label="Item Subtotal"
               value={formatCurrency(
-                totals.subtotal
+                totals.itemsSubtotal
               )}
             />
 
-            {invoice.gstEnabled && (
+
+            {
+              totals.labour >
+                0 && (
+                <ScreenSummary
+                  label="Labour Charges"
+                  value={formatCurrency(
+                    totals.labour
+                  )}
+                />
+              )
+            }
+
+
+            {
+              totals.transportation >
+                0 && (
+                <ScreenSummary
+                  label="Transportation"
+                  value={formatCurrency(
+                    totals.transportation
+                  )}
+                />
+              )
+            }
+
+
+            <div className="border-t border-slate-300 pt-3">
+
               <ScreenSummary
-                label={`GST (${invoice.gstRate}%)`}
+                label="Subtotal"
                 value={formatCurrency(
-                  totals.gstAmount
+                  totals.subtotal
                 )}
+                bold
               />
-            )}
+
+            </div>
+
+
+            {
+              invoice.gstEnabled && (
+                <ScreenSummary
+                  label={`GST (${invoice.gstRate}%)`}
+                  value={formatCurrency(
+                    totals.gstAmount
+                  )}
+                />
+              )
+            }
+
 
             <div className="border-t-2 border-slate-950 pt-3">
 
@@ -502,12 +706,14 @@ function ScreenInvoice({
 
             </div>
 
+
             <ScreenSummary
               label="Advance / Paid"
               value={formatCurrency(
                 totals.advancePaid
               )}
             />
+
 
             <ScreenSummary
               label="Balance Due"
@@ -522,7 +728,7 @@ function ScreenInvoice({
         </div>
 
 
-        {/* PAYMENT + TAX */}
+        {/* PAYMENT */}
 
         <div className="grid gap-8 border-b border-slate-200 py-8 md:grid-cols-2">
 
@@ -533,14 +739,18 @@ function ScreenInvoice({
             </ScreenLabel>
 
             <ScreenStatus
-              status={totals.status}
+              status={
+                totals.status
+              }
               large
             />
 
             <p className="mt-3 text-xs leading-5 text-slate-500">
-              {getPaymentDescription(
-                totals.status
-              )}
+              {
+                getPaymentDescription(
+                  totals.status
+                )
+              }
             </p>
 
           </div>
@@ -553,9 +763,11 @@ function ScreenInvoice({
             </ScreenLabel>
 
             <p className="text-sm font-bold">
-              {invoice.gstEnabled
-                ? `GST @ ${invoice.gstRate}%`
-                : "Non-GST"}
+              {
+                invoice.gstEnabled
+                  ? `GST @ ${invoice.gstRate}%`
+                  : "Non-GST"
+              }
             </p>
 
           </div>
@@ -565,88 +777,59 @@ function ScreenInvoice({
 
         {/* TERMS */}
 
-        <div className="py-4">
+        <div className="py-8">
 
           <ScreenLabel>
             Terms & Conditions
           </ScreenLabel>
 
-          {Array.isArray(
-            invoice.terms
-          ) &&
-          invoice.terms.length > 0 ? (
 
-            <ol className="space-y-2 text-xs leading-5 text-slate-600">
+          {
+            Array.isArray(
+              invoice.terms
+            ) &&
+            invoice.terms.length >
+              0 ? (
 
-              {invoice.terms.map(
-                (
-                  term,
-                  index
-                ) => (
-                  <li
-                    key={index}
-                  >
-                    <span className="font-semibold text-slate-700">
-                      {index + 1}.
-                    </span>{" "}
-                    {term}
-                  </li>
-                )
-              )}
+              <ol className="space-y-2 text-xs leading-5 text-slate-600">
 
-            </ol>
+                {
+                  invoice.terms.map(
+                    (
+                      term,
+                      index
+                    ) => (
+                      <li
+                        key={
+                          index
+                        }
+                      >
+                        <span className="font-semibold text-slate-700">
+                          {
+                            index + 1
+                          }.
+                        </span>{" "}
+                        {
+                          term
+                        }
+                      </li>
+                    )
+                  )
+                }
 
-          ) : (
+              </ol>
 
-            <p className="text-xs text-slate-400">
-              No additional terms
-              and conditions
-              specified.
-            </p>
+            ) : (
 
-          )}
-
-        </div>
-
-
-        {/* IMPORTANT */}
-
-        <div className="border-t border-slate-200 py-8">
-
-          <div className="grid gap-8 md:grid-cols-2">
-
-            <div>
-
-              <ScreenLabel>
-                Important
-              </ScreenLabel>
-
-              <p className="text-xs leading-5 text-slate-500">
-                This document is a
-                Proforma Invoice
-                generated electronically
-                by KirayNow. It is not a
-                Tax Invoice.
+              <p className="text-xs text-slate-400">
+                No additional
+                terms and
+                conditions
+                specified.
               </p>
 
-            </div>
-
-
-            <div>
-
-              <ScreenLabel>
-                Payment Note
-              </ScreenLabel>
-
-              <p className="text-xs leading-5 text-slate-500">
-                Please ensure that all
-                payments are made against
-                the agreed booking terms.
-              </p>
-
-            </div>
-
-          </div>
+            )
+          }
 
         </div>
 
@@ -675,9 +858,11 @@ function ScreenInvoice({
 }
 
 
-/* =============================================================
-   STANDALONE PRINT DOCUMENT
-============================================================= */
+/*
+|--------------------------------------------------------------------------
+| PRINT DOCUMENT
+|--------------------------------------------------------------------------
+*/
 
 function buildPrintDocument(
   invoice,
@@ -690,6 +875,7 @@ function buildPrintDocument(
       ? invoice.items
       : [];
 
+
   const terms =
     Array.isArray(
       invoice.terms
@@ -697,43 +883,42 @@ function buildPrintDocument(
       ? invoice.terms
       : [];
 
-  const invoiceNumber =
-    escapeHtml(
-      invoice.invoiceNumber ||
-        ""
-    );
 
   const customer =
     invoice.customer || {};
 
+
   const eventDetails =
-    invoice.eventDetails || {};
+    invoice.eventDetails ||
+    {};
+
 
   const gstEnabled =
     Boolean(
       invoice.gstEnabled
     );
 
+
   const gstRate =
     Number(
       invoice.gstRate
     ) || 0;
 
+
   const status =
-    totals.status || "PENDING";
+    totals.status ||
+    "UNPAID";
+
 
   const statusClass =
     getPrintStatusClass(
       status
     );
 
-  const statusText =
-    escapeHtml(status);
-
 
   /*
    * ==========================================================
-   * ITEMS HTML
+   * ITEM ROWS
    * ==========================================================
    */
 
@@ -741,7 +926,11 @@ function buildPrintDocument(
     items.length > 0
       ? items
           .map(
-            (item, index) => {
+            (
+              item,
+              index
+            ) => {
+
               const quantity =
                 Number(
                   item.quantity
@@ -753,20 +942,26 @@ function buildPrintDocument(
                 ) || 0;
 
               const amount =
-                quantity * rate;
+                quantity *
+                rate;
+
 
               return `
                 <tr class="item-row">
 
                   <td class="col-number">
-                    ${index + 1}
+                    ${
+                      index + 1
+                    }
                   </td>
 
                   <td class="col-description">
-                    ${escapeHtml(
-                      item.description ||
-                        ""
-                    )}
+                    ${
+                      escapeHtml(
+                        item.description ||
+                          ""
+                      )
+                    }
                   </td>
 
                   <td class="col-qty">
@@ -774,19 +969,23 @@ function buildPrintDocument(
                   </td>
 
                   <td class="col-rate">
-                    ${escapeHtml(
-                      formatCurrency(
-                        rate
+                    ${
+                      escapeHtml(
+                        formatCurrency(
+                          rate
+                        )
                       )
-                    )}
+                    }
                   </td>
 
                   <td class="col-amount">
-                    ${escapeHtml(
-                      formatCurrency(
-                        amount
+                    ${
+                      escapeHtml(
+                        formatCurrency(
+                          amount
+                        )
                       )
-                    )}
+                    }
                   </td>
 
                 </tr>
@@ -808,7 +1007,114 @@ function buildPrintDocument(
 
   /*
    * ==========================================================
-   * TERMS HTML
+   * ADDITIONAL CHARGES
+   * ==========================================================
+   */
+
+  const additionalChargesHtml =
+    (
+      totals.labour >
+        0 ||
+      totals.transportation >
+        0
+    )
+      ? `
+          <div class="additional-section">
+
+            <div class="label">
+              Additional Charges
+            </div>
+
+
+            ${
+              totals.labour >
+                0
+                ? `
+                  <div class="additional-row">
+
+                    <span>
+                      Labour Charges
+                    </span>
+
+                    <strong>
+                      ${
+                        escapeHtml(
+                          formatCurrency(
+                            totals.labour
+                          )
+                        )
+                      }
+                    </strong>
+
+                  </div>
+                `
+                : ""
+            }
+
+
+            ${
+              totals.transportation >
+                0
+                ? `
+                  <div class="additional-row">
+
+                    <span>
+                      Transportation Charges
+                    </span>
+
+                    <strong>
+                      ${
+                        escapeHtml(
+                          formatCurrency(
+                            totals.transportation
+                          )
+                        )
+                      }
+                    </strong>
+
+                  </div>
+                `
+                : ""
+            }
+
+          </div>
+        `
+      : "";
+
+
+  /*
+   * ==========================================================
+   * GST
+   * ==========================================================
+   */
+
+  const gstRow =
+    gstEnabled
+      ? `
+          <div class="summary-row">
+
+            <span>
+              GST (${gstRate}%)
+            </span>
+
+            <strong>
+              ${
+                escapeHtml(
+                  formatCurrency(
+                    totals.gstAmount
+                  )
+                )
+              }
+            </strong>
+
+          </div>
+        `
+      : "";
+
+
+  /*
+   * ==========================================================
+   * TERMS
    * ==========================================================
    */
 
@@ -816,6 +1122,7 @@ function buildPrintDocument(
     terms.length > 0
       ? `
           <ol class="terms-list">
+
             ${terms
               .map(
                 (
@@ -823,17 +1130,26 @@ function buildPrintDocument(
                   index
                 ) => `
                   <li class="term-item">
-                    
+
+                    <span class="term-number">
+                      ${
+                        index + 1
+                      }.
+                    </span>
 
                     <span>
-                      ${escapeHtml(
-                        term
-                      )}
+                      ${
+                        escapeHtml(
+                          term
+                        )
+                      }
                     </span>
+
                   </li>
                 `
               )
               .join("")}
+
           </ol>
         `
       : `
@@ -846,47 +1162,7 @@ function buildPrintDocument(
 
   /*
    * ==========================================================
-   * GST HTML
-   * ==========================================================
-   */
-
-  const gstRow =
-    gstEnabled
-      ? `
-          <div class="summary-row">
-            <span>
-              GST (${gstRate}%)
-            </span>
-
-            <strong>
-              ${escapeHtml(
-                formatCurrency(
-                  totals.gstAmount
-                )
-              )}
-            </strong>
-          </div>
-        `
-      : "";
-
-
-  /*
-   * ==========================================================
-   * PAYMENT DESCRIPTION
-   * ==========================================================
-   */
-
-  const paymentDescription =
-    escapeHtml(
-      getPaymentDescription(
-        status
-      )
-    );
-
-
-  /*
-   * ==========================================================
-   * COMPLETE PRINT DOCUMENT
+   * COMPLETE PRINT HTML
    * ==========================================================
    */
 
@@ -897,1199 +1173,1300 @@ function buildPrintDocument(
 
 <head>
 
-  <meta charset="UTF-8" />
+<meta charset="UTF-8">
 
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  />
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+/>
 
-  <title>
-    ${invoiceNumber}
-  </title>
+<title>
+  ${escapeHtml(
+    invoice.invoiceNumber ||
+      "KirayNow PI"
+  )}
+</title>
 
 
-  <style>
+<style>
 
-    /*
-     * ========================================================
-     * PAGE
-     * ========================================================
-     */
+/* ============================================================
+   PAGE
+============================================================ */
 
-    @page {
-      size: A4;
-      margin: 0;
-    }
+@page {
+  size: A4;
+  margin: 0;
+}
 
 
-    /*
-     * ========================================================
-     * RESET
-     * ========================================================
-     */
+/* ============================================================
+   RESET
+============================================================ */
 
-    * {
-      box-sizing: border-box;
-    }
+* {
+  box-sizing: border-box;
+}
 
 
-    html,
-    body {
-      margin: 0;
-      padding: 0;
+html,
+body {
+  margin: 0;
+  padding: 0;
 
-      width: 100%;
+  width: 100%;
 
-      background: #ffffff;
+  background: #ffffff;
 
-      color: #0f172a;
+  color: #0f172a;
 
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
+  font-family:
+    Arial,
+    Helvetica,
+    sans-serif;
 
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
 
 
-    body {
-      font-size: 10.5px;
-      line-height: 1.45;
-    }
+body {
+  font-size: 10px;
 
+  line-height: 1.45;
+}
 
-    /*
-     * ========================================================
-     * INVOICE
-     * ========================================================
-     */
 
-    .invoice {
-      width: 210mm;
+/* ============================================================
+   PAGE CONTAINER
+============================================================ */
 
-      margin: 0 auto;
+.invoice {
+  width: 210mm;
 
-      background: #ffffff;
+  margin: 0 auto;
 
-      padding: 12mm;
+  padding: 12mm;
 
-      overflow: visible;
-    }
+  background: #ffffff;
+}
 
 
-    /*
-     * IMPORTANT:
-     *
-     * Do NOT set fixed height.
-     *
-     * Browser is allowed to continue
-     * onto page 2, 3, 4...
-     */
+.invoice-content {
+  width: 100%;
+}
 
-    .invoice-content {
-      width: 100%;
-    }
 
+/* ============================================================
+   HEADER
+============================================================ */
 
-    /*
-     * ========================================================
-     * HEADER
-     * ========================================================
-     */
+.header {
+  display: flex;
 
-    .header {
-      display: flex;
+  justify-content: space-between;
 
-      justify-content: space-between;
+  gap: 20mm;
 
-      gap: 20mm;
+  padding-bottom: 7mm;
 
-      padding-bottom: 7mm;
+  border-bottom: 2px solid #0f172a;
 
-      border-bottom: 2px solid #0f172a;
+  page-break-inside: avoid;
 
-      page-break-inside: avoid;
+  break-inside: avoid;
+}
 
-      break-inside: avoid;
-    }
 
+.brand {
+  flex: 1;
+}
 
-    .brand {
-      flex: 1;
-    }
 
+.brand-name {
+  margin: 0;
 
-    .brand-name {
-      margin: 0;
+  font-size: 25px;
 
-      font-size: 25px;
+  font-weight: 900;
 
-      line-height: 1;
+  line-height: 1;
+}
 
-      font-weight: 900;
 
-      letter-spacing: -0.5px;
-    }
+.brand-subtitle {
+  margin-top: 2px;
 
+  color: #64748b;
 
-    .brand-subtitle {
-      margin-top: 2px;
+  font-size: 10px;
 
-      color: #64748b;
+  font-weight: 600;
+}
 
-      font-size: 10px;
 
-      font-weight: 600;
-    }
+.brand-description {
+  max-width: 72mm;
 
+  margin-top: 13px;
 
-    .brand-description {
-      max-width: 72mm;
+  color: #64748b;
 
-      margin-top: 13px;
+  font-size: 8.5px;
 
-      color: #64748b;
+  line-height: 1.6;
+}
 
-      font-size: 8.5px;
 
-      line-height: 1.6;
-    }
+.invoice-meta {
+  min-width: 60mm;
 
+  text-align: right;
+}
 
-    .invoice-meta {
-      min-width: 60mm;
 
-      text-align: right;
-    }
+.invoice-title {
+  margin: 0;
 
+  font-size: 18px;
 
-    .invoice-title {
-      margin: 0;
+  font-weight: 900;
+}
 
-      font-size: 18px;
 
-      line-height: 1.2;
+.meta-row {
+  margin-top: 4px;
 
-      font-weight: 900;
-    }
+  font-size: 9.5px;
+}
 
 
-    .meta-row {
-      margin-top: 4px;
+.status {
+  display: inline-block;
 
-      font-size: 9.5px;
-    }
+  margin-top: 8px;
 
+  padding: 3px 9px;
 
-    .status {
-      display: inline-block;
+  border-radius: 999px;
 
-      margin-top: 8px;
+  font-size: 8px;
 
-      padding: 3px 9px;
+  font-weight: 900;
+}
 
-      border-radius: 999px;
 
-      font-size: 8px;
+.status-paid {
+  background: #d1fae5;
 
-      font-weight: 900;
-    }
+  color: #047857;
+}
 
 
-    .status-paid {
-      background: #d1fae5;
-      color: #047857;
-    }
+.status-partial {
+  background: #fef3c7;
 
+  color: #b45309;
+}
 
-    .status-partial {
-      background: #fef3c7;
-      color: #b45309;
-    }
 
+.status-pending {
+  background: #fee2e2;
 
-    .status-pending {
-      background: #fee2e2;
-      color: #b91c1c;
-    }
+  color: #b91c1c;
+}
 
 
-    /*
-     * ========================================================
-     * TWO COLUMN
-     * ========================================================
-     */
+/* ============================================================
+   TWO COLUMN
+============================================================ */
 
-    .two-column {
-      display: grid;
+.two-column {
+  display: grid;
 
-      grid-template-columns: 1fr 1fr;
+  grid-template-columns:
+    1fr 1fr;
 
-      width: 100%;
-    }
+  width: 100%;
+}
 
 
-    .two-column > .column {
-      min-width: 0;
-    }
+.bill-to {
+  padding:
+    7mm
+    8mm
+    7mm
+    0;
 
+  border-right:
+    1px solid #e2e8f0;
+}
 
-    .bill-to {
-      padding: 4mm 8mm 4mm 0;
 
-      border-right: 1px solid #e2e8f0;
-    }
+.event-details {
+  padding:
+    7mm
+    0
+    7mm
+    8mm;
+}
 
 
-    .event-details {
-      padding: 4mm 0 4mm 8mm;
-    }
+/* ============================================================
+   LABEL
+============================================================ */
 
+.label {
+  margin-bottom: 3mm;
 
-    /*
-     * ========================================================
-     * LABEL
-     * ========================================================
-     */
+  color: #94a3b8;
 
-    .label {
-      margin-bottom: 2mm;
+  font-size: 7px;
 
-      color: #94a3b8;
+  font-weight: 900;
 
-      font-size: 7px;
+  letter-spacing: 1.5px;
 
-      font-weight: 900;
+  text-transform: uppercase;
+}
 
-      letter-spacing: 1.5px;
 
-      text-transform: uppercase;
-    }
+/* ============================================================
+   CUSTOMER
+============================================================ */
 
+.customer-name {
+  margin: 0;
 
-    /*
-     * ========================================================
-     * CUSTOMER
-     * ========================================================
-     */
+  font-size: 13px;
 
-    .customer-name {
-      margin: 0;
+  font-weight: 800;
+}
 
-      font-size: 13px;
 
-      font-weight: 800;
-    }
+.customer-company {
+  margin-top: 2px;
 
+  font-size: 9.5px;
 
-    .customer-company {
-      margin-top: 2px;
+  font-weight: 700;
+}
 
-      font-size: 9.5px;
 
-      font-weight: 700;
-    }
+.customer-address {
+  max-width: 80mm;
 
+  margin-top: 8px;
 
-    .customer-address {
-      max-width: 80mm;
+  color: #475569;
 
-      margin-top: 2px;
+  font-size: 9px;
 
-      color: #475569;
+  line-height: 1.55;
 
-      font-size: 9px;
+  white-space: pre-line;
+}
 
-      line-height: 1;
 
-      white-space: pre-line;
-    }
+.customer-contact {
+  margin-top: 6px;
 
+  font-size: 9px;
+}
 
-    .customer-contact {
-      margin-top: 6px;
 
-      font-size: 9px;
+.customer-gstin {
+  margin-top: 6px;
 
-      line-height: 1.6;
-    }
+  font-size: 9px;
 
+  font-weight: 800;
+}
 
-    .customer-gstin {
-      margin-top: 6px;
 
-      font-size: 9px;
+.event-row {
+  margin-bottom: 5px;
 
-      font-weight: 800;
-    }
+  font-size: 9.5px;
+}
 
 
-    .event-row {
-      margin-bottom: 5px;
+/* ============================================================
+   ITEMS
+============================================================ */
 
-      font-size: 9.5px;
-    }
+.items-section {
+  padding: 7mm 0;
+}
 
 
-    /*
-     * ========================================================
-     * ITEMS
-     * ========================================================
-     */
+.items-table {
+  width: 100%;
 
-    .items-section {
-      padding: 2mm 0;
-    }
+  border-collapse:
+    collapse;
 
+  table-layout:
+    fixed;
 
-    .items-table {
-      width: 100%;
+  font-size: 9px;
+}
 
-      border-collapse: collapse;
 
-      table-layout: fixed;
+.items-table thead {
+  display:
+    table-header-group;
+}
 
-      font-size: 9px;
-    }
 
+.items-table tr {
+  page-break-inside:
+    avoid;
 
-    .items-table thead {
-      display: table-header-group;
-    }
+  break-inside:
+    avoid;
+}
 
 
-    .items-table tr {
-      page-break-inside: avoid;
+.items-table th {
+  padding-bottom: 3mm;
 
-      break-inside: avoid;
-    }
+  border-bottom:
+    2px solid #0f172a;
 
+  font-size: 8px;
 
-    .items-table th {
-      padding-bottom: 3mm;
+  font-weight: 900;
 
-      border-bottom: 2px solid #0f172a;
+  text-align: left;
+}
 
-      font-size: 8px;
 
-      font-weight: 900;
+.items-table td {
+  padding:
+    3.5mm
+    0;
 
-      text-align: left;
-    }
+  border-bottom:
+    1px solid #e2e8f0;
 
+  vertical-align:
+    top;
 
-    .items-table td {
-      padding: 3.5mm 0;
+  overflow-wrap:
+    anywhere;
+}
 
-      border-bottom: 1px solid #e2e8f0;
 
-      vertical-align: top;
+.col-number {
+  width: 8mm;
+}
 
-      overflow-wrap: anywhere;
-    }
 
+.col-description {
+  padding-right: 5mm !important;
+}
 
-    .col-number {
-      width: 8mm;
 
-      text-align: left;
-    }
+.col-qty {
+  width: 15mm;
 
+  text-align:
+    center !important;
+}
 
-    .col-description {
-      width: auto;
 
-      padding-right: 5mm !important;
-    }
+.col-rate {
+  width: 32mm;
 
+  text-align:
+    right !important;
+}
 
-    .col-qty {
-      width: 15mm;
 
-      text-align: center !important;
-    }
+.col-amount {
+  width: 35mm;
 
+  text-align:
+    right !important;
 
-    .col-rate {
-      width: 32mm;
+  font-weight:
+    800;
+}
 
-      text-align: right !important;
-    }
 
+.empty-items {
+  padding: 8mm;
 
-    .col-amount {
-      width: 35mm;
+  color: #94a3b8;
 
-      text-align: right !important;
+  text-align:
+    center;
+}
 
-      font-weight: 800;
-    }
 
+/* ============================================================
+   ADDITIONAL CHARGES
+============================================================ */
 
-    .empty-items {
-      padding: 8mm 0;
+.additional-section {
+  padding:
+    5mm
+    0
+    7mm;
 
-      color: #94a3b8;
+  page-break-inside:
+    avoid;
 
-      text-align: center;
-    }
+  break-inside:
+    avoid;
+}
 
 
-    /*
-     * ========================================================
-     * TOTALS
-     * ========================================================
-     */
+.additional-row {
+  display: flex;
 
-    .totals-section {
-      display: flex;
+  justify-content:
+    space-between;
 
-      justify-content: flex-end;
+  gap: 10mm;
 
-      padding: 6mm 0 7mm;
+  padding:
+    3mm
+    0;
 
-      border-bottom: 1px solid #e2e8f0;
+  border-bottom:
+    1px solid #e2e8f0;
 
-      page-break-inside: avoid;
+  font-size: 9px;
+}
 
-      break-inside: avoid;
-    }
 
+/* ============================================================
+   TOTALS
+============================================================ */
 
-    .totals-box {
-      width: 72mm;
-    }
+.totals-section {
+  display: flex;
 
+  justify-content:
+    flex-end;
 
-    .summary-row {
-      display: flex;
+  padding:
+    6mm
+    0
+    7mm;
 
-      justify-content: space-between;
+  border-bottom:
+    1px solid #e2e8f0;
 
-      gap: 10mm;
+  page-break-inside:
+    avoid;
 
-      margin-bottom: 2.5mm;
+  break-inside:
+    avoid;
+}
 
-      font-size: 9.5px;
-    }
 
+.totals-box {
+  width: 72mm;
+}
 
-    .grand-total {
-      padding-top: 3mm;
 
-      margin-top: 3mm;
+.summary-row {
+  display: flex;
 
-      border-top: 2px solid #0f172a;
+  justify-content:
+    space-between;
 
-      font-size: 13px;
+  gap: 10mm;
 
-      font-weight: 900;
-    }
+  margin-bottom: 2.5mm;
 
+  font-size: 9.5px;
+}
 
-    .balance {
-      color: #ea580c;
 
-      font-weight: 800;
-    }
+.grand-total {
+  padding-top: 3mm;
 
+  margin-top: 3mm;
 
-    /*
-     * ========================================================
-     * PAYMENT
-     * ========================================================
-     */
+  border-top:
+    2px solid #0f172a;
 
-    .payment-section {
-      padding: 4mm 0;
+  font-size: 13px;
 
-      border-bottom: 1px solid #e2e8f0;
+  font-weight: 900;
+}
 
-      page-break-inside: avoid;
 
-      break-inside: avoid;
-    }
+.balance {
+  color: #ea580c;
 
+  font-weight: 800;
+}
 
-    .payment-column {
-      min-width: 0;
-    }
 
+/* ============================================================
+   PAYMENT
+============================================================ */
 
-    .payment-status {
-      display: inline-block;
+.payment-section {
+  padding:
+    7mm
+    0;
 
-      margin-top: 2px;
+  border-bottom:
+    1px solid #e2e8f0;
 
-      padding: 4px 10px;
+  page-break-inside:
+    avoid;
 
-      border-radius: 999px;
+  break-inside:
+    avoid;
+}
 
-      font-size: 9px;
 
-      font-weight: 900;
-    }
+.payment-status {
+  display: inline-block;
 
+  padding:
+    4px
+    10px;
 
-    .payment-description {
-      max-width: 80mm;
+  border-radius:
+    999px;
 
-      margin-top: 5px;
+  font-size: 9px;
 
-      color: #64748b;
+  font-weight: 900;
+}
 
-      font-size: 8.5px;
 
-      line-height: 1.5;
-    }
+.payment-description {
+  max-width: 80mm;
 
+  margin-top: 5px;
 
-    .tax-type {
-      font-size: 9.5px;
+  color: #64748b;
 
-      font-weight: 800;
-    }
+  font-size: 8.5px;
 
+  line-height: 1.5;
+}
 
-    /*
-     * ========================================================
-     * TERMS
-     * ========================================================
-     *
-     * NO fixed height.
-     *
-     * Browser can move this section
-     * to the next page naturally.
-     */
 
-    .terms-section {
-      padding: 7mm 0;
+/* ============================================================
+   TERMS
+============================================================ */
 
-      page-break-inside: auto;
+.terms-section {
+  padding:
+    7mm
+    0;
 
-      break-inside: auto;
-    }
+  page-break-inside:
+    auto;
 
+  break-inside:
+    auto;
+}
 
-    .terms-list {
-      margin: 0;
 
-      padding-left: 6mm;
+.terms-list {
+  margin: 0;
 
-      color: #475569;
+  padding-left: 6mm;
 
-      font-size: 8.5px;
+  color: #475569;
 
-      line-height: 1.6;
-    }
+  font-size: 8.5px;
 
+  line-height: 1.6;
+}
 
-    .term-item {
-      margin-bottom: 2mm;
 
-      padding-left: 1mm;
+.term-item {
+  margin-bottom: 2mm;
 
-      page-break-inside: avoid;
+  padding-left: 1mm;
 
-      break-inside: avoid;
-    }
+  page-break-inside:
+    avoid;
 
+  break-inside:
+    avoid;
+}
 
-    .term-number {
-      color: #334155;
 
-      font-weight: 800;
-    }
+.term-number {
+  font-weight:
+    800;
 
+  color: #334155;
+}
 
-    .empty-terms {
-      color: #94a3b8;
 
-      font-size: 8.5px;
-    }
+.empty-terms {
+  color: #94a3b8;
 
+  font-size: 8.5px;
+}
 
-    /*
-     * ========================================================
-     * IMPORTANT
-     * ========================================================
-     */
 
-    .important-section {
-      padding: 7mm 0;
+/* ============================================================
+   FOOTER
+============================================================ */
 
-      border-top: 1px solid #e2e8f0;
+.footer {
+  padding-top:
+    5mm;
 
-      page-break-inside: avoid;
+  border-top:
+    1px solid #e2e8f0;
 
-      break-inside: avoid;
-    }
+  text-align:
+    center;
 
+  page-break-inside:
+    avoid;
 
-    .important-text {
-      color: #64748b;
+  break-inside:
+    avoid;
+}
 
-      font-size: 8.5px;
 
-      line-height: 1.6;
-    }
+.footer-main {
+  color: #94a3b8;
 
+  font-size: 8.5px;
+}
 
-    /*
-     * ========================================================
-     * FOOTER
-     * ========================================================
-     */
 
-    .footer {
-      padding-top: 5mm;
+.footer-small {
+  margin-top:
+    1mm;
 
-      border-top: 1px solid #e2e8f0;
+  color: #94a3b8;
 
-      text-align: center;
+  font-size: 7px;
+}
 
-      page-break-inside: avoid;
 
-      break-inside: avoid;
-    }
+/* ============================================================
+   PRINT
+============================================================ */
 
+@media print {
 
-    .footer-main {
-      color: #94a3b8;
+  html,
+  body {
+    width: 210mm;
 
-      font-size: 8.5px;
-    }
+    margin: 0;
 
+    padding: 0;
+  }
 
-    .footer-small {
-      margin-top: 1mm;
 
-      color: #94a3b8;
+  .invoice {
+    width: 210mm;
 
-      font-size: 7px;
-    }
+    margin: 0;
 
+    padding: 12mm;
+  }
 
-    /*
-     * ========================================================
-     * PRINT
-     * ========================================================
-     */
+}
 
-    @media print {
-
-      html,
-      body {
-        width: 210mm;
-
-        margin: 0;
-
-        padding: 0;
-      }
-
-
-      .invoice {
-        width: 210mm;
-
-        margin: 0;
-
-        padding: 12mm;
-      }
-
-
-      /*
-       * Do NOT force one page.
-       */
-
-      .invoice-content {
-        width: 100%;
-      }
-
-    }
-
-
-  </style>
+</style>
 
 </head>
 
 
 <body>
 
-  <main class="invoice">
+<main class="invoice">
 
-    <div class="invoice-content">
-
-
-      <!-- ==================================================
-           HEADER
-      =================================================== -->
-
-      <header class="header">
-
-        <div class="brand">
-
-          <h1 class="brand-name">
-            KIRAYNOW
-          </h1>
-
-          <div class="brand-subtitle">
-            Rental & Event Solutions
-          </div>
-
-          <div class="brand-description">
-            Professional event rental
-            services for weddings,
-            corporate events and
-            special occasions.
-          </div>
-
-        </div>
+<div class="invoice-content">
 
 
-        <div class="invoice-meta">
+<!-- ======================================================
+     HEADER
+======================================================= -->
 
-      
+<header class="header">
 
-          <div class="meta-row">
-            <strong>PI No:</strong>
-            ${invoiceNumber}
-          </div>
+<div class="brand">
 
-          <div class="meta-row">
-            <strong>Date:</strong>
-            ${escapeHtml(
-              formatDate(
-                invoice.createdAt
-              )
-            )}
-          </div>
+<h1 class="brand-name">
+KIRAYNOW
+</h1>
 
-          <span
-            class="status ${statusClass}"
-          >
-            ${statusText}
-          </span>
+<div class="brand-subtitle">
+Rental & Event Solutions
+</div>
 
-        </div>
+<div class="brand-description">
+Professional event rental
+services for weddings,
+corporate events and
+special occasions.
+</div>
 
-      </header>
+</div>
 
 
-      <!-- ==================================================
-           CUSTOMER + EVENT
-      =================================================== -->
+<div class="invoice-meta">
 
-      <section class="two-column">
+<h2 class="invoice-title">
+PROFORMA INVOICE
+</h2>
 
-        <div class="column bill-to">
+<div class="meta-row">
+<strong>PI No:</strong>
+${escapeHtml(
+  invoice.invoiceNumber ||
+    ""
+)}
+</div>
 
-          <div class="label">
-            Bill To
-          </div>
+<div class="meta-row">
+<strong>Date:</strong>
+${escapeHtml(
+  formatDate(
+    invoice.createdAt
+  )
+)}
+</div>
 
-          <h3 class="customer-name">
-            ${escapeHtml(
-              customer.name ||
-                "-"
-            )}
-          </h3>
+<span class="status ${statusClass}">
+${escapeHtml(
+  status
+)}
+</span>
 
-          ${
-            customer.company
-              ? `
-                <div class="customer-company">
-                  ${escapeHtml(
-                    customer.company
-                  )}
-                </div>
-              `
-              : ""
-          }
+</div>
 
-
-          ${
-            customer.address
-              ? `
-                <div class="customer-address">
-                  ${escapeHtml(
-                    customer.address
-                  )}
-                </div>
-              `
-              : ""
-          }
+</header>
 
 
-          ${
-            customer.phone
-              ? `
-                <div class="customer-contact">
-                  ${escapeHtml(
-                    customer.phone
-                  )}
-                </div>
-              `
-              : ""
-          }
+<!-- ======================================================
+     CUSTOMER + EVENT
+======================================================= -->
+
+<section class="two-column">
+
+<div class="bill-to">
+
+<div class="label">
+Bill To
+</div>
 
 
-          ${
-            customer.email
-              ? `
-                <div class="customer-contact">
-                  ${escapeHtml(
-                    customer.email
-                  )}
-                </div>
-              `
-              : ""
-          }
+<h3 class="customer-name">
+${escapeHtml(
+  customer.name ||
+    "-"
+)}
+</h3>
 
 
-          ${
-            customer.gstin
-              ? `
-                <div class="customer-gstin">
-                  GSTIN:
-                  ${escapeHtml(
-                    customer.gstin
-                  )}
-                </div>
-              `
-              : ""
-          }
-
-        </div>
+${
+  customer.company
+    ? `
+      <div class="customer-company">
+        ${escapeHtml(
+          customer.company
+        )}
+      </div>
+    `
+    : ""
+}
 
 
-        <div class="column event-details">
-
-          <div class="label">
-            Event Details
-          </div>
-
-
-          ${
-            eventDetails.name
-              ? `
-                <div class="event-row">
-                  <strong>Event:</strong>
-                  ${escapeHtml(
-                    eventDetails.name
-                  )}
-                </div>
-              `
-              : ""
-          }
+${
+  customer.address
+    ? `
+      <div class="customer-address">
+        ${escapeHtml(
+          customer.address
+        )}
+      </div>
+    `
+    : ""
+}
 
 
-          ${
+${
+  customer.phone
+    ? `
+      <div class="customer-contact">
+        ${escapeHtml(
+          customer.phone
+        )}
+      </div>
+    `
+    : ""
+}
+
+
+${
+  customer.email
+    ? `
+      <div class="customer-contact">
+        ${escapeHtml(
+          customer.email
+        )}
+      </div>
+    `
+    : ""
+}
+
+
+${
+  customer.gstin
+    ? `
+      <div class="customer-gstin">
+        GSTIN:
+        ${escapeHtml(
+          customer.gstin
+        )}
+      </div>
+    `
+    : ""
+}
+
+</div>
+
+
+<div class="event-details">
+
+<div class="label">
+Event Details
+</div>
+
+
+${
+  eventDetails.name
+    ? `
+      <div class="event-row">
+        <strong>Event:</strong>
+        ${escapeHtml(
+          eventDetails.name
+        )}
+      </div>
+    `
+    : ""
+}
+
+
+${
+  eventDetails.date
+    ? `
+      <div class="event-row">
+        <strong>Event Date:</strong>
+        ${escapeHtml(
+          formatDate(
             eventDetails.date
-              ? `
-                <div class="event-row">
-                  <strong>Event Date:</strong>
-                  ${escapeHtml(
-                    formatDate(
-                      eventDetails.date
-                    )
-                  )}
-                </div>
-              `
-              : ""
-          }
+          )
+        )}
+      </div>
+    `
+    : ""
+}
 
 
-          ${
-            eventDetails.venue
-              ? `
-                <div class="event-row">
-                  <strong>Venue:</strong>
-                  ${escapeHtml(
-                    eventDetails.venue
-                  )}
-                </div>
-              `
-              : ""
-          }
+${
+  eventDetails.venue
+    ? `
+      <div class="event-row">
+        <strong>Venue:</strong>
+        ${escapeHtml(
+          eventDetails.venue
+        )}
+      </div>
+    `
+    : ""
+}
 
-        </div>
+</div>
 
-      </section>
+</section>
 
 
-      <!-- ==================================================
-           ITEMS
-      =================================================== -->
+<!-- ======================================================
+     RENTAL ITEMS
+======================================================= -->
 
-      <section class="items-section">
+<section class="items-section">
 
-        <table class="items-table">
+<table class="items-table">
 
-          <thead>
+<thead>
 
-            <tr>
+<tr>
 
-              <th class="col-number">
-                #
-              </th>
+<th class="col-number">
+#
+</th>
 
-              <th class="col-description">
-                Description
-              </th>
+<th class="col-description">
+Description
+</th>
 
-              <th class="col-qty">
-                Qty
-              </th>
+<th class="col-qty">
+Qty
+</th>
 
-              <th class="col-rate">
-                Rate
-              </th>
+<th class="col-rate">
+Rate
+</th>
 
-              <th class="col-amount">
-                Amount
-              </th>
+<th class="col-amount">
+Amount
+</th>
 
-            </tr>
+</tr>
 
-          </thead>
+</thead>
 
 
-          <tbody>
+<tbody>
 
-            ${itemsHtml}
+${itemsHtml}
 
-          </tbody>
+</tbody>
 
-        </table>
+</table>
 
-      </section>
+</section>
 
 
-      <!-- ==================================================
-           TOTALS
-      =================================================== -->
+<!-- ======================================================
+     ADDITIONAL CHARGES
+======================================================= -->
 
-      <section class="totals-section">
+${additionalChargesHtml}
 
-        <div class="totals-box">
 
-          <div class="summary-row">
+<!-- ======================================================
+     TOTALS
+======================================================= -->
 
-            <span>
-              Subtotal
-            </span>
+<section class="totals-section">
 
-            <strong>
-              ${escapeHtml(
-                formatCurrency(
-                  totals.subtotal
-                )
-              )}
-            </strong>
+<div class="totals-box">
 
-          </div>
 
+<div class="summary-row">
 
-          ${gstRow}
+<span>
+Item Subtotal
+</span>
 
+<strong>
+${escapeHtml(
+  formatCurrency(
+    totals.itemsSubtotal
+  )
+)}
+</strong>
 
-          <div class="summary-row grand-total">
+</div>
 
-            <span>
-              Grand Total
-            </span>
 
-            <strong>
-              ${escapeHtml(
-                formatCurrency(
-                  totals.grandTotal
-                )
-              )}
-            </strong>
+${
+  totals.labour >
+    0
+    ? `
+      <div class="summary-row">
 
-          </div>
+        <span>
+          Labour Charges
+        </span>
 
+        <strong>
+          ${escapeHtml(
+            formatCurrency(
+              totals.labour
+            )
+          )}
+        </strong>
 
-          <div class="summary-row">
+      </div>
+    `
+    : ""
+}
 
-            <span>
-              Advance / Paid
-            </span>
 
-            <strong>
-              ${escapeHtml(
-                formatCurrency(
-                  totals.advancePaid
-                )
-              )}
-            </strong>
+${
+  totals.transportation >
+    0
+    ? `
+      <div class="summary-row">
 
-          </div>
+        <span>
+          Transportation
+        </span>
 
+        <strong>
+          ${escapeHtml(
+            formatCurrency(
+              totals.transportation
+            )
+          )}
+        </strong>
 
-          <div class="summary-row balance">
+      </div>
+    `
+    : ""
+}
 
-            <span>
-              Balance Due
-            </span>
 
-            <strong>
-              ${escapeHtml(
-                formatCurrency(
-                  totals.balance
-                )
-              )}
-            </strong>
+<div class="summary-row">
 
-          </div>
+<span>
+Subtotal
+</span>
 
-        </div>
+<strong>
+${escapeHtml(
+  formatCurrency(
+    totals.subtotal
+  )
+)}
+</strong>
 
-      </section>
+</div>
 
 
-      <!-- ==================================================
-           PAYMENT + TAX
-      =================================================== -->
+${gstRow}
 
-      <section class="payment-section">
 
-        <div class="two-column">
+<div class="summary-row grand-total">
 
-          <div class="payment-column">
+<span>
+Grand Total
+</span>
 
-            <div class="label">
-              Payment Status
-            </div>
+<strong>
+${escapeHtml(
+  formatCurrency(
+    totals.grandTotal
+  )
+)}
+</strong>
 
-            <span
-              class="payment-status ${statusClass}"
-            >
-              ${statusText}
-            </span>
+</div>
 
-            <div class="payment-description">
-              ${paymentDescription}
-            </div>
 
-          </div>
+<div class="summary-row">
 
+<span>
+Advance / Paid
+</span>
 
-          <div class="payment-column">
+<strong>
+${escapeHtml(
+  formatCurrency(
+    totals.advancePaid
+  )
+)}
+</strong>
 
-            <div class="label">
-              Tax Type
-            </div>
+</div>
 
-            <div class="tax-type">
-              ${
-                gstEnabled
-                  ? `GST @ ${gstRate}%`
-                  : "Non-GST"
-              }
-            </div>
 
-          </div>
+<div class="summary-row balance">
 
-        </div>
+<span>
+Balance Due
+</span>
 
-      </section>
+<strong>
+${escapeHtml(
+  formatCurrency(
+    totals.balance
+  )
+)}
+</strong>
 
+</div>
 
-      <!-- ==================================================
-           TERMS & CONDITIONS
-      =================================================== -->
 
-      <section class="terms-section">
+</div>
 
-        <div class="label">
-          Terms & Conditions
-        </div>
+</section>
 
-        ${termsHtml}
 
-      </section>
+<!-- ======================================================
+     PAYMENT
+======================================================= -->
 
+<section class="payment-section">
 
-      <!-- ==================================================
-           IMPORTANT
-      =================================================== -->
+<div class="two-column">
 
-      <section class="important-section">
+<div>
 
-        <div class="two-column">
+<div class="label">
+Payment Status
+</div>
 
-          <div>
+<span
+class="payment-status ${statusClass}"
+>
+${escapeHtml(
+  status
+)}
+</span>
 
-            <div class="label">
-              Important
-            </div>
+<div class="payment-description">
+${escapeHtml(
+  getPaymentDescription(
+    status
+  )
+)}
+</div>
 
-            <div class="important-text">
-              This document is a
-              Proforma Invoice generated
-              electronically by KirayNow.
-              It is not a Tax Invoice.
-            </div>
+</div>
 
-          </div>
 
+<div>
 
-          <div>
+<div class="label">
+Tax Type
+</div>
 
-            <div class="label">
-              Payment Note
-            </div>
+<div style="font-size:9.5px;font-weight:800;">
 
-            <div class="important-text">
-              Please ensure that all
-              payments are made against
-              the agreed booking terms.
-            </div>
+${
+  gstEnabled
+    ? `GST @ ${gstRate}%`
+    : "Non-GST"
+}
 
-          </div>
+</div>
 
-        </div>
+</div>
 
-      </section>
+</div>
 
+</section>
 
-      <!-- ==================================================
-           FOOTER
-      =================================================== -->
 
-      <footer class="footer">
+<!-- ======================================================
+     TERMS
+======================================================= -->
 
-        <div class="footer-main">
-          Thank you for choosing
-          KirayNow.
-        </div>
+<section class="terms-section">
 
-        <div class="footer-small">
-          Computer-generated document
-          • No signature required
-        </div>
+<div class="label">
+Terms & Conditions
+</div>
 
-      </footer>
+${termsHtml}
 
+</section>
 
-    </div>
 
-  </main>
+<!-- ======================================================
+     IMPORTANT
+======================================================= -->
+
+<section
+style="
+padding:7mm 0;
+border-top:1px solid #e2e8f0;
+page-break-inside:avoid;
+"
+>
+
+<div class="two-column">
+
+<div>
+
+<div class="label">
+Important
+</div>
+
+<div
+style="
+color:#64748b;
+font-size:8.5px;
+line-height:1.6;
+"
+>
+This document is a Proforma
+Invoice generated electronically
+by KirayNow. It is not a Tax Invoice.
+</div>
+
+</div>
+
+
+<div>
+
+<div class="label">
+Payment Note
+</div>
+
+<div
+style="
+color:#64748b;
+font-size:8.5px;
+line-height:1.6;
+"
+>
+Please ensure that all payments
+are made against the agreed
+booking terms.
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+
+<!-- ======================================================
+     FOOTER
+======================================================= -->
+
+<footer class="footer">
+
+<div class="footer-main">
+Thank you for choosing
+KirayNow.
+</div>
+
+<div class="footer-small">
+Computer-generated document
+• No signature required
+</div>
+
+</footer>
+
+
+</div>
+
+</main>
 
 </body>
 
 </html>
-  `;
+`;
 }
 
 
-/* =============================================================
-   SCREEN HELPERS
-============================================================= */
+/*
+|--------------------------------------------------------------------------
+| SCREEN HELPERS
+|--------------------------------------------------------------------------
+*/
 
 function ScreenLabel({
   children,
@@ -2120,9 +2497,13 @@ function ScreenSummary({
           : ""
       }`}
     >
-      <span>{label}</span>
+      <span>
+        {label}
+      </span>
 
-      <span>{value}</span>
+      <span>
+        {value}
+      </span>
     </div>
   );
 }
@@ -2135,10 +2516,14 @@ function ScreenStatus({
   let classes =
     "bg-red-100 text-red-700";
 
-  if (status === "PAID") {
+
+  if (
+    status === "PAID"
+  ) {
     classes =
       "bg-emerald-100 text-emerald-700";
   }
+
 
   if (
     status ===
@@ -2147,6 +2532,7 @@ function ScreenStatus({
     classes =
       "bg-amber-100 text-amber-700";
   }
+
 
   return (
     <span
@@ -2162,16 +2548,21 @@ function ScreenStatus({
 }
 
 
-/* =============================================================
-   STATUS HELPERS
-============================================================= */
+/*
+|--------------------------------------------------------------------------
+| PRINT STATUS
+|--------------------------------------------------------------------------
+*/
 
 function getPrintStatusClass(
   status
 ) {
-  if (status === "PAID") {
+  if (
+    status === "PAID"
+  ) {
     return "status-paid";
   }
+
 
   if (
     status ===
@@ -2180,16 +2571,26 @@ function getPrintStatusClass(
     return "status-partial";
   }
 
+
   return "status-pending";
 }
 
 
+/*
+|--------------------------------------------------------------------------
+| PAYMENT DESCRIPTION
+|--------------------------------------------------------------------------
+*/
+
 function getPaymentDescription(
   status
 ) {
-  if (status === "PAID") {
+  if (
+    status === "PAID"
+  ) {
     return "Payment has been received in full.";
   }
+
 
   if (
     status ===
@@ -2198,18 +2599,23 @@ function getPaymentDescription(
     return "Partial payment has been received. The remaining balance is due as agreed.";
   }
 
+
   return "Payment is currently pending.";
 }
 
 
-/* =============================================================
-   HTML ESCAPE
-============================================================= */
+/*
+|--------------------------------------------------------------------------
+| HTML ESCAPE
+|--------------------------------------------------------------------------
+*/
 
 function escapeHtml(
   value
 ) {
-  return String(value ?? "")
+  return String(
+    value ?? ""
+  )
     .replace(
       /&/g,
       "&amp;"

@@ -15,23 +15,38 @@ import {
   safeNumber,
 } from "../../../../utils/invoice-utils";
 
+
 export default function InvoiceForm({
   initialInvoice,
   onSave,
   onCancel,
 }) {
-  const isEditing = Boolean(
-    initialInvoice
-  );
+  const isEditing =
+    Boolean(initialInvoice);
 
-  const [customer, setCustomer] = useState({
-    name: "",
-    company: "",
-    phone: "",
-    email: "",
-    address: "",
-    gstin: "",
-  });
+
+  /*
+  |--------------------------------------------------------------------------
+  | CUSTOMER
+  |--------------------------------------------------------------------------
+  */
+
+  const [customer, setCustomer] =
+    useState({
+      name: "",
+      company: "",
+      phone: "",
+      email: "",
+      address: "",
+      gstin: "",
+    });
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | EVENT
+  |--------------------------------------------------------------------------
+  */
 
   const [eventDetails, setEventDetails] =
     useState({
@@ -40,14 +55,42 @@ export default function InvoiceForm({
       venue: "",
     });
 
-  const [items, setItems] = useState([
-    {
-      id: createId(),
-      description: "",
-      quantity: 1,
-      rate: 0,
-    },
-  ]);
+
+  /*
+  |--------------------------------------------------------------------------
+  | ITEMS
+  |--------------------------------------------------------------------------
+  */
+
+  const [items, setItems] =
+    useState([
+      {
+        id: createId(),
+        description: "",
+        quantity: 1,
+        rate: 0,
+      },
+    ]);
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | ADDITIONAL CHARGES
+  |--------------------------------------------------------------------------
+  */
+
+  const [labour, setLabour] =
+    useState(0);
+
+  const [transportation, setTransportation] =
+    useState(0);
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | GST
+  |--------------------------------------------------------------------------
+  */
 
   const [gstEnabled, setGstEnabled] =
     useState(false);
@@ -55,73 +98,129 @@ export default function InvoiceForm({
   const [gstRate, setGstRate] =
     useState(18);
 
+
+  /*
+  |--------------------------------------------------------------------------
+  | PAYMENT
+  |--------------------------------------------------------------------------
+  */
+
   const [advancePaid, setAdvancePaid] =
     useState(0);
 
-  const [terms, setTerms] = useState(
-    DEFAULT_TERMS.join("\n")
-  );
+
+  /*
+  |--------------------------------------------------------------------------
+  | TERMS
+  |--------------------------------------------------------------------------
+  */
+
+  const [terms, setTerms] =
+    useState(
+      DEFAULT_TERMS.join("\n")
+    );
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | ERROR
+  |--------------------------------------------------------------------------
+  */
 
   const [error, setError] =
     useState("");
 
+
   /*
-    Load existing invoice when Edit is clicked.
+  |--------------------------------------------------------------------------
+  | LOAD EXISTING INVOICE
+  |--------------------------------------------------------------------------
   */
+
   useEffect(() => {
     if (!initialInvoice) {
       return;
     }
 
+
+    /*
+     * Customer
+     */
+
     setCustomer({
       name:
         initialInvoice.customer?.name ||
         "",
+
       company:
         initialInvoice.customer?.company ||
         "",
+
       phone:
         initialInvoice.customer?.phone ||
         "",
+
       email:
         initialInvoice.customer?.email ||
         "",
+
       address:
         initialInvoice.customer?.address ||
         "",
+
       gstin:
         initialInvoice.customer?.gstin ||
         "",
     });
 
+
+    /*
+     * Event
+     */
+
     setEventDetails({
       name:
         initialInvoice.eventDetails?.name ||
         "",
+
       date:
         initialInvoice.eventDetails?.date ||
         "",
+
       venue:
         initialInvoice.eventDetails?.venue ||
         "",
     });
 
+
+    /*
+     * Items
+     */
+
     setItems(
-      Array.isArray(initialInvoice.items) &&
+      Array.isArray(
+        initialInvoice.items
+      ) &&
         initialInvoice.items.length
         ? initialInvoice.items.map(
             (item) => ({
               id:
-                item.id || createId(),
+                item.id ||
+                createId(),
+
               description:
-                item.description || "",
+                item.description ||
+                "",
+
               quantity:
                 safeNumber(
                   item.quantity
                 ) || 1,
-              rate: safeNumber(
-                item.rate
-              ),
+
+              rate:
+                safeNumber(
+                  item.rate
+                ),
             })
           )
         : [
@@ -134,9 +233,49 @@ export default function InvoiceForm({
           ]
     );
 
-    setGstEnabled(
-      Boolean(initialInvoice.gstEnabled)
+
+    /*
+     * Labour
+     *
+     * Supports old field names too.
+     */
+
+    setLabour(
+      safeNumber(
+        initialInvoice.labour ??
+          initialInvoice.labor ??
+          initialInvoice.labourCharge ??
+          initialInvoice.laborCharge
+      )
     );
+
+
+    /*
+     * Transportation
+     *
+     * Supports old field names too.
+     */
+
+    setTransportation(
+      safeNumber(
+        initialInvoice.transportation ??
+          initialInvoice.transport ??
+          initialInvoice.transportationCharge ??
+          initialInvoice.transportCharge
+      )
+    );
+
+
+    /*
+     * GST
+     */
+
+    setGstEnabled(
+      Boolean(
+        initialInvoice.gstEnabled
+      )
+    );
+
 
     setGstRate(
       safeNumber(
@@ -144,11 +283,21 @@ export default function InvoiceForm({
       ) || 18
     );
 
+
+    /*
+     * Advance
+     */
+
     setAdvancePaid(
       safeNumber(
         initialInvoice.advancePaid
       )
     );
+
+
+    /*
+     * Terms
+     */
 
     setTerms(
       Array.isArray(
@@ -157,92 +306,170 @@ export default function InvoiceForm({
         ? initialInvoice.terms.join(
             "\n"
           )
-        : DEFAULT_TERMS.join("\n")
+        : DEFAULT_TERMS.join(
+            "\n"
+          )
     );
   }, [initialInvoice]);
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | LIVE CALCULATION
+  |--------------------------------------------------------------------------
+  */
 
   const totals = useMemo(
     () =>
       calculateInvoice({
         items,
+
+        labour,
+
+        transportation,
+
         gstEnabled,
+
         gstRate,
+
         advancePaid,
       }),
     [
       items,
+      labour,
+      transportation,
       gstEnabled,
       gstRate,
       advancePaid,
     ]
   );
 
+
+  /*
+  |--------------------------------------------------------------------------
+  | CUSTOMER UPDATE
+  |--------------------------------------------------------------------------
+  */
+
   function updateCustomer(
     field,
     value
   ) {
-    setCustomer((previous) => ({
-      ...previous,
-      [field]: value,
-    }));
+    setCustomer(
+      (previous) => ({
+        ...previous,
+        [field]: value,
+      })
+    );
+
+    setError("");
   }
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | EVENT UPDATE
+  |--------------------------------------------------------------------------
+  */
 
   function updateEvent(
     field,
     value
   ) {
-    setEventDetails((previous) => ({
-      ...previous,
-      [field]: value,
-    }));
+    setEventDetails(
+      (previous) => ({
+        ...previous,
+        [field]: value,
+      })
+    );
   }
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | ITEM UPDATE
+  |--------------------------------------------------------------------------
+  */
 
   function updateItem(
     id,
     field,
     value
   ) {
-    setItems((previous) =>
-      previous.map((item) => {
-        if (item.id !== id) {
-          return item;
-        }
+    setItems(
+      (previous) =>
+        previous.map(
+          (item) => {
+            if (
+              item.id !== id
+            ) {
+              return item;
+            }
 
-        if (
-          field === "quantity" ||
-          field === "rate"
-        ) {
-          return {
-            ...item,
-            [field]: Math.max(
-              0,
-              Number(value) || 0
-            ),
-          };
-        }
 
-        return {
-          ...item,
-          [field]: value,
-        };
-      })
+            if (
+              field ===
+                "quantity" ||
+              field === "rate"
+            ) {
+              return {
+                ...item,
+
+                [field]:
+                  Math.max(
+                    0,
+                    Number(
+                      value
+                    ) || 0
+                  ),
+              };
+            }
+
+
+            return {
+              ...item,
+              [field]: value,
+            };
+          }
+        )
+    );
+
+    setError("");
+  }
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | ADD ITEM
+  |--------------------------------------------------------------------------
+  */
+
+  function addItem() {
+    setItems(
+      (previous) => [
+        ...previous,
+
+        {
+          id: createId(),
+          description: "",
+          quantity: 1,
+          rate: 0,
+        },
+      ]
     );
   }
 
-  function addItem() {
-    setItems((previous) => [
-      ...previous,
-      {
-        id: createId(),
-        description: "",
-        quantity: 1,
-        rate: 0,
-      },
-    ]);
-  }
+
+  /*
+  |--------------------------------------------------------------------------
+  | REMOVE ITEM
+  |--------------------------------------------------------------------------
+  */
 
   function removeItem(id) {
-    if (items.length === 1) {
+    if (
+      items.length === 1
+    ) {
       setItems([
         {
           id: createId(),
@@ -255,20 +482,76 @@ export default function InvoiceForm({
       return;
     }
 
-    setItems((previous) =>
-      previous.filter(
-        (item) => item.id !== id
-      )
+
+    setItems(
+      (previous) =>
+        previous.filter(
+          (item) =>
+            item.id !== id
+        )
     );
   }
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | LABOUR
+  |--------------------------------------------------------------------------
+  */
+
+  function handleLabourChange(
+    value
+  ) {
+    const amount =
+      Math.max(
+        0,
+        Number(value) || 0
+      );
+
+    setLabour(amount);
+
+    setError("");
+  }
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | TRANSPORTATION
+  |--------------------------------------------------------------------------
+  */
+
+  function handleTransportationChange(
+    value
+  ) {
+    const amount =
+      Math.max(
+        0,
+        Number(value) || 0
+      );
+
+    setTransportation(
+      amount
+    );
+
+    setError("");
+  }
+
+
+  /*
+  |--------------------------------------------------------------------------
+  | ADVANCE
+  |--------------------------------------------------------------------------
+  */
 
   function handleAdvanceChange(
     value
   ) {
-    const amount = Math.max(
-      0,
-      Number(value) || 0
-    );
+    const amount =
+      Math.max(
+        0,
+        Number(value) || 0
+      );
+
 
     setAdvancePaid(
       Math.min(
@@ -276,136 +559,317 @@ export default function InvoiceForm({
         totals.grandTotal
       )
     );
+
+    setError("");
   }
 
+
+  /*
+  |--------------------------------------------------------------------------
+  | VALIDATION
+  |--------------------------------------------------------------------------
+  */
+
   function validate() {
-    if (!customer.name.trim()) {
-      return "Customer name is required.";
+    /*
+     * Customer
+     */
+
+    if (
+      !customer.name.trim()
+    ) {
+      return (
+        "Customer name is required."
+      );
     }
 
-    const validItems = items.filter(
-      (item) =>
-        item.description.trim() &&
-        safeNumber(
-          item.quantity
-        ) > 0 &&
-        safeNumber(item.rate) >= 0
-    );
 
-    if (!validItems.length) {
-      return "Please add at least one valid item.";
+    /*
+     * Valid rental items
+     */
+
+    const validItems =
+      items.filter(
+        (item) =>
+          item.description.trim() &&
+          safeNumber(
+            item.quantity
+          ) > 0 &&
+          safeNumber(
+            item.rate
+          ) >= 0
+      );
+
+
+    /*
+     * At least one billable
+     * thing must exist.
+     *
+     * This allows:
+     *
+     * Items
+     * OR Labour
+     * OR Transportation
+     */
+
+    const hasAdditionalCharges =
+      safeNumber(labour) >
+        0 ||
+      safeNumber(
+        transportation
+      ) > 0;
+
+
+    if (
+      !validItems.length &&
+      !hasAdditionalCharges
+    ) {
+      return (
+        "Please add at least one valid item, labour charge or transportation charge."
+      );
     }
 
-    if (totals.grandTotal <= 0) {
-      return "Invoice total must be greater than ₹0.";
+
+    /*
+     * Total
+     */
+
+    if (
+      totals.grandTotal <= 0
+    ) {
+      return (
+        "Invoice total must be greater than ₹0."
+      );
     }
+
+
+    /*
+     * GST
+     */
 
     if (
       gstEnabled &&
-      (gstRate <= 0 ||
-        gstRate > 100)
+      (
+        gstRate <= 0 ||
+        gstRate > 100
+      )
     ) {
-      return "Please enter a valid GST rate.";
+      return (
+        "Please enter a valid GST rate."
+      );
     }
+
+
+    /*
+     * Advance
+     */
 
     if (
       advancePaid < 0 ||
       advancePaid >
         totals.grandTotal
     ) {
-      return "Advance cannot be greater than total.";
+      return (
+        "Advance cannot be greater than total."
+      );
     }
+
 
     return "";
   }
 
-  function handleSubmit(event) {
+
+  /*
+  |--------------------------------------------------------------------------
+  | SUBMIT
+  |--------------------------------------------------------------------------
+  */
+
+  function handleSubmit(
+    event
+  ) {
     event.preventDefault();
+
 
     const validationError =
       validate();
 
-    if (validationError) {
-      setError(validationError);
+
+    if (
+      validationError
+    ) {
+      setError(
+        validationError
+      );
+
 
       window.scrollTo({
         top: 0,
         behavior: "smooth",
       });
 
+
       return;
     }
 
-    const cleanItems = items
-      .filter(
-        (item) =>
-          item.description.trim() &&
-          safeNumber(
-            item.quantity
-          ) > 0
-      )
-      .map((item) => ({
-        id: item.id,
-        description:
-          item.description.trim(),
-        quantity:
-          safeNumber(
-            item.quantity
-          ),
-        rate:
-          safeNumber(item.rate),
-      }));
+
+    /*
+     * Clean items
+     */
+
+    const cleanItems =
+      items
+        .filter(
+          (item) =>
+            item.description.trim() &&
+            safeNumber(
+              item.quantity
+            ) > 0
+        )
+        .map(
+          (item) => ({
+            id: item.id,
+
+            description:
+              item.description.trim(),
+
+            quantity:
+              safeNumber(
+                item.quantity
+              ),
+
+            rate:
+              safeNumber(
+                item.rate
+              ),
+          })
+        );
+
+
+    /*
+     * Final invoice object
+     */
 
     const invoice = {
       ...(initialInvoice || {}),
 
+
+      /*
+       * Customer
+       */
+
       customer: {
-        name: customer.name.trim(),
+        name:
+          customer.name.trim(),
+
         company:
           customer.company.trim(),
+
         phone:
           customer.phone.trim(),
+
         email:
           customer.email.trim(),
+
         address:
           customer.address.trim(),
+
         gstin:
           customer.gstin
             .trim()
             .toUpperCase(),
       },
 
+
+      /*
+       * Event
+       */
+
       eventDetails: {
         name:
           eventDetails.name.trim(),
+
         date:
           eventDetails.date ||
           getTodayInputValue(),
+
         venue:
           eventDetails.venue.trim(),
       },
 
-      items: cleanItems,
+
+      /*
+       * Items
+       */
+
+      items:
+        cleanItems,
+
+
+      /*
+       * Labour
+       */
+
+      labour:
+        safeNumber(
+          labour
+        ),
+
+
+      /*
+       * Transportation
+       */
+
+      transportation:
+        safeNumber(
+          transportation
+        ),
+
+
+      /*
+       * GST
+       */
 
       gstEnabled,
 
-      gstRate: gstEnabled
-        ? safeNumber(gstRate)
-        : 0,
+      gstRate:
+        gstEnabled
+          ? safeNumber(
+              gstRate
+            )
+          : 0,
 
-      advancePaid: Math.min(
-        safeNumber(
-          advancePaid
+
+      /*
+       * Advance
+       */
+
+      advancePaid:
+        Math.min(
+          safeNumber(
+            advancePaid
+          ),
+          totals.grandTotal
         ),
-        totals.grandTotal
-      ),
 
-      terms: terms
-        .split("\n")
-        .map((term) =>
-          term.trim()
-        )
-        .filter(Boolean),
+
+      /*
+       * Terms
+       */
+
+      terms:
+        terms
+          .split("\n")
+          .map(
+            (term) =>
+              term.trim()
+          )
+          .filter(Boolean),
+
+
+      /*
+       * Dates
+       */
 
       updatedAt:
         new Date().toISOString(),
@@ -415,32 +879,55 @@ export default function InvoiceForm({
         new Date().toISOString(),
     };
 
+
     onSave(invoice);
   }
 
+
+  /*
+  |--------------------------------------------------------------------------
+  | UI
+  |--------------------------------------------------------------------------
+  */
+
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={
+        handleSubmit
+      }
       className="space-y-6"
     >
+
+      {/* ==================================================
+          ERROR
+      =================================================== */}
+
       {error && (
         <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm font-semibold text-red-700">
           {error}
         </div>
       )}
 
-      {/* CUSTOMER */}
+
+      {/* ==================================================
+          CUSTOMER
+      =================================================== */}
 
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
         <SectionTitle
           number="01"
           title="Customer Details"
         />
 
+
         <div className="grid gap-4 md:grid-cols-2">
+
           <Input
             label="Customer Name *"
-            value={customer.name}
+            value={
+              customer.name
+            }
             onChange={(e) =>
               updateCustomer(
                 "name",
@@ -450,9 +937,12 @@ export default function InvoiceForm({
             placeholder="Rahul Sharma"
           />
 
+
           <Input
             label="Company"
-            value={customer.company}
+            value={
+              customer.company
+            }
             onChange={(e) =>
               updateCustomer(
                 "company",
@@ -462,9 +952,12 @@ export default function InvoiceForm({
             placeholder="ABC Events Pvt. Ltd."
           />
 
+
           <Input
             label="Phone"
-            value={customer.phone}
+            value={
+              customer.phone
+            }
             onChange={(e) =>
               updateCustomer(
                 "phone",
@@ -474,10 +967,13 @@ export default function InvoiceForm({
             placeholder="+91 98765 43210"
           />
 
+
           <Input
             label="Email"
             type="email"
-            value={customer.email}
+            value={
+              customer.email
+            }
             onChange={(e) =>
               updateCustomer(
                 "email",
@@ -487,9 +983,12 @@ export default function InvoiceForm({
             placeholder="client@example.com"
           />
 
+
           <Input
             label="GSTIN"
-            value={customer.gstin}
+            value={
+              customer.gstin
+            }
             onChange={(e) =>
               updateCustomer(
                 "gstin",
@@ -500,9 +999,12 @@ export default function InvoiceForm({
             maxLength={15}
           />
 
+
           <Input
             label="Address"
-            value={customer.address}
+            value={
+              customer.address
+            }
             onChange={(e) =>
               updateCustomer(
                 "address",
@@ -511,18 +1013,26 @@ export default function InvoiceForm({
             }
             placeholder="Billing address"
           />
+
         </div>
+
       </section>
 
-      {/* EVENT */}
+
+      {/* ==================================================
+          EVENT
+      =================================================== */}
 
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
         <SectionTitle
           number="02"
           title="Event / Booking Details"
         />
 
+
         <div className="grid gap-4 md:grid-cols-3">
+
           <Input
             label="Event Name"
             value={
@@ -536,6 +1046,7 @@ export default function InvoiceForm({
             }
             placeholder="Wedding Event"
           />
+
 
           <Input
             label="Event Date"
@@ -551,6 +1062,7 @@ export default function InvoiceForm({
             }
           />
 
+
           <Input
             label="Venue"
             value={
@@ -564,38 +1076,61 @@ export default function InvoiceForm({
             }
             placeholder="The Grand Hotel"
           />
+
         </div>
+
       </section>
 
-      {/* ITEMS */}
+
+      {/* ==================================================
+          ITEMS
+      =================================================== */}
 
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+
           <SectionTitle
             number="03"
             title="Items / Services"
           />
 
+
           <button
             type="button"
-            onClick={addItem}
+            onClick={
+              addItem
+            }
             className="rounded-lg bg-slate-950 px-4 py-2 text-sm font-bold text-white hover:bg-slate-800"
           >
             + Add Item
           </button>
+
         </div>
 
+
         <div className="space-y-3">
+
           {items.map(
-            (item, index) => (
+            (
+              item,
+              index
+            ) => (
+
               <div
-                key={item.id}
+                key={
+                  item.id
+                }
                 className="rounded-xl border border-slate-200 p-4"
               >
+
                 <div className="mb-3 flex justify-between">
+
                   <span className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                    Item {index + 1}
+                    Item{" "}
+                    {index + 1}
                   </span>
+
 
                   <button
                     type="button"
@@ -608,9 +1143,12 @@ export default function InvoiceForm({
                   >
                     Remove
                   </button>
+
                 </div>
 
+
                 <div className="grid gap-4 md:grid-cols-[1fr_120px_160px_160px]">
+
                   <Input
                     label="Description"
                     value={
@@ -625,6 +1163,7 @@ export default function InvoiceForm({
                     }
                     placeholder="Chiavari Chairs"
                   />
+
 
                   <Input
                     label="Qty"
@@ -643,12 +1182,15 @@ export default function InvoiceForm({
                     }
                   />
 
+
                   <Input
                     label="Rate"
                     type="number"
                     min="0"
                     step="0.01"
-                    value={item.rate}
+                    value={
+                      item.rate
+                    }
                     onChange={(e) =>
                       updateItem(
                         item.id,
@@ -658,10 +1200,13 @@ export default function InvoiceForm({
                     }
                   />
 
+
                   <div>
+
                     <label className="mb-1 block text-sm font-medium text-slate-700">
                       Amount
                     </label>
+
 
                     <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 font-bold">
                       {formatCurrency(
@@ -673,40 +1218,203 @@ export default function InvoiceForm({
                           )
                       )}
                     </div>
+
                   </div>
+
                 </div>
+
               </div>
+
             )
           )}
+
         </div>
+
       </section>
 
-      {/* GST + PAYMENT */}
+
+      {/* ==================================================
+          ADDITIONAL CHARGES
+      =================================================== */}
 
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
         <SectionTitle
           number="04"
+          title="Additional Charges"
+        />
+
+
+        <p className="mb-5 text-sm text-slate-500">
+          Add labour and transportation charges separately. These charges will be included in the subtotal and GST calculation when GST is enabled.
+        </p>
+
+
+        <div className="grid gap-4 md:grid-cols-2">
+
+          {/* LABOUR */}
+
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+
+            <div className="mb-3">
+
+              <p className="font-bold text-slate-900">
+                Labour Charges
+              </p>
+
+              <p className="mt-1 text-xs text-slate-500">
+                Loading, unloading, setup, dismantling, manpower, etc.
+              </p>
+
+            </div>
+
+
+            <div className="relative">
+
+              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">
+                ₹
+              </span>
+
+
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={
+                  labour
+                }
+                onChange={(e) =>
+                  handleLabourChange(
+                    e.target.value
+                  )
+                }
+                className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-8 pr-3 font-bold outline-none focus:border-slate-950 focus:ring-1 focus:ring-slate-950"
+                placeholder="0"
+              />
+
+            </div>
+
+          </div>
+
+
+          {/* TRANSPORTATION */}
+
+          <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+
+            <div className="mb-3">
+
+              <p className="font-bold text-slate-900">
+                Transportation Charges
+              </p>
+
+              <p className="mt-1 text-xs text-slate-500">
+                Delivery, pickup, vehicle and transportation charges.
+              </p>
+
+            </div>
+
+
+            <div className="relative">
+
+              <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">
+                ₹
+              </span>
+
+
+              <input
+                type="number"
+                min="0"
+                step="0.01"
+                value={
+                  transportation
+                }
+                onChange={(e) =>
+                  handleTransportationChange(
+                    e.target.value
+                  )
+                }
+                className="w-full rounded-lg border border-slate-300 bg-white py-3 pl-8 pr-3 font-bold outline-none focus:border-slate-950 focus:ring-1 focus:ring-slate-950"
+                placeholder="0"
+              />
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        {/* ADDITIONAL CHARGE SUMMARY */}
+
+        {(labour > 0 ||
+          transportation > 0) && (
+
+          <div className="mt-5 rounded-xl bg-slate-950 p-4 text-white">
+
+            <div className="flex justify-between text-sm">
+
+              <span className="text-slate-300">
+                Additional Charges
+              </span>
+
+              <span className="font-black">
+                {formatCurrency(
+                  labour +
+                    transportation
+                )}
+              </span>
+
+            </div>
+
+          </div>
+
+        )}
+
+      </section>
+
+
+      {/* ==================================================
+          TAX + PAYMENT
+      =================================================== */}
+
+      <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
+        <SectionTitle
+          number="05"
           title="Tax & Payment"
         />
 
+
         <div className="grid gap-6 lg:grid-cols-2">
+
+          {/* TAX */}
+
           <div>
+
             <p className="mb-3 text-sm font-bold">
               Tax Type
             </p>
 
+
             <div className="flex items-center justify-between rounded-xl border border-slate-200 p-4">
+
               <div>
+
                 <p className="font-bold">
                   {gstEnabled
                     ? "GST Enabled"
                     : "Non-GST"}
                 </p>
 
+
                 <p className="mt-1 text-xs text-slate-500">
-                  GST is applied on subtotal.
+                  {gstEnabled
+                    ? "GST will be applied on items, labour and transportation."
+                    : "No GST will be added to this PI."}
                 </p>
+
               </div>
+
 
               <button
                 type="button"
@@ -726,6 +1434,7 @@ export default function InvoiceForm({
                     : "bg-slate-300"
                 }`}
               >
+
                 <span
                   className={`absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-all ${
                     gstEnabled
@@ -733,17 +1442,25 @@ export default function InvoiceForm({
                       : "left-1"
                   }`}
                 />
+
               </button>
+
             </div>
 
+
             {gstEnabled && (
+
               <div className="mt-4">
+
                 <label className="mb-1 block text-sm font-medium">
                   GST Rate
                 </label>
 
+
                 <select
-                  value={gstRate}
+                  value={
+                    gstRate
+                  }
                   onChange={(e) =>
                     setGstRate(
                       Number(
@@ -753,33 +1470,48 @@ export default function InvoiceForm({
                   }
                   className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
                 >
+
                   <option value="5">
                     5%
                   </option>
+
                   <option value="12">
                     12%
                   </option>
+
                   <option value="18">
                     18%
                   </option>
+
                   <option value="28">
                     28%
                   </option>
+
                 </select>
+
               </div>
+
             )}
+
           </div>
 
+
+          {/* PAYMENT */}
+
           <div>
+
             <label className="mb-1 block text-sm font-medium">
               Advance / Amount Paid
             </label>
+
 
             <input
               type="number"
               min="0"
               step="0.01"
-              value={advancePaid}
+              value={
+                advancePaid
+              }
               onChange={(e) =>
                 handleAdvanceChange(
                   e.target.value
@@ -788,30 +1520,79 @@ export default function InvoiceForm({
               className="w-full rounded-lg border border-slate-300 px-3 py-2.5"
             />
 
+
             <div className="mt-4 space-y-3 rounded-xl bg-slate-50 p-4">
+
               <SummaryRow
-                label="Subtotal"
+                label="Item Subtotal"
                 value={formatCurrency(
-                  totals.subtotal
+                  totals.itemsSubtotal
                 )}
               />
 
+
+              {labour > 0 && (
+
+                <SummaryRow
+                  label="Labour"
+                  value={formatCurrency(
+                    totals.labour
+                  )}
+                />
+
+              )}
+
+
+              {transportation >
+                0 && (
+
+                <SummaryRow
+                  label="Transportation"
+                  value={formatCurrency(
+                    totals.transportation
+                  )}
+                />
+
+              )}
+
+
+              <div className="border-t border-slate-200 pt-3">
+
+                <SummaryRow
+                  label="Subtotal"
+                  value={formatCurrency(
+                    totals.subtotal
+                  )}
+                  bold
+                />
+
+              </div>
+
+
               {gstEnabled && (
+
                 <SummaryRow
                   label={`GST (${gstRate}%)`}
                   value={formatCurrency(
                     totals.gstAmount
                   )}
                 />
+
               )}
 
-              <SummaryRow
-                label="Grand Total"
-                value={formatCurrency(
-                  totals.grandTotal
-                )}
-                bold
-              />
+
+              <div className="border-t-2 border-slate-900 pt-3">
+
+                <SummaryRow
+                  label="Grand Total"
+                  value={formatCurrency(
+                    totals.grandTotal
+                  )}
+                  bold
+                />
+
+              </div>
+
 
               <SummaryRow
                 label="Advance Paid"
@@ -819,6 +1600,7 @@ export default function InvoiceForm({
                   totals.advancePaid
                 )}
               />
+
 
               <SummaryRow
                 label="Balance Due"
@@ -828,48 +1610,85 @@ export default function InvoiceForm({
                 highlight
               />
 
+
               <div className="pt-2 text-center">
-                <span className="rounded-full bg-slate-200 px-3 py-1 text-xs font-bold">
-                  {totals.status}
+
+                <span
+                  className={`rounded-full px-3 py-1 text-xs font-bold ${
+                    totals.status ===
+                    "PAID"
+                      ? "bg-emerald-100 text-emerald-700"
+                      : totals.status ===
+                        "PARTIALLY PAID"
+                      ? "bg-amber-100 text-amber-700"
+                      : "bg-red-100 text-red-700"
+                  }`}
+                >
+                  {
+                    totals.status
+                  }
                 </span>
+
               </div>
+
             </div>
+
           </div>
+
         </div>
+
       </section>
 
-      {/* TERMS */}
+
+      {/* ==================================================
+          TERMS
+      =================================================== */}
 
       <section className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+
         <SectionTitle
-          number="05"
+          number="06"
           title="Terms & Conditions"
         />
 
+
         <textarea
-          value={terms}
+          value={
+            terms
+          }
           onChange={(e) =>
-            setTerms(e.target.value)
+            setTerms(
+              e.target.value
+            )
           }
           rows={8}
           className="w-full resize-y rounded-xl border border-slate-300 px-4 py-3 text-sm leading-6 outline-none focus:border-slate-950"
         />
 
+
         <p className="mt-2 text-xs text-slate-400">
           One term per line.
         </p>
+
       </section>
 
-      {/* ACTIONS */}
+
+      {/* ==================================================
+          ACTIONS
+      =================================================== */}
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row">
+
         <button
           type="button"
-          onClick={onCancel}
+          onClick={
+            onCancel
+          }
           className="flex-1 rounded-xl border border-slate-300 bg-white py-4 font-bold text-slate-700 hover:bg-slate-50"
         >
           Cancel
         </button>
+
 
         <button
           type="submit"
@@ -879,10 +1698,19 @@ export default function InvoiceForm({
             ? "Save Changes"
             : "Generate Proforma Invoice"}
         </button>
+
       </div>
+
     </form>
   );
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| SECTION TITLE
+|--------------------------------------------------------------------------
+*/
 
 function SectionTitle({
   number,
@@ -890,16 +1718,26 @@ function SectionTitle({
 }) {
   return (
     <div className="mb-5 flex items-center gap-3">
+
       <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-950 text-xs font-bold text-white">
         {number}
       </span>
 
+
       <h2 className="text-lg font-bold">
         {title}
       </h2>
+
     </div>
   );
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| INPUT
+|--------------------------------------------------------------------------
+*/
 
 function Input({
   label,
@@ -907,18 +1745,32 @@ function Input({
   ...props
 }) {
   return (
-    <div className={className}>
+    <div
+      className={
+        className
+      }
+    >
+
       <label className="mb-1 block text-sm font-medium text-slate-700">
         {label}
       </label>
+
 
       <input
         {...props}
         className="w-full rounded-lg border border-slate-300 px-3 py-2.5 outline-none focus:border-slate-950 focus:ring-1 focus:ring-slate-950"
       />
+
     </div>
   );
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| SUMMARY
+|--------------------------------------------------------------------------
+*/
 
 function SummaryRow({
   label,
@@ -938,8 +1790,15 @@ function SummaryRow({
           : ""
       }`}
     >
-      <span>{label}</span>
-      <span>{value}</span>
+
+      <span>
+        {label}
+      </span>
+
+      <span>
+        {value}
+      </span>
+
     </div>
   );
 }
