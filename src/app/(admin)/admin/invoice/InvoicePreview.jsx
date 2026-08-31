@@ -1157,11 +1157,7 @@ function buildPrintDocument(
                 ) => `
                   <li class="term-item">
 
-                    <span class="term-number">
-                      ${
-                        index + 1
-                      }.
-                    </span>
+                    
 
                     <span>
                       ${
@@ -1294,7 +1290,7 @@ body {
 
   gap: 20mm;
 
-  padding-bottom: 7mm;
+  padding-bottom: 4mm;
 
   border-bottom: 2px solid #0f172a;
 
@@ -1419,9 +1415,9 @@ body {
 
 .bill-to {
   padding:
-    7mm
+    4mm
     8mm
-    7mm
+    4mm
     0;
 
   border-right:
@@ -1431,9 +1427,9 @@ body {
 
 .event-details {
   padding:
-    7mm
+    4mm
     0
-    7mm
+    4mm
     8mm;
 }
 
@@ -1522,7 +1518,7 @@ body {
 ============================================================ */
 
 .items-section {
-  padding: 7mm 0;
+  padding: 4mm 0;
 }
 
 
@@ -1645,9 +1641,9 @@ body {
 
 .additional-section {
   padding:
-    5mm
+    3mm
     0
-    7mm;
+    4mm;
 
   page-break-inside:
     avoid;
@@ -1687,9 +1683,9 @@ body {
     flex-end;
 
   padding:
-    6mm
+    4mm
     0
-    7mm;
+    4mm;
 
   border-bottom:
     1px solid #e2e8f0;
@@ -1748,7 +1744,7 @@ body {
 
 .payment-section {
   padding:
-    7mm
+    4mm
     0;
 
   border-bottom:
@@ -1797,7 +1793,7 @@ body {
 
 .terms-section {
   padding:
-    7mm
+    4mm
     0;
 
   page-break-inside:
