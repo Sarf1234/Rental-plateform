@@ -10,12 +10,6 @@ export const DEFAULT_TERMS = [
   "Any damage or loss to rented items may be charged separately.",
 ];
 
-/*
-|--------------------------------------------------------------------------
-| ID
-|--------------------------------------------------------------------------
-*/
-
 export function createId() {
   try {
     if (
@@ -31,13 +25,6 @@ export function createId() {
     .slice(2, 10)}`;
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| NUMBER HELPERS
-|--------------------------------------------------------------------------
-*/
-
 export function safeNumber(value) {
   const number = Number(value);
 
@@ -51,7 +38,6 @@ export function safeNumber(value) {
   return number;
 }
 
-
 export function roundMoney(value) {
   const number = Number(value);
 
@@ -63,13 +49,6 @@ export function roundMoney(value) {
     (number + Number.EPSILON) * 100
   ) / 100;
 }
-
-
-/*
-|--------------------------------------------------------------------------
-| CURRENCY
-|--------------------------------------------------------------------------
-*/
 
 export function formatCurrency(value) {
   const amount = roundMoney(value);
@@ -84,13 +63,6 @@ export function formatCurrency(value) {
     }
   ).format(amount);
 }
-
-
-/*
-|--------------------------------------------------------------------------
-| DATE
-|--------------------------------------------------------------------------
-*/
 
 export function formatDate(value) {
   if (!value) {
@@ -117,7 +89,6 @@ export function formatDate(value) {
   );
 }
 
-
 export function getTodayInputValue() {
   const date = new Date();
 
@@ -134,18 +105,6 @@ export function getTodayInputValue() {
 
   return `${year}-${month}-${day}`;
 }
-
-
-/*
-|--------------------------------------------------------------------------
-| INVOICE NUMBER
-|--------------------------------------------------------------------------
-|
-| Example:
-|
-| KN-PI-310826-001
-|
-*/
 
 export function generateInvoiceNumber() {
   const now = new Date();
@@ -208,27 +167,6 @@ export function generateInvoiceNumber() {
   ).padStart(3, "0")}`;
 }
 
-
-/*
-|--------------------------------------------------------------------------
-| GET ADDITIONAL CHARGES
-|--------------------------------------------------------------------------
-|
-| Supports both:
-|
-| labour
-| transportation
-|
-| and also:
-|
-| labor
-| transport
-|
-| This makes the code safer if your
-| current form uses American spelling.
-|--------------------------------------------------------------------------
-*/
-
 export function getAdditionalCharges(
   invoice
 ) {
@@ -257,25 +195,22 @@ export function getAdditionalCharges(
   };
 }
 
-
 /*
 |--------------------------------------------------------------------------
 | CALCULATE INVOICE
 |--------------------------------------------------------------------------
 |
-| Calculation:
+| Rental item amount:
+|
+| Quantity × Days × Rate
 |
 | Items
 | + Labour
 | + Transportation
 | = Taxable Subtotal
 |
-| GST is applied to the COMPLETE subtotal.
+| GST is applied to the complete subtotal.
 |
-| Grand Total =
-| Subtotal + GST
-|
-|--------------------------------------------------------------------------
 */
 
 export function calculateInvoice(
@@ -287,11 +222,6 @@ export function calculateInvoice(
     )
       ? invoice.items
       : [];
-
-
-  /*
-   * PRODUCT / RENTAL ITEMS
-   */
 
   const itemsSubtotal =
     roundMoney(
@@ -305,6 +235,16 @@ export function calculateInvoice(
               item?.quantity
             );
 
+          /*
+           * Backward compatibility:
+           * Old invoices did not have days,
+           * so they are treated as 1 day.
+           */
+          const days =
+            safeNumber(
+              item?.days
+            ) || 1;
+
           const rate =
             safeNumber(
               item?.rate
@@ -312,17 +252,14 @@ export function calculateInvoice(
 
           return (
             total +
-            quantity * rate
+            quantity *
+              days *
+              rate
           );
         },
         0
       )
     );
-
-
-  /*
-   * LABOUR + TRANSPORTATION
-   */
 
   const {
     labour,
@@ -331,11 +268,6 @@ export function calculateInvoice(
     invoice
   );
 
-
-  /*
-   * COMPLETE TAXABLE SUBTOTAL
-   */
-
   const subtotal =
     roundMoney(
       itemsSubtotal +
@@ -343,18 +275,12 @@ export function calculateInvoice(
         transportation
     );
 
-
-  /*
-   * GST
-   */
-
   const gstRate =
     invoice?.gstEnabled
       ? safeNumber(
           invoice?.gstRate
         )
       : 0;
-
 
   const gstAmount =
     invoice?.gstEnabled
@@ -365,23 +291,11 @@ export function calculateInvoice(
         )
       : 0;
 
-
-  /*
-   * GRAND TOTAL
-   */
-
   const grandTotal =
     roundMoney(
       subtotal +
         gstAmount
     );
-
-
-  /*
-   * ADVANCE
-   *
-   * Never allow advance > grand total.
-   */
 
   const advancePaid =
     Math.min(
@@ -390,11 +304,6 @@ export function calculateInvoice(
       ),
       grandTotal
     );
-
-
-  /*
-   * BALANCE
-   */
 
   const balance =
     roundMoney(
@@ -405,13 +314,7 @@ export function calculateInvoice(
       )
     );
 
-
-  /*
-   * STATUS
-   */
-
   let status = "UNPAID";
-
 
   if (
     grandTotal > 0 &&
@@ -425,42 +328,19 @@ export function calculateInvoice(
       "PARTIALLY PAID";
   }
 
-
   return {
-    /*
-     * Existing field
-     */
     subtotal,
-
-    /*
-     * New detailed fields
-     */
     itemsSubtotal,
     labour,
     transportation,
-
-    /*
-     * Tax
-     */
     gstRate,
     gstAmount,
-
-    /*
-     * Final
-     */
     grandTotal,
     advancePaid,
     balance,
     status,
   };
 }
-
-
-/*
-|--------------------------------------------------------------------------
-| LOCAL STORAGE
-|--------------------------------------------------------------------------
-*/
 
 export function loadInvoices() {
   if (
@@ -500,7 +380,6 @@ export function loadInvoices() {
   }
 }
 
-
 export function saveInvoices(
   invoices
 ) {
@@ -529,4 +408,3 @@ export function saveInvoices(
     return false;
   }
 }
-

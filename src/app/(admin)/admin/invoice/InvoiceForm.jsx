@@ -68,6 +68,7 @@ export default function InvoiceForm({
         id: createId(),
         description: "",
         quantity: 1,
+        days: 1,
         rate: 0,
       },
     ]);
@@ -215,6 +216,11 @@ export default function InvoiceForm({
               quantity:
                 safeNumber(
                   item.quantity
+                ) || 1,
+
+              days:
+                safeNumber(
+                  item.days
                 ) || 1,
 
               rate:
@@ -408,8 +414,8 @@ export default function InvoiceForm({
 
 
             if (
-              field ===
-                "quantity" ||
+              field === "quantity" ||
+              field === "days" ||
               field === "rate"
             ) {
               return {
@@ -737,6 +743,11 @@ export default function InvoiceForm({
               safeNumber(
                 item.quantity
               ),
+
+            days:
+              safeNumber(
+                item.days
+              ) || 1,
 
             rate:
               safeNumber(
@@ -1147,7 +1158,7 @@ export default function InvoiceForm({
                 </div>
 
 
-                <div className="grid gap-4 md:grid-cols-[1fr_120px_160px_160px]">
+                <div className="grid gap-4 md:grid-cols-[1fr_110px_110px_150px_150px]">
 
                   <Input
                     label="Description"
@@ -1177,6 +1188,23 @@ export default function InvoiceForm({
                       updateItem(
                         item.id,
                         "quantity",
+                        e.target.value
+                      )
+                    }
+                  />
+
+                  <Input
+                    label="Days"
+                    type="number"
+                    min="1"
+                    step="1"
+                    value={
+                      item.days
+                    }
+                    onChange={(e) =>
+                      updateItem(
+                        item.id,
+                        "days",
                         e.target.value
                       )
                     }
@@ -1212,6 +1240,9 @@ export default function InvoiceForm({
                       {formatCurrency(
                         safeNumber(
                           item.quantity
+                        ) *
+                          safeNumber(
+                            item.days
                         ) *
                           safeNumber(
                             item.rate

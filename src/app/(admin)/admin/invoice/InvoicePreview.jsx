@@ -461,8 +461,12 @@ function ScreenInvoice({
                   Description
                 </th>
 
-                <th className="w-20 pb-3 text-center">
+                <th className="w-16 pb-3 text-center">
                   Qty
+                </th>
+
+                <th className="w-16 pb-3 text-center">
+                  Days
                 </th>
 
                 <th className="w-32 pb-3 text-right">
@@ -497,8 +501,14 @@ function ScreenInvoice({
                         item.rate
                       ) || 0;
 
+                    const days =
+                      Number(
+                        item.days
+                      ) || 1;
+
                     const amount =
                       quantity *
+                      days *
                       rate;
 
 
@@ -526,6 +536,12 @@ function ScreenInvoice({
                         <td className="py-4 text-center align-top">
                           {
                             quantity
+                          }
+                        </td>
+
+                        <td className="py-4 text-center align-top">
+                          {
+                            days
                           }
                         </td>
 
@@ -941,8 +957,14 @@ function buildPrintDocument(
                   item.rate
                 ) || 0;
 
+              const days =
+                Number(
+                  item.days
+                ) || 1;
+
               const amount =
                 quantity *
+                days *
                 rate;
 
 
@@ -966,6 +988,10 @@ function buildPrintDocument(
 
                   <td class="col-qty">
                     ${quantity}
+                  </td>
+
+                  <td class="col-days">
+                    ${days}
                   </td>
 
                   <td class="col-rate">
@@ -996,7 +1022,7 @@ function buildPrintDocument(
       : `
           <tr>
             <td
-              colspan="5"
+              colspan="6"
               class="empty-items"
             >
               No items added.
@@ -1569,7 +1595,15 @@ body {
 
 
 .col-qty {
-  width: 15mm;
+  width: 14mm;
+
+  text-align:
+    center !important;
+}
+
+
+.col-days {
+  width: 14mm;
 
   text-align:
     center !important;
@@ -1577,7 +1611,7 @@ body {
 
 
 .col-rate {
-  width: 32mm;
+  width: 30mm;
 
   text-align:
     right !important;
@@ -1585,7 +1619,7 @@ body {
 
 
 .col-amount {
-  width: 35mm;
+  width: 33mm;
 
   text-align:
     right !important;
@@ -1920,9 +1954,6 @@ special occasions.
 
 <div class="invoice-meta">
 
-<h2 class="invoice-title">
-PROFORMA INVOICE
-</h2>
 
 <div class="meta-row">
 <strong>PI No:</strong>
@@ -2118,6 +2149,10 @@ Description
 
 <th class="col-qty">
 Qty
+</th>
+
+<th class="col-days">
+Days
 </th>
 
 <th class="col-rate">
@@ -2378,7 +2413,7 @@ ${termsHtml}
 
 <section
 style="
-padding:7mm 0;
+padding:4mm 0;
 border-top:1px solid #e2e8f0;
 page-break-inside:avoid;
 "
