@@ -26,7 +26,7 @@ export default function FlagsCards({
 
         <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
           {data.slice(0, 8).map((item) => (
-            <div key={item._id} className="min-w-[55%]">
+            <div key={item._id} className="min-w-[68%]">
               <ProductsCards
                 product={item}
                 citySlug={citySlug}

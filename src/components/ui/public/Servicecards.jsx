@@ -131,7 +131,7 @@ export default function Servicecards({
               {data.slice(0, 8).map((service) => (
                 <div
                   key={service._id}
-                  className="min-w-[78%]"
+                  className="min-w-[68%]"
                 >
                   <ServiceCard
                     service={service}
