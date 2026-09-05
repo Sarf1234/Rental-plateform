@@ -1,6 +1,69 @@
 import Link from "next/link";
+import {
+  Palette,
+  MonitorPlay,
+  Building2,
+  Armchair,
+  Lightbulb,
+  Heart,
+  Volume2,
+  Sparkles,
+} from "lucide-react";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+const CATEGORY_ICONS = {
+  "decor-styling": Palette,
+  "electronics-and-av-equipment": MonitorPlay,
+  "fabrication-and-exhibition-stalls": Building2,
+  furniture: Armchair,
+  "lighting-equipment": Lightbulb,
+  "mandap-and-wedding": Heart,
+  "sound-systems": Volume2,
+  "special-effects": Sparkles,
+};
+
+const CATEGORY_COLORS = {
+  "decor-styling": {
+    bg: "bg-amber-50",
+    icon: "text-amber-600",
+  },
+
+  "electronics-and-av-equipment": {
+    bg: "bg-indigo-50",
+    icon: "text-indigo-600",
+  },
+
+  "fabrication-and-exhibition-stalls": {
+    bg: "bg-orange-50",
+    icon: "text-orange-600",
+  },
+
+  furniture: {
+    bg: "bg-blue-50",
+    icon: "text-blue-600",
+  },
+
+  "lighting-equipment": {
+    bg: "bg-yellow-50",
+    icon: "text-yellow-600",
+  },
+
+  "mandap-and-wedding": {
+    bg: "bg-rose-50",
+    icon: "text-rose-600",
+  },
+
+  "sound-systems": {
+    bg: "bg-cyan-50",
+    icon: "text-cyan-600",
+  },
+
+  "special-effects": {
+    bg: "bg-purple-50",
+    icon: "text-purple-600",
+  },
+};
 
 async function getProductCategories() {
   try {
@@ -13,7 +76,7 @@ async function getProductCategories() {
       `${API_URL}/api/products/categories`,
       {
         next: {
-          revalidate: 604800, // 7 days
+          revalidate: 604800,
           tags: ["product-categories"],
         },
       }
@@ -43,124 +106,188 @@ export default async function ProductCategories({ citySlug }) {
 
   return (
     <section
-      aria-label="Rental product categories"
-      className="w-full bg-white border-y border-gray-100 shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+      aria-label="Rental categories"
+      className="
+        w-full
+        border-b
+        border-slate-200
+        bg-[#f8fafc]
+      "
     >
-      <div className="max-w-7xl mx-auto px-3 sm:px-4">
-
-        {/* 
-          Mobile / tablet:
-          Horizontal category rail
-
-          Large desktop:
-          Compact 8-column layout
-        */}
+      <div className="w-full">
         <div
           className="
-            flex xl:grid xl:grid-cols-8
-            items-stretch
-            gap-2
-            xl:gap-0
+            flex
+            w-full
+            items-center
 
-            overflow-x-auto xl:overflow-visible
+            overflow-x-auto
+            overflow-y-hidden
+
+            px-2
+            sm:px-3
+            lg:px-4
 
             py-2
-            md:py-2.5
-            xl:py-2
 
             [scrollbar-width:none]
             [-ms-overflow-style:none]
             [&::-webkit-scrollbar]:hidden
-
-            snap-x
-            snap-mandatory
           "
         >
-          {categories.map((category) => (
-            <Link
-              key={category._id || category.slug}
-              href={`/${citySlug}/categories/${category.slug}`}
-              className="
-                group
-                relative
-                flex-shrink-0
-                snap-start
+          <div
+            className="
+              flex
+              w-full
+              min-w-max
+              items-center
 
-                min-w-[132px]
-                sm:min-w-[148px]
-                md:min-w-[160px]
+              gap-1
+              sm:gap-2
+            "
+          >
+            {categories.map((category) => {
+              const Icon =
+                CATEGORY_ICONS[category.slug] || Sparkles;
 
-                xl:min-w-0
+              const colors =
+                CATEGORY_COLORS[category.slug] || {
+                  bg: "bg-slate-100",
+                  icon: "text-slate-600",
+                };
 
-                min-h-[44px]
-                md:min-h-[48px]
-                xl:min-h-[52px]
+              // First word only as requested
+              const label =
+                category.name?.trim()?.split(/\s+/)[0] ||
+                category.name;
 
-                px-3
-                md:px-4
-                xl:px-3
+              return (
+                <Link
+                  key={category._id || category.slug}
+                  href={`/${citySlug}/categories/${category.slug}`}
+                  title={category.name}
+                  aria-label={`Browse ${category.name}`}
+                  className="
+                    group
+                    relative
 
-                flex
-                items-center
-                justify-center
+                    flex
+                    flex-1
+                    flex-shrink-0
 
-                rounded-lg
-                xl:rounded-none
+                    min-w-[92px]
+                    sm:min-w-[105px]
+                    md:min-w-[115px]
 
-                border
-                border-gray-200
-                xl:border-0
-                xl:border-r
-                xl:last:border-r-0
+                    items-center
+                    justify-center
 
-                bg-white
+                    rounded-lg
 
-                text-[12px]
-                sm:text-[13px]
-                md:text-sm
-                font-medium
-                leading-tight
-                text-center
-                text-gray-700
+                    px-2
+                    sm:px-3
 
-                transition-colors
-                duration-200
+                    py-1.5
+                    sm:py-2
 
-                hover:text-[#003459]
-                hover:bg-[#f7fafc]
+                    transition-all
+                    duration-200
 
-                focus-visible:outline-none
-                focus-visible:ring-2
-                focus-visible:ring-[#003459]
-                focus-visible:ring-offset-1
-              "
-            >
-              <span className="line-clamp-2">
-                {category.name}
-              </span>
+                    hover:bg-white
+                    hover:shadow-[0_2px_10px_rgba(15,23,42,0.05)]
 
-              {/* Desktop active/hover indicator */}
-              <span
-                className="
-                  absolute
-                  left-1/2
-                  bottom-0
+                    focus-visible:outline-none
+                    focus-visible:ring-2
+                    focus-visible:ring-[#003459]
+                    focus-visible:ring-inset
+                  "
+                >
+                  <div
+                    className="
+                      flex
+                      items-center
+                      gap-2
+                    "
+                  >
+                    {/* CATEGORY MARK */}
+                    <span
+                      className={`
+                        flex
+                        h-9
+                        w-9
+                        sm:h-10
+                        sm:w-10
 
-                  h-[2px]
-                  w-0
+                        flex-shrink-0
 
-                  -translate-x-1/2
+                        items-center
+                        justify-center
 
-                  bg-[#003459]
+                        rounded-full
 
-                  transition-all
-                  duration-200
+                        ${colors.bg}
 
-                  group-hover:w-8
-                "
-              />
-            </Link>
-          ))}
+                        transition-all
+                        duration-200
+
+                        group-hover:scale-105
+                      `}
+                    >
+                      <Icon
+                        size={18}
+                        strokeWidth={1.8}
+                        className={colors.icon}
+                      />
+                    </span>
+
+                    {/* LABEL */}
+                    <span
+                      className="
+                        text-[11px]
+                        sm:text-xs
+                        md:text-[13px]
+
+                        font-semibold
+                        leading-none
+
+                        text-slate-700
+
+                        transition-colors
+                        duration-200
+
+                        group-hover:text-[#003459]
+                      "
+                    >
+                      {label}
+                    </span>
+                  </div>
+
+                  {/* ACTIVE / HOVER LINE */}
+                  <span
+                    className="
+                      absolute
+                      bottom-0
+                      left-1/2
+
+                      h-[2px]
+                      w-0
+
+                      -translate-x-1/2
+
+                      rounded-full
+
+                      bg-[#003459]
+
+                      transition-all
+                      duration-200
+
+                      group-hover:w-7
+                    "
+                  />
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

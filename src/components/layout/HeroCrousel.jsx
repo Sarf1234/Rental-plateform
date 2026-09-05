@@ -119,7 +119,7 @@ export default function HeroCarousel({
               return (
                 <div
                   key={banner._id || i}
-                  className="relative min-w-full h-[45vh] md:h-[78vh] bg-gray-100 overflow-hidden"
+                  className="relative min-w-full h-[45vh] md:h-[70vh] bg-gray-100 overflow-hidden"
                 >
 
                   {/* IMAGE SKELETON */}
@@ -190,7 +190,7 @@ export default function HeroCarousel({
 
                         {/* TITLE */}
 
-                        <h1 className="text-white font-bold leading-[1.08] tracking-tight text-[2rem] sm:text-5xl md:text-6xl">
+                        <h1 className="text-white font-bold leading-[1.08] tracking-tight text-[2rem] sm:text-5xl md:text-5xl">
 
                           {banner.title}
 
@@ -199,7 +199,7 @@ export default function HeroCarousel({
                         {/* SUBTITLE */}
 
                         {banner.subtitle && (
-                          <p className="mt-5 text-white/90 text-base md:text-xl leading-relaxed max-w-xl">
+                          <p className="mt-5 text-white/90 text-base md:text-lg leading-relaxed max-w-xl">
 
                             {banner.subtitle}
 
