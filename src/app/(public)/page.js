@@ -122,6 +122,7 @@ export default async function HomePage() {
 
       <div className="mt-16">
         {/* 🔥 HERO (FINAL FIXED) */}
+        <section className="max-w-7xl mx-auto md:px-4 mt-2 md:mt-20"></section>
         <HeroCarousel banners={banners} />
 
         {/* 🔥 SEO INTRO */}

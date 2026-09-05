@@ -274,6 +274,8 @@ export default async function CityProductsPage({ params }) {
         }}
       />
 
+      <section className="max-w-7xl mx-auto md:px-4 mt-2 md:mt-20"></section>
+
       {/* HERO */}
       <HeroCarousel banners={banners} />
 
