@@ -500,10 +500,7 @@ export default function Navbar() {
                 flex-shrink-0
                 items-center
 
-                rounded-xl
-
-                border
-                border-gray-200
+               
 
                 bg-white
 
@@ -650,9 +647,7 @@ export default function Navbar() {
 
                 overflow-hidden
 
-                rounded-lg
-
-                border
+                
                 border-gray-200
 
                 bg-white

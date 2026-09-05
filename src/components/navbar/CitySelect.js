@@ -111,7 +111,7 @@ export default function CitySelect() {
       {/* Trigger */}
       <button
         onClick={() => setOpen(true)}
-        className="flex items-center gap-1 px-3 py-2 hover:bg-gray-100 rounded-lg transition"
+        className="flex items-center gap-1 text-sm font-medium transition"
       >
         <MapPin size={18} />
 

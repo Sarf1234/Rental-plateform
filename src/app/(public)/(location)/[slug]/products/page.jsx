@@ -266,7 +266,7 @@ export default async function CityProductsPage({ params }) {
   };
 
   return (
-    <div className="min-h-screen mt-16">
+    <div className="min-h-screen mt-15">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
@@ -274,7 +274,7 @@ export default async function CityProductsPage({ params }) {
         }}
       />
 
-      <section className="max-w-7xl mx-auto md:px-4 mt-2 md:mt-20"></section>
+      <section className="max-w-7xl mx-auto md:px-4 mt-0 md:mt-20"></section>
 
       {/* HERO */}
       <HeroCarousel banners={banners} />

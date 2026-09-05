@@ -120,116 +120,383 @@ export default async function HomePage() {
         }}
       />
 
-      <div className="mt-16">
-        {/* 🔥 HERO (FINAL FIXED) */}
-        <section className="max-w-7xl mx-auto md:px-4 mt-2 md:mt-20"></section>
-        <HeroCarousel banners={banners} />
+      <div className="mt-0">
+  {/* 🔥 HERO */}
+  <section className="max-w-7xl mx-auto md:px-4 mt-0 md:mt-20"></section>
 
-        {/* 🔥 SEO INTRO */}
+  <HeroCarousel banners={banners} />
 
-        <div className=" flex mx-auto items-center justify-center text-center px-2 md:max-w-4xl">
-          <div className=" md:p-6 px-2 py-6">
-            <h1 className="text-xl md:text-4xl font-bold ">
-              Event, Party & Wedding Rentals Across India
-            </h1>
+  {/* 🔥 SEO INTRO */}
+  <section className="max-w-4xl mx-auto px-3 sm:px-4 py-6 md:py-10">
+    <div className="text-center">
+      <h1
+        className="
+          text-xl
+          sm:text-2xl
+          md:text-4xl
 
-            <p className="mt-3 text-sm md:text-base ">
-              Book decoration, furniture, sound systems and more with verified
-              vendors.
-            </p>
-            <p className="text-gray-600 leading-relaxed">
-              KirayNow helps you find trusted event and party services across
-              India. Whether you need birthday decoration at home, wedding
-              setup, tent house services, or furniture rental, you can compare
-              vendors, pricing, and book the best option for your event.
-            </p>
+          font-bold
+          leading-[1.2]
+          tracking-tight
 
-            <p className="text-sm text-gray-500">
-              Popular services: Birthday Decoration • Wedding Setup • Tent House
-              • Chair Rental • Sound System • Lighting Setup
-            </p>
+          text-gray-900
+        "
+      >
+        Event, Party & Wedding Rentals Across India
+      </h1>
 
-            <Link
-              href="/mumbai"
-              className="inline-block mt-4 bg-yellow-500 text-black px-6 py-2 rounded-lg font-semibold hover:bg-yellow-400 transition"
+      <p
+        className="
+          mt-2
+          md:mt-3
+
+          text-sm
+          md:text-base
+
+          leading-6
+          text-gray-900
+        "
+      >
+        Book decoration, furniture, sound systems and more with verified
+        vendors.
+      </p>
+
+      <p
+        className="
+          mt-2
+          md:mt-3
+
+          text-sm
+          md:text-base
+
+          leading-6
+          md:leading-relaxed
+
+          text-gray-600
+        "
+      >
+        KirayNow helps you find trusted event and party services across
+        India. Whether you need birthday decoration at home, wedding
+        setup, tent house services, or furniture rental, you can compare
+        vendors, pricing, and book the best option for your event.
+      </p>
+
+      <p
+        className="
+          mt-2
+          md:mt-3
+
+          text-xs
+          sm:text-sm
+
+          leading-5
+
+          text-gray-500
+        "
+      >
+        Popular services: Birthday Decoration • Wedding Setup • Tent House
+        • Chair Rental • Sound System • Lighting Setup
+      </p>
+
+      <Link
+        href="/mumbai"
+        className="
+          inline-flex
+          items-center
+          justify-center
+
+          mt-4
+
+          rounded-lg
+
+          bg-yellow-500
+          hover:bg-yellow-400
+
+          px-5
+          sm:px-6
+
+          py-2
+
+          text-sm
+          sm:text-base
+
+          font-semibold
+          text-black
+
+          transition
+
+          active:scale-[0.98]
+        "
+      >
+        Explore Services
+      </Link>
+    </div>
+  </section>
+
+  {/* 🔥 KEYWORD BOOST (SEO) */}
+  <section className="max-w-5xl mx-auto px-4 py-1 md:py-4 text-center"></section>
+
+  {/* 🔥 CITY CARDS */}
+  <section
+    className="
+      max-w-7xl
+      mx-auto
+      px-4
+
+      py-7
+      md:py-16
+    "
+  >
+    <h2
+      className="
+        text-xl
+        sm:text-2xl
+
+        font-semibold
+        leading-[1.25]
+
+        mb-5
+        md:mb-8
+
+        text-center
+        text-gray-900
+      "
+    >
+      Explore Services by City
+    </h2>
+
+    <div
+      className="
+        grid
+        grid-cols-1
+        sm:grid-cols-2
+        md:grid-cols-3
+
+        gap-3
+        sm:gap-4
+        md:gap-6
+      "
+    >
+      {cities.map((city) => (
+        <Link
+          key={city._id}
+          href={`/${city.slug}`}
+          className="
+            relative
+
+            h-36
+            sm:h-40
+            md:h-44
+
+            rounded-xl
+            md:rounded-2xl
+
+            overflow-hidden
+
+            group
+
+            shadow-sm
+            hover:shadow-xl
+
+            transition-shadow
+            duration-300
+          "
+        >
+          <img
+            src={
+              cityImages[city.slug] ||
+              `https://source.unsplash.com/400x300/?${city.name}`
+            }
+            alt={`${city.name} rental services`}
+            className="
+              w-full
+              h-full
+
+              object-cover
+
+              group-hover:scale-105
+
+              transition-transform
+              duration-500
+            "
+          />
+
+          <div
+            className="
+              absolute
+              inset-0
+
+              bg-gradient-to-t
+              from-black/70
+              via-black/20
+              to-transparent
+
+              flex
+              items-end
+
+              p-3
+              sm:p-4
+            "
+          >
+            <h3
+              className="
+                text-white
+
+                text-base
+                md:text-lg
+
+                font-semibold
+
+                leading-[1.3]
+              "
             >
-              Explore Services
-            </Link>
+              {city.name}
+            </h3>
           </div>
-        </div>
+        </Link>
+      ))}
+    </div>
+  </section>
 
-        {/* 🔥 KEYWORD BOOST (SEO) */}
-        <section className="max-w-5xl mx-auto px-4 py-2 md:py-6 text-center"></section>
+  {/* 🔥 WHY US */}
+  <section
+    className="
+      max-w-7xl
+      mx-auto
+      px-4
 
-        {/* 🔥 CITY CARDS */}
-        <section className="max-w-7xl mx-auto px-4 py-4 md:py-16">
-          <h2 className="text-2xl font-semibold mb-8 text-center">
-            Explore Services by City
-          </h2>
+      py-10
+      md:py-16
 
-          <div className="grid md:grid-cols-3 gap-6">
-            {cities.map((city) => (
-              <Link
-                key={city._id}
-                href={`/${city.slug}`}
-                className="relative h-44 rounded-2xl overflow-hidden group shadow hover:shadow-xl"
-              >
-                <img
-                  src={
-                    cityImages[city.slug] ||
-                    `https://source.unsplash.com/400x300/?${city.name}`
-                  }
-                  alt={`${city.name} rental services`}
-                  className="w-full h-full object-cover group-hover:scale-110 transition"
-                />
+      text-center
+    "
+  >
+    <h2
+      className="
+        text-xl
+        sm:text-2xl
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-4">
-                  <h3 className="text-white text-lg font-semibold">
-                    {city.name}
-                  </h3>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </section>
+        font-semibold
+        leading-[1.25]
 
-        {/* 🔥 WHY US (UPGRADED) */}
-        <section className="max-w-7xl mx-auto px-4 py-16 text-center">
-          <h2 className="text-2xl font-semibold mb-6">Why Choose KirayNow?</h2>
+        mb-4
+        md:mb-6
 
-          <p className="text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            KirayNow is a trusted rental marketplace connecting users with
-            verified event service providers. From birthday decoration at home
-            to wedding setups and furniture rentals, we help you compare
-            options, find the best pricing, and book services easily. Our
-            platform simplifies event planning across cities like Mumbai and
-            Patna with reliable vendors and fast support.
+        text-gray-900
+      "
+    >
+      Why Choose KirayNow?
+    </h2>
+
+    <p
+      className="
+        max-w-3xl
+        mx-auto
+
+        text-sm
+        md:text-base
+
+        leading-6
+        md:leading-relaxed
+
+        text-gray-600
+      "
+    >
+      KirayNow is a trusted rental marketplace connecting users with
+      verified event service providers. From birthday decoration at home
+      to wedding setups and furniture rentals, we help you compare
+      options, find the best pricing, and book services easily. Our
+      platform simplifies event planning across cities like Mumbai and
+      Patna with reliable vendors and fast support.
+    </p>
+  </section>
+
+  <RelatedBlogs
+    title="Wedding & Event Planning Guides"
+    subtitle="Explore helpful articles to plan your event smarter."
+  />
+
+  {/* 🔥 FAQ */}
+  <section
+    className="
+      max-w-7xl
+      mx-auto
+      px-4
+
+      py-8
+      md:py-12
+    "
+  >
+    <h2
+      className="
+        text-xl
+        md:text-2xl
+
+        font-semibold
+
+        mb-5
+        md:mb-6
+
+        text-gray-900
+      "
+    >
+      Frequently Asked Questions
+    </h2>
+
+    <div className="space-y-2.5 sm:space-y-4">
+      {faq.map((f, i) => (
+        <details
+          key={i}
+          className="
+            border
+            border-gray-200
+
+            bg-white
+
+            p-3
+            sm:p-4
+
+            rounded-xl
+            sm:rounded-lg
+          "
+        >
+          <summary
+            className="
+              font-medium
+              cursor-pointer
+
+              text-sm
+              md:text-base
+
+              leading-5
+              md:leading-6
+
+              text-gray-900
+            "
+          >
+            {f.question}
+          </summary>
+
+          <p
+            className="
+              mt-2
+
+              text-xs
+              sm:text-sm
+
+              leading-5
+              sm:leading-6
+
+              text-gray-600
+            "
+          >
+            {f.answer}
           </p>
-        </section>
-
-        <RelatedBlogs
-          title="Wedding & Event Planning Guides"
-          subtitle="Explore helpful articles to plan your event smarter."
-        />
-
-        {/* 🔥 FAQ */}
-        <section className="max-w-7xl mx-auto px-4 py-12">
-          <h2 className="text-xl font-semibold mb-6">
-            Frequently Asked Questions
-          </h2>
-
-          <div className="space-y-4">
-            {faq.map((f, i) => (
-              <details key={i} className="border p-4 rounded-lg">
-                <summary className="font-medium cursor-pointer">
-                  {f.question}
-                </summary>
-                <p className="mt-2 text-sm text-gray-600">{f.answer}</p>
-              </details>
-            ))}
-          </div>
-        </section>
-      </div>
+        </details>
+      ))}
+    </div>
+  </section>
+</div>
     </>
   );
 }

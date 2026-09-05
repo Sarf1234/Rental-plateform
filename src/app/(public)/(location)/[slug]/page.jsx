@@ -13,8 +13,7 @@ import { notFound } from "next/navigation";
 import { isValidSlug } from "@/utils/isValidSlug";
 import Script from "next/script";
 
-
-export const revalidate = 86400; // ISR (1 hour)
+export const revalidate = 86400;
 export const dynamic = "force-static";
 
 // 🔥 Dynamic Metadata Generator
@@ -33,11 +32,12 @@ export async function generateMetadata({ params }) {
 
   try {
     const cityRes = await apiRequest(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/cities/${slug}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/cities/${slug}`
     );
 
     const city = cityRes?.data;
     const locationContext = cityRes?.locationContext;
+
     if (!city) return {};
 
     const subAreasText =
@@ -49,6 +49,7 @@ export async function generateMetadata({ params }) {
     const title =
       locationContext?.seoTitleOverride ||
       `Affordable Birthday, Wedding & Party Rentals in ${city.name}`;
+
     const description =
       locationContext?.seoDescriptionOverride ||
       `Planning a celebration in ${city.name}? KirayNow helps you book trusted birthday decoration, wedding setups and party rental services${
@@ -56,9 +57,9 @@ export async function generateMetadata({ params }) {
       }. Compare packages, view transparent pricing and hire verified professionals for a hassle-free event experience.`;
 
     const url = `https://kiraynow.com/${city.slug}`;
+
     const ogImage =
       "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp";
-    // Replace with your real OG generator or image
 
     return {
       metadataBase: new URL("https://kiraynow.com"),
@@ -125,77 +126,81 @@ export default async function CityHome({ params }) {
   let serviceCategories = [];
 
   try {
-  const [
-    serviceCatRes,
-    cityRes,
-    catRes,
-    serviceRes,
-    bannerRes,
-  ] = await Promise.all([
-    apiRequest(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/service-categories`
-    ),
+    const [
+      serviceCatRes,
+      cityRes,
+      catRes,
+      serviceRes,
+      bannerRes,
+    ] = await Promise.all([
+      apiRequest(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/service-categories`
+      ),
 
-    apiRequest(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/cities/${slug}`
-    ),
+      apiRequest(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/cities/${slug}`
+      ),
 
-    apiRequest(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/products/categories`
-    ),
+      apiRequest(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/products/categories`
+      ),
 
-    apiRequest(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/service?city=${slug}&type=all&page=1&limit=10`
-    ),
-    apiRequest(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/banners?placement=citypage&city=${slug}`
-    ),
-  ]);
+      apiRequest(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/service?city=${slug}&type=all&page=1&limit=10`
+      ),
 
-  /* Assign Data */
+      apiRequest(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/banners?placement=citypage&city=${slug}`
+      ),
+    ]);
 
-  serviceCategories =
-    serviceCatRes?.data || [];
+    /* Assign Data */
 
-  cityData =
-    cityRes?.data || null;
+    serviceCategories =
+      serviceCatRes?.data || [];
 
-  locationProfile =
-    cityRes?.locationContext || null;
+    cityData =
+      cityRes?.data || null;
 
-  categories =
-    catRes?.data || [];
+    locationProfile =
+      cityRes?.locationContext || null;
 
-  featured =
-    serviceRes?.featured || [];
+    categories =
+      catRes?.data || [];
 
-  top =
-    serviceRes?.top || [];
+    featured =
+      serviceRes?.featured || [];
 
-  best =
-    serviceRes?.best || [];
+    top =
+      serviceRes?.top || [];
 
-  all =
-    serviceRes?.all || [];
+    best =
+      serviceRes?.best || [];
 
-  products =
-    serviceRes?.products || [];
+    all =
+      serviceRes?.all || [];
 
-  vendors =
-    serviceRes?.vendors || [];
+    products =
+      serviceRes?.products || [];
 
-   banners =
+    vendors =
+      serviceRes?.vendors || [];
+
+    banners =
       bannerRes?.data || [];
-
-} catch (err) {
-  console.error(
-    "Parallel fetch failed:",
-    err
-  );
-}
+  } catch (err) {
+    console.error(
+      "Parallel fetch failed:",
+      err
+    );
+  }
 
   if (!cityData) {
-    return <div className="mt-20 text-center">City not found</div>;
+    return (
+      <div className="mt-20 text-center">
+        City not found
+      </div>
+    );
   }
 
   const cityName = cityData.name;
@@ -207,229 +212,214 @@ export default async function CityHome({ params }) {
   // ==========================
 
   const structuredData = {
-  "@context": "https://schema.org",
+    "@context": "https://schema.org",
 
-  "@graph": [
-    /* =========================================================
-       WEBSITE
-    ========================================================= */
-    {
-      "@type": "WebSite",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": `${baseUrl}/#website`,
+        url: baseUrl,
+        name: "KirayNow",
+        publisher: {
+          "@id": `${baseUrl}/#organization`,
+        },
+        potentialAction: {
+          "@type": "SearchAction",
+          target: `${baseUrl}/search?q={search_term_string}`,
+          "query-input":
+            "required name=search_term_string",
+        },
+      },
 
-      "@id": `${baseUrl}/#website`,
-
-      url: baseUrl,
-
-      name: "KirayNow",
-
-      publisher: {
+      {
+        "@type": "Organization",
         "@id": `${baseUrl}/#organization`,
+        name: "KirayNow",
+        url: baseUrl,
+
+        logo:
+          "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
+
+        description:
+          "KirayNow is a trusted event rental marketplace offering wedding decoration, birthday setup, party rentals and event services across multiple cities in India.",
+
+        contactPoint: {
+          "@type": "ContactPoint",
+
+          telephone:
+            cityData?.footer?.phone ||
+            "+91-7672876321",
+
+          contactType: "customer support",
+
+          areaServed: "IN",
+
+          availableLanguage: [
+            "English",
+            "Hindi",
+          ],
+        },
       },
 
-      potentialAction: {
-        "@type": "SearchAction",
+      {
+        "@type": "WebPage",
 
-        target: `${baseUrl}/search?q={search_term_string}`,
+        "@id": `${baseUrl}/${slug}#webpage`,
 
-        "query-input": "required name=search_term_string",
+        url: `${baseUrl}/${slug}`,
+
+        name:
+          locationProfile?.seoTitleOverride ||
+          `Event Rentals in ${cityName}`,
+
+        description:
+          locationProfile?.seoDescriptionOverride ||
+          `Book wedding decoration, birthday setup and rental services in ${cityName}.`,
+
+        isPartOf: {
+          "@id": `${baseUrl}/#website`,
+        },
+
+        about: {
+          "@id": `${baseUrl}/${slug}#localbusiness`,
+        },
       },
-    },
 
-    /* =========================================================
-       ORGANIZATION
-    ========================================================= */
-    {
-      "@type": "Organization",
+      {
+        "@type": "LocalBusiness",
 
-      "@id": `${baseUrl}/#organization`,
+        "@id":
+          `${baseUrl}/${slug}#localbusiness`,
 
-      name: "KirayNow",
+        name:
+          `KirayNow ${cityName}`,
 
-      url: baseUrl,
+        url:
+          `${baseUrl}/${slug}`,
 
-      logo:
-        "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
+        image:
+          "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
 
-      description:
-        "KirayNow is a trusted event rental marketplace offering wedding decoration, birthday setup, party rentals and event services across multiple cities in India.",
-
-      contactPoint: {
-        "@type": "ContactPoint",
+        description:
+          locationProfile?.seoDescriptionOverride ||
+          `Event rental and wedding setup services in ${cityName}.`,
 
         telephone:
-          cityData?.footer?.phone || "+91-7672876321",
+          cityData?.footer?.phone ||
+          "+91-7672876321",
 
-        contactType: "customer support",
+        address: {
+          "@type": "PostalAddress",
 
-        areaServed: "IN",
+          addressLocality:
+            cityName,
 
-        availableLanguage: ["English", "Hindi"],
-      },
-    },
+          addressRegion:
+            cityData?.state,
 
-    /* =========================================================
-       WEBPAGE
-    ========================================================= */
-    {
-      "@type": "WebPage",
-
-      "@id": `${baseUrl}/${slug}#webpage`,
-
-      url: `${baseUrl}/${slug}`,
-
-      name:
-        locationProfile?.seoTitleOverride ||
-        `Event Rentals in ${cityName}`,
-
-      description:
-        locationProfile?.seoDescriptionOverride ||
-        `Book wedding decoration, birthday setup and rental services in ${cityName}.`,
-
-      isPartOf: {
-        "@id": `${baseUrl}/#website`,
-      },
-
-      about: {
-        "@id": `${baseUrl}/${slug}#localbusiness`,
-      },
-    },
-
-    /* =========================================================
-       LOCAL BUSINESS
-    ========================================================= */
-    {
-      "@type": "LocalBusiness",
-
-      "@id": `${baseUrl}/${slug}#localbusiness`,
-
-      name: `KirayNow ${cityName}`,
-
-      url: `${baseUrl}/${slug}`,
-
-      image:
-        "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
-
-      description:
-        locationProfile?.seoDescriptionOverride ||
-        `Event rental and wedding setup services in ${cityName}.`,
-
-      telephone:
-        cityData?.footer?.phone || "+91-7672876321",
-
-      address: {
-        "@type": "PostalAddress",
-
-        addressLocality: cityName,
-
-        addressRegion: cityData?.state,
-
-        addressCountry: "IN",
-      },
-
-      areaServed: {
-        "@type": "City",
-
-        name: cityName,
-      },
-
-      priceRange: "₹₹",
-    },
-
-    /* =========================================================
-       SERVICE
-    ========================================================= */
-    {
-      "@type": "Service",
-
-      "@id": `${baseUrl}/${slug}#service`,
-
-      name:
-        locationProfile?.seoTitleOverride ||
-        `Event Rental & Wedding Services in ${cityName}`,
-
-      provider: {
-        "@id": `${baseUrl}/#organization`,
-      },
-
-      areaServed: {
-        "@type": "City",
-
-        name: cityName,
-      },
-
-      serviceArea: subAreas
-        ?.slice(0, 5)
-        ?.map((area) => ({
-          "@type": "Place",
-
-          name: area.name,
-        })),
-
-      url: `${baseUrl}/${slug}`,
-
-      image:
-        "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
-    },
-
-    /* =========================================================
-       BREADCRUMB
-    ========================================================= */
-    {
-      "@type": "BreadcrumbList",
-
-      "@id": `${baseUrl}/${slug}#breadcrumb`,
-
-      itemListElement: [
-        {
-          "@type": "ListItem",
-
-          position: 1,
-
-          name: "Home",
-
-          item: baseUrl,
+          addressCountry: "IN",
         },
 
-        {
-          "@type": "ListItem",
-
-          position: 2,
+        areaServed: {
+          "@type": "City",
 
           name: cityName,
-
-          item: `${baseUrl}/${slug}`,
         },
-      ],
-    },
 
-    /* =========================================================
-       FAQ
-    ========================================================= */
-    ...(locationProfile?.faq?.length > 0
-      ? [
+        priceRange: "₹₹",
+      },
+
+      {
+        "@type": "Service",
+
+        "@id": `${baseUrl}/${slug}#service`,
+
+        name:
+          locationProfile?.seoTitleOverride ||
+          `Event Rental & Wedding Services in ${cityName}`,
+
+        provider: {
+          "@id": `${baseUrl}/#organization`,
+        },
+
+        areaServed: {
+          "@type": "City",
+
+          name: cityName,
+        },
+
+        serviceArea:
+          subAreas
+            ?.slice(0, 5)
+            ?.map((area) => ({
+              "@type": "Place",
+              name: area.name,
+            })),
+
+        url: `${baseUrl}/${slug}`,
+
+        image:
+          "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770999576/posts/iwaqbv8dufoyz8hqjuyq.webp",
+      },
+
+      {
+        "@type": "BreadcrumbList",
+
+        "@id":
+          `${baseUrl}/${slug}#breadcrumb`,
+
+        itemListElement: [
           {
-            "@type": "FAQPage",
+            "@type": "ListItem",
 
-            "@id": `${baseUrl}/${slug}#faq`,
+            position: 1,
 
-            mainEntity: locationProfile?.faq?.map(
-              (faq) => ({
-                "@type": "Question",
+            name: "Home",
 
-                name: faq.question,
-
-                acceptedAnswer: {
-                  "@type": "Answer",
-
-                  text: faq.answer,
-                },
-              })
-            ),
+            item: baseUrl,
           },
-        ]
-      : []),
-  ],
-};
+
+          {
+            "@type": "ListItem",
+
+            position: 2,
+
+            name: cityName,
+
+            item:
+              `${baseUrl}/${slug}`,
+          },
+        ],
+      },
+
+      ...(locationProfile?.faq?.length > 0
+        ? [
+            {
+              "@type": "FAQPage",
+
+              "@id":
+                `${baseUrl}/${slug}#faq`,
+
+              mainEntity:
+                locationProfile?.faq?.map(
+                  (faq) => ({
+                    "@type": "Question",
+
+                    name:
+                      faq.question,
+
+                    acceptedAnswer: {
+                      "@type": "Answer",
+                      text:
+                        faq.answer,
+                    },
+                  })
+                ),
+            },
+          ]
+        : []),
+    ],
+  };
 
   // =========================
   // 🔥 SCHEMA SECTION END
@@ -437,200 +427,605 @@ export default async function CityHome({ params }) {
 
   return (
     <>
-    {/* 🔥 JSON-LD Injection */}
+      {/* 🔥 JSON-LD Injection */}
       <Script
         id="city-schema"
         type="application/ld+json"
         strategy="beforeInteractive"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(structuredData),
+          __html:
+            JSON.stringify(
+              structuredData
+            ),
         }}
       />
-    <div className="min-h-screen mt-16">
-      
-      <ProductCategories citySlug={slug}/>
-      {/* HERO */}
-      <HeroCarousel banners={banners} />
-      {/* SEO H1 + SHORT INTRO */}
 
-      {locationProfile?.additionalContent && (
-        <section className="max-w-5xl mx-auto px-4 py-14">
-          <div className="prose max-w-none">
-            <h2>
-              Event Planning & Rental Services in {cityName}
-            </h2>
+      <div className="min-h-screen md:mt-16 mt-15">
 
-            <div className="text-gray-700 leading-8 whitespace-pre-line">
-              {locationProfile.additionalContent}
+        <ProductCategories citySlug={slug} />
+
+        {/* HERO */}
+        <HeroCarousel
+          banners={banners}
+        />
+
+        {/* SEO H1 + SHORT INTRO */}
+
+        {locationProfile?.additionalContent && (
+          <section
+            className="
+              max-w-5xl
+              mx-auto
+              px-4
+              sm:px-5
+              md:px-6
+
+              py-8
+              sm:py-10
+              md:py-14
+            "
+          >
+            <div className="prose max-w-none">
+
+              <h2
+                className="
+                  text-xl
+                  sm:text-2xl
+                  md:text-3xl
+                  font-semibold
+                  leading-[1.25]
+                "
+              >
+                Event Planning & Rental Services in{" "}
+                {cityName}
+              </h2>
+
+              <div
+                className="
+                  mt-3
+                  sm:mt-4
+
+                  text-xs
+                  sm:text-sm
+                  md:text-base
+
+                  leading-5
+                  md:leading-6
+
+                  text-gray-700
+                  whitespace-pre-line
+                "
+              >
+                {locationProfile.additionalContent}
+              </div>
+
             </div>
-          </div>
-        </section>
-      )}
+          </section>
+        )}
 
+        {/* PRODUCTS */}
 
-      {products.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 py-12">
-          {/* HEADER */}
-          <div className="mb-6 flex items-center justify-between">
-            <h2 className="md:text-xl text-base inline-block font-semibold text-gray-900 border-b-4 border-[#003459] pb-2 ">
-              Rental Products in {cityName}
-            </h2>
+        {products.length > 0 && (
+          <section
+            className="
+              max-w-7xl
+              mx-auto
 
-            <Link
-              href={`/${slug}/products`}
-              className="text-sm font-medium text-gray-900 flex items-center gap-1 hover:gap-2 transition-all"
+              px-4
+              sm:px-5
+              md:px-6
+
+              py-8
+              sm:py-10
+              md:py-12
+            "
+          >
+
+            {/* HEADER */}
+
+            <div
+              className="
+                mb-4
+                sm:mb-5
+                md:mb-6
+
+                flex
+                items-center
+                justify-between
+
+                gap-3
+              "
             >
-              View More →
-            </Link>
-          </div>
 
-          {/* 🔥 MOBILE: HORIZONTAL SCROLL */}
-          <div className="relative sm:hidden">
-            {/* fade effect (scroll hint 🔥) */}
-            <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-white to-transparent z-10" />
+              <h2
+                className="
+                  md:text-xl
+                  text-base
+                  sm:text-lg
 
-            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-              {products.slice(0, 8).map((product) => (
-                <div key={product._id} className="min-w-[55%]">
-                  <ProductCard product={product} citySlug={slug} />
-                </div>
-              ))}
+                  inline-block
+                  font-semibold
+                  text-gray-900
+
+                  border-b-4
+                  border-[#003459]
+
+                  pb-1.5
+                  sm:pb-2
+
+                  leading-[1.25]
+                "
+              >
+                Rental Products in{" "}
+                {cityName}
+              </h2>
+
+              <Link
+                href={`/${slug}/products`}
+                className="
+                  text-xs
+                  sm:text-sm
+
+                  font-medium
+                  text-gray-900
+
+                  flex
+                  items-center
+                  gap-1
+
+                  hover:gap-2
+                  transition-all
+
+                  whitespace-nowrap
+                "
+              >
+                View More →
+              </Link>
+
             </div>
-          </div>
 
-          {/* 💻 DESKTOP: GRID */}
-          <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {products.slice(0, 8).map((product) => (
-              <ProductCard
-                key={product._id}
-                product={product}
-                citySlug={slug}
+            {/* MOBILE */}
+
+            <div className="relative sm:hidden">
+
+              <div
+                className="
+                  pointer-events-none
+                  absolute
+                  right-0
+                  top-0
+                  h-full
+                  w-10
+
+                  bg-gradient-to-l
+                  from-white
+                  to-transparent
+
+                  z-10
+                "
               />
-            ))}
-          </div>
-        </section>
-      )}
 
-
-      {/* FEATURED */}
-      <Servicecards
-        data={featured}
-        title={`Featured Rental Services in ${cityName}`}
-        subtitle={`Handpicked decoration and event rental services trusted by customers in ${cityName}.`}
-        citySlug={slug}
-      />
-
-      {/* WHY CHOOSE US */}
-      <Services
-        city={cityName}
-        subAreas={subAreas}
-        totalServices={totalServices}
-        seasonalNote={locationProfile?.seasonalNote || null}
-        deliveryNote={locationProfile?.deliveryNote || null}
-        trendingText={locationProfile?.trendingText || null}
-        expressAvailable={locationProfile?.expressAvailable || false}
-        demandLevel={locationProfile?.demandLevel || null}
-      />
-      {/* PRODUCT CATEGORIES */}
-      {/* <ProductCategories categories={categories} citySlug={slug} /> */}
-
-      {locationProfile?.faq?.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 py-12">
-          <h2 className="text-xl font-semibold mb-6">
-            Frequently Asked Questions in {cityName}
-          </h2>
-
-          <div className="space-y-4">
-            {locationProfile?.faq?.map((faq, i) => (
-              <details
-                key={i}
-                className="border border-gray-200 rounded-lg p-4 cursor-pointer"
+              <div
+                className="
+                  flex
+                  gap-3
+                  overflow-x-auto
+                  pb-2
+                  scrollbar-hide
+                "
               >
-                <summary className="font-medium text-gray-900">
-                  {faq.question}
-                </summary>
-                <p className="mt-2 text-sm text-gray-600 leading-relaxed">
-                  {faq.answer}
-                </p>
-              </details>
-            ))}
-          </div>
-        </section>
-      )}
+                {products
+                  .slice(0, 8)
+                  .map((product) => (
+                    <div
+                      key={product._id}
+                      className="min-w-[68%]"
+                    >
+                      <ProductCard
+                        product={product}
+                        citySlug={slug}
+                      />
+                    </div>
+                  ))}
+              </div>
 
-      {/* TOP BOOKED */}
-      {/* <Servicecards
-        data={top}
-        title={`Most Booked Services in ${cityName}`}
-        subtitle={`Our top-performing and highest-rated rental packages available across ${cityName}.`}
-        citySlug={slug}
-      /> */}
+            </div>
 
-      {/* PREMIUM */}
-      {/* <Servicecards
-        data={best}
-        title={`Premium & Luxury Rentals in ${cityName}`}
-        subtitle={`Exclusive high-end event setups for weddings, corporate events, and special occasions in ${cityName}.`}
-        citySlug={slug}
-      /> */}
+            {/* DESKTOP */}
 
-      {vendors.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 py-12">
-          {/* HEADER (MATCH PRODUCTS STYLE) */}
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-gray-900">
-              Trusted Vendors in {cityName}
+            <div
+              className="
+                hidden
+                sm:grid
+
+                sm:grid-cols-2
+                lg:grid-cols-4
+
+                gap-4
+                md:gap-5
+                lg:gap-6
+              "
+            >
+              {products
+                .slice(0, 8)
+                .map((product) => (
+                  <ProductCard
+                    key={product._id}
+                    product={product}
+                    citySlug={slug}
+                  />
+                ))}
+            </div>
+
+          </section>
+        )}
+
+        {/* FEATURED */}
+
+        <Servicecards
+          data={featured}
+          title={`Featured Rental Services in ${cityName}`}
+          subtitle={`Handpicked decoration and event rental services trusted by customers in ${cityName}.`}
+          citySlug={slug}
+        />
+
+        {/* WHY CHOOSE US */}
+
+        <Services
+          city={cityName}
+          subAreas={subAreas}
+          totalServices={totalServices}
+          seasonalNote={
+            locationProfile?.seasonalNote ||
+            null
+          }
+          deliveryNote={
+            locationProfile?.deliveryNote ||
+            null
+          }
+          trendingText={
+            locationProfile?.trendingText ||
+            null
+          }
+          expressAvailable={
+            locationProfile?.expressAvailable ||
+            false
+          }
+          demandLevel={
+            locationProfile?.demandLevel ||
+            null
+          }
+        />
+
+        {/* PRODUCT CATEGORIES */}
+        {/* <ProductCategories categories={categories} citySlug={slug} /> */}
+
+        {/* FAQ */}
+
+        {locationProfile?.faq?.length > 0 && (
+          <section
+            className="
+              max-w-7xl
+              mx-auto
+
+              px-4
+              sm:px-5
+              md:px-6
+
+              py-8
+              sm:py-10
+              md:py-12
+            "
+          >
+
+            <h2
+              className="
+                text-xl
+                sm:text-2xl
+
+                font-semibold
+                leading-[1.25]
+
+                mb-4
+                sm:mb-5
+                md:mb-6
+              "
+            >
+              Frequently Asked Questions in{" "}
+              {cityName}
             </h2>
-            <p className="text-sm text-gray-500 mt-1">
-              Verified professionals for your event needs
-            </p>
-          </div>
 
-          {/* 🔥 MOBILE: HORIZONTAL SCROLL (CONSISTENT UX) */}
-          <div className="relative sm:hidden">
-            {/* scroll hint */}
-            <div className="pointer-events-none absolute right-0 top-0 h-full w-10 bg-gradient-to-l from-white to-transparent z-10" />
+            <div
+              className="
+                space-y-3
+                sm:space-y-4
+              "
+            >
+              {locationProfile?.faq?.map(
+                (faq, i) => (
+                  <details
+                    key={i}
+                    className="
+                      border
+                      border-gray-200
+                      rounded-lg
 
-            <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
-              {vendors.slice(0, 8).map((vendor) => (
-                <div key={vendor._id} className="min-w-[75%]">
-                  <VendorCard vendor={vendor} citySlug={slug} />
-                </div>
+                      p-3
+                      sm:p-4
+
+                      cursor-pointer
+                    "
+                  >
+                    <summary
+                      className="
+                        text-sm
+                        sm:text-base
+
+                        font-medium
+                        leading-5
+                        sm:leading-6
+
+                        text-gray-900
+                      "
+                    >
+                      {faq.question}
+                    </summary>
+
+                    <p
+                      className="
+                        mt-2
+
+                        text-xs
+                        sm:text-sm
+                        md:text-sm
+
+                        text-gray-600
+
+                        leading-5
+                        sm:leading-6
+                      "
+                    >
+                      {faq.answer}
+                    </p>
+                  </details>
+                )
+              )}
+            </div>
+
+          </section>
+        )}
+
+        {/* TOP BOOKED */}
+        {/* <Servicecards
+          data={top}
+          title={`Most Booked Services in ${cityName}`}
+          subtitle={`Our top-performing and highest-rated rental packages available across ${cityName}.`}
+          citySlug={slug}
+        /> */}
+
+        {/* PREMIUM */}
+        {/* <Servicecards
+          data={best}
+          title={`Premium & Luxury Rentals in ${cityName}`}
+          subtitle={`Exclusive high-end event setups for weddings, corporate events, and special occasions in ${cityName}.`}
+          citySlug={slug}
+        /> */}
+
+        {/* VENDORS */}
+
+        {vendors.length > 0 && (
+          <section
+            className="
+              max-w-7xl
+              mx-auto
+
+              px-4
+              sm:px-5
+              md:px-6
+
+              py-8
+              sm:py-10
+              md:py-12
+            "
+          >
+
+            {/* HEADER */}
+
+            <div
+              className="
+                mb-4
+                sm:mb-5
+                md:mb-6
+              "
+            >
+              <h2
+                className="
+                  text-xl
+                  sm:text-2xl
+
+                  font-semibold
+                  leading-[1.25]
+
+                  text-gray-900
+                "
+              >
+                Trusted Vendors in{" "}
+                {cityName}
+              </h2>
+
+              <p
+                className="
+                  text-xs
+                  sm:text-sm
+                  md:text-base
+
+                  text-gray-500
+
+                  mt-1
+                  sm:mt-1.5
+
+                  leading-5
+                  md:leading-6
+                "
+              >
+                Verified professionals for your event needs
+              </p>
+            </div>
+
+            {/* MOBILE */}
+
+            <div className="relative sm:hidden">
+
+              <div
+                className="
+                  pointer-events-none
+                  absolute
+                  right-0
+                  top-0
+                  h-full
+                  w-10
+
+                  bg-gradient-to-l
+                  from-white
+                  to-transparent
+
+                  z-10
+                "
+              />
+
+              <div
+                className="
+                  flex
+                  gap-3
+                  overflow-x-auto
+                  pb-2
+                  scrollbar-hide
+                "
+              >
+                {vendors
+                  .slice(0, 8)
+                  .map((vendor) => (
+                    <div
+                      key={vendor._id}
+                      className="min-w-[78%]"
+                    >
+                      <VendorCard
+                        vendor={vendor}
+                        citySlug={slug}
+                      />
+                    </div>
+                  ))}
+              </div>
+
+            </div>
+
+            {/* DESKTOP */}
+
+            <div
+              className="
+                hidden
+                sm:grid
+
+                sm:grid-cols-2
+                lg:grid-cols-4
+
+                gap-4
+                md:gap-5
+                lg:gap-6
+              "
+            >
+              {vendors
+                .slice(0, 8)
+                .map((vendor) => (
+                  <VendorCard
+                    key={vendor._id}
+                    vendor={vendor}
+                    citySlug={slug}
+                  />
+                ))}
+            </div>
+
+          </section>
+        )}
+
+        <ServiceCategories
+          categories={serviceCategories}
+          citySlug={slug}
+        />
+
+        {/* SUB AREAS */}
+
+        {subAreas.length > 0 && (
+          <section
+            className="
+              max-w-7xl
+              mx-auto
+
+              px-4
+              sm:px-5
+              md:px-6
+
+              py-8
+              sm:py-9
+              md:py-10
+            "
+          >
+
+            <h2
+              className="
+                text-xl
+                sm:text-2xl
+
+                font-semibold
+                leading-[1.25]
+
+                mb-3
+                sm:mb-4
+              "
+            >
+              Serving Areas in{" "}
+              {cityName}
+            </h2>
+
+            <div
+              className="
+                flex
+                flex-wrap
+
+                gap-2
+                sm:gap-3
+              "
+            >
+              {subAreas.map((area) => (
+                <span
+                  key={area._id}
+                  className="
+                    px-3
+                    sm:px-4
+
+                    py-1.5
+                    sm:py-2
+
+                    bg-gray-100
+                    rounded-full
+
+                    text-xs
+                    sm:text-sm
+
+                    leading-5
+
+                    text-gray-700
+                  "
+                >
+                  {area.name}
+                </span>
               ))}
             </div>
-          </div>
 
-          {/* 💻 DESKTOP GRID */}
-          <div className="hidden sm:grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {vendors.slice(0, 8).map((vendor) => (
-              <VendorCard key={vendor._id} vendor={vendor} citySlug={slug} />
-            ))}
-          </div>
-        </section>
-      )}
+          </section>
+        )}
 
-      <ServiceCategories categories={serviceCategories} citySlug={slug} />
-
-
-      {/* SUB AREAS FOOTER BLOCK */}
-      {subAreas.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 py-10">
-          <h2 className="text-xl font-semibold mb-4">
-            Serving Areas in {cityName}
-          </h2>
-          <div className="flex flex-wrap gap-3">
-            {subAreas.map((area) => (
-              <span
-                key={area._id}
-                className="px-4 py-2 bg-gray-100 rounded-full text-sm text-gray-700"
-              >
-                {area.name}
-              </span>
-            ))}
-          </div>
-        </section>
-      )}
-    </div>
+      </div>
     </>
   );
 }
