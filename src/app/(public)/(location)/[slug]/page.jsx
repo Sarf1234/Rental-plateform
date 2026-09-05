@@ -491,7 +491,7 @@ export default async function CityHome({ params }) {
 
             <div className="flex gap-4 overflow-x-auto pb-2 scrollbar-hide">
               {products.slice(0, 8).map((product) => (
-                <div key={product._id} className="min-w-[75%]">
+                <div key={product._id} className="min-w-[55%]">
                   <ProductCard product={product} citySlug={slug} />
                 </div>
               ))}
