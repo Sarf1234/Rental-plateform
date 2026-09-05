@@ -68,7 +68,9 @@ const CATEGORY_COLORS = {
 async function getProductCategories() {
   try {
     if (!API_URL) {
-      console.error("NEXT_PUBLIC_API_URL is not configured");
+      console.error(
+        "NEXT_PUBLIC_API_URL is not configured"
+      );
       return [];
     }
 
@@ -92,15 +94,24 @@ async function getProductCategories() {
 
     const result = await response.json();
 
-    return Array.isArray(result?.data) ? result.data : [];
+    return Array.isArray(result?.data)
+      ? result.data
+      : [];
   } catch (error) {
-    console.error("Failed to fetch product categories:", error);
+    console.error(
+      "Failed to fetch product categories:",
+      error
+    );
+
     return [];
   }
 }
 
-export default async function ProductCategories({ citySlug }) {
-  const categories = await getProductCategories();
+export default async function ProductCategories({
+  citySlug,
+}) {
+  const categories =
+    await getProductCategories();
 
   if (!categories.length) return null;
 
@@ -111,10 +122,11 @@ export default async function ProductCategories({ citySlug }) {
         w-full
         border-b
         border-slate-200
-        bg-[#f8fafc]
+        
       "
     >
       <div className="w-full">
+
         <div
           className="
             flex
@@ -128,13 +140,15 @@ export default async function ProductCategories({ citySlug }) {
             sm:px-3
             lg:px-4
 
-            py-2
+            md:py-2
+            sm:py-0
 
             [scrollbar-width:none]
             [-ms-overflow-style:none]
             [&::-webkit-scrollbar]:hidden
           "
         >
+
           <div
             className="
               flex
@@ -142,13 +156,15 @@ export default async function ProductCategories({ citySlug }) {
               min-w-max
               items-center
 
-              gap-1
+              gap-2
               sm:gap-2
             "
           >
+
             {categories.map((category) => {
               const Icon =
-                CATEGORY_ICONS[category.slug] || Sparkles;
+                CATEGORY_ICONS[category.slug] ||
+                Sparkles;
 
               const colors =
                 CATEGORY_COLORS[category.slug] || {
@@ -156,14 +172,19 @@ export default async function ProductCategories({ citySlug }) {
                   icon: "text-slate-600",
                 };
 
-              // First word only as requested
+              // First word only
               const label =
-                category.name?.trim()?.split(/\s+/)[0] ||
+                category.name
+                  ?.trim()
+                  ?.split(/\s+/)[0] ||
                 category.name;
 
               return (
                 <Link
-                  key={category._id || category.slug}
+                  key={
+                    category._id ||
+                    category.slug
+                  }
                   href={`/${citySlug}/categories/${category.slug}`}
                   title={category.name}
                   aria-label={`Browse ${category.name}`}
@@ -175,26 +196,23 @@ export default async function ProductCategories({ citySlug }) {
                     flex-1
                     flex-shrink-0
 
-                    min-w-[92px]
+                    min-w-[82px]
                     sm:min-w-[105px]
                     md:min-w-[115px]
 
                     items-center
                     justify-center
 
-                    rounded-lg
-
                     px-2
                     sm:px-3
 
-                    py-1.5
+                    py-2
                     sm:py-2
 
                     transition-all
                     duration-200
 
-                    hover:bg-white
-                    hover:shadow-[0_2px_10px_rgba(15,23,42,0.05)]
+                    active:scale-[0.96]
 
                     focus-visible:outline-none
                     focus-visible:ring-2
@@ -202,19 +220,32 @@ export default async function ProductCategories({ citySlug }) {
                     focus-visible:ring-inset
                   "
                 >
+
+                  {/* CATEGORY CONTENT */}
+
                   <div
                     className="
                       flex
+                      flex-col
                       items-center
-                      gap-2
+                      justify-center
+
+                      gap-1.5
+
+                      sm:flex-row
+                      sm:gap-2
                     "
                   >
-                    {/* CATEGORY MARK */}
+
+                    {/* CATEGORY ICON */}
+
                     <span
                       className={`
                         flex
-                        h-9
-                        w-9
+
+                        h-10
+                        w-10
+
                         sm:h-10
                         sm:w-10
 
@@ -227,22 +258,27 @@ export default async function ProductCategories({ citySlug }) {
 
                         ${colors.bg}
 
-                        transition-all
+                        transition-transform
                         duration-200
 
                         group-hover:scale-105
                       `}
                     >
                       <Icon
-                        size={18}
+                        size={19}
                         strokeWidth={1.8}
                         className={colors.icon}
                       />
                     </span>
 
                     {/* LABEL */}
+
                     <span
                       className="
+                        max-w-[76px]
+
+                        text-center
+
                         text-[11px]
                         sm:text-xs
                         md:text-[13px]
@@ -256,13 +292,17 @@ export default async function ProductCategories({ citySlug }) {
                         duration-200
 
                         group-hover:text-[#003459]
+
+                        truncate
                       "
                     >
                       {label}
                     </span>
+
                   </div>
 
-                  {/* ACTIVE / HOVER LINE */}
+                  {/* ACTIVE / HOVER INDICATOR */}
+
                   <span
                     className="
                       absolute
@@ -281,12 +321,14 @@ export default async function ProductCategories({ citySlug }) {
                       transition-all
                       duration-200
 
-                      group-hover:w-7
+                      group-hover:w-8
                     "
                   />
+
                 </Link>
               );
             })}
+
           </div>
         </div>
       </div>

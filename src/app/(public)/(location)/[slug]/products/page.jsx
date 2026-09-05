@@ -274,8 +274,9 @@ export default async function CityProductsPage({ params }) {
         }}
       />
 
-      <section className="max-w-7xl mx-auto md:px-4 mt-0 md:mt-20"></section>
 
+      <section className="max-w-7xl mx-auto md:px-4 mt-0 md:mt-20"></section>
+      <ProductCategories categories={categories} citySlug={slug} />
       {/* HERO */}
       <HeroCarousel banners={banners} />
 
@@ -321,7 +322,7 @@ export default async function CityProductsPage({ params }) {
         </section>
       )}
 
-      <ProductCategories categories={categories} citySlug={slug} />
+      
 
       {/* WHY SECTION */}
       <Services
