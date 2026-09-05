@@ -13,6 +13,7 @@ import { notFound } from "next/navigation";
 import { isValidSlug } from "@/utils/isValidSlug";
 import Script from "next/script";
 
+
 export const revalidate = 86400; // ISR (1 hour)
 export const dynamic = "force-static";
 
@@ -447,7 +448,7 @@ export default async function CityHome({ params }) {
       />
     <div className="min-h-screen mt-16">
       
-
+      <ProductCategories citySlug={slug}/>
       {/* HERO */}
       <HeroCarousel banners={banners} />
       {/* SEO H1 + SHORT INTRO */}

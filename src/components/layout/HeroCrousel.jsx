@@ -101,7 +101,7 @@ export default function HeroCarousel({
   }
 
   return (
-    <section className="max-w-7xl mx-auto md:px-4 mt-16 md:mt-20">
+    <section className="max-w-7xl mx-auto md:px-4 mt-2 md:mt-2">
 
       <div
         ref={emblaRef}
