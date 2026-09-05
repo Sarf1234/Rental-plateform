@@ -178,7 +178,7 @@ export default function ProductCard({ product, citySlug }) {
             ) : (
               <p
                 className="
-                  text-lg
+                  text-xs
                   sm:text-xl
                   md:text-2xl
 

@@ -2,19 +2,28 @@ import Image from "next/image";
 import Link from "next/link";
 import { Phone, MessageCircle } from "lucide-react";
 
-export default function ServiceCard({ service = {}, citySlug }) {
+export default function ServiceCard({
+  service = {},
+  citySlug,
+}) {
   /* ---------- SAFE DEFAULT DATA ---------- */
+
   const {
     title = "Premium Wedding Decoration",
     slug = "premium-wedding-decoration",
-    images = ["https://res.cloudinary.com/dlwcvgox7/image/upload/v1770009777/posts/xd3ftryqa4qrrqojqlva.webp"],
+    images = [
+      "https://res.cloudinary.com/dlwcvgox7/image/upload/v1770009777/posts/xd3ftryqa4qrrqojqlva.webp",
+    ],
     serviceType = "on_site",
     pricing = {
       type: "starting_from",
       amount: 9999,
       label: "",
     },
-    features = ["Professional Team", "High Quality Setup"],
+    features = [
+      "Professional Team",
+      "High Quality Setup",
+    ],
     isFeatured = false,
     isTopService = false,
     isBestService = false,
@@ -23,19 +32,29 @@ export default function ServiceCard({ service = {}, citySlug }) {
     callNumber = "9999999999",
   } = service || {};
 
-  const imageUrl = images?.[0] || "/placeholder.jpg";
+  const imageUrl =
+    images?.[0] || "/placeholder.jpg";
 
   /* ---------- PRICE LOGIC ---------- */
+
   const getPriceLabel = () => {
     if (!pricing) return "Get Quote";
 
-    if (pricing.label) return pricing.label;
+    if (pricing.label) {
+      return pricing.label;
+    }
 
-    if (pricing.type === "fixed" && pricing.amount) {
+    if (
+      pricing.type === "fixed" &&
+      pricing.amount
+    ) {
       return `₹${pricing.amount}`;
     }
 
-    if (pricing.type === "starting_from" && pricing.amount) {
+    if (
+      pricing.type === "starting_from" &&
+      pricing.amount
+    ) {
       return `Starting ₹${pricing.amount}`;
     }
 
@@ -43,6 +62,7 @@ export default function ServiceCard({ service = {}, citySlug }) {
   };
 
   /* ---------- SERVICE TYPE LABEL ---------- */
+
   const serviceTypeLabel =
     serviceType === "on_site"
       ? "On Site"
@@ -50,103 +70,245 @@ export default function ServiceCard({ service = {}, citySlug }) {
       ? "Remote"
       : "Hybrid";
 
+  const serviceUrl = `/${citySlug}/${slug}`;
+
   return (
-    <div className="group bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden relative">
+    <div
+      className="
+        group
+        h-full
+        relative
+        overflow-hidden
 
-      {/* Promotion Badges */}
-      {/* <div className="absolute top-3 left-3 flex gap-2 z-10">
-        {isFeatured && (
-          <span className="text-xs bg-yellow-500 text-white px-2 py-1 rounded-md">
-            Featured
-          </span>
-        )}
-        {isTopService && (
-          <span className="text-xs bg-blue-600 text-white px-2 py-1 rounded-md">
-            Top
-          </span>
-        )}
-        {isBestService && (
-          <span className="text-xs bg-green-600 text-white px-2 py-1 rounded-md">
-            Best
-          </span>
-        )}
-      </div> */}
+        rounded-2xl
 
-      {/* Service Type Badge */}
-      <div className="absolute top-3 right-3 z-10">
-        <span className="text-xs bg-black/80 text-white px-2 py-1 rounded-md backdrop-blur">
+        border
+        border-gray-100
+
+        bg-white
+
+        shadow-sm
+        hover:shadow-xl
+        hover:-translate-y-1
+
+        transition-all
+        duration-300
+      "
+    >
+      {/* -------------------------------- */}
+      {/* SERVICE TYPE BADGE */}
+      {/* -------------------------------- */}
+
+      <div className="absolute top-2.5 right-2.5 sm:top-3 sm:right-3 z-10">
+        <span
+          className="
+            bg-black/80
+            text-white
+            backdrop-blur
+
+            rounded-md
+
+            px-1.5
+            sm:px-2
+
+            py-1
+
+            text-[10px]
+            sm:text-[11px]
+            md:text-xs
+
+            font-medium
+            leading-none
+
+            whitespace-nowrap
+          "
+        >
           {serviceTypeLabel}
         </span>
       </div>
 
-      {/* Image */}
+      {/* -------------------------------- */}
+      {/* IMAGE */}
+      {/* -------------------------------- */}
+
       <Link
-        href={`/${citySlug}/${slug}`}
-        className="relative block aspect-[4/3] overflow-hidden"
+        href={serviceUrl}
+        className="
+          relative
+          block
+          aspect-[4/3]
+          overflow-hidden
+        "
       >
         <Image
           src={imageUrl}
           alt={title}
           fill
-          className="object-cover group-hover:scale-105 transition duration-500"
-          sizes="(max-width:768px) 100vw, (max-width:1200px) 50vw, 33vw"
+          className="
+            object-cover
+            group-hover:scale-105
+            transition
+            duration-500
+          "
+          sizes="
+            (max-width:640px) 100vw,
+            (max-width:1024px) 50vw,
+            25vw
+          "
         />
       </Link>
 
-      {/* Content */}
-      <div className="p-5 space-y-3">
+      {/* -------------------------------- */}
+      {/* CONTENT */}
+      {/* -------------------------------- */}
 
-        {/* Title */}
-        <Link href={`/${citySlug}/${slug}`}>
-          <h3 className="font-semibold text-base line-clamp-2 group-hover:text-blue-600 transition">
+      <div
+        className="
+          p-3
+          sm:p-4
+          md:p-5
+
+          space-y-2
+          sm:space-y-3
+          md:space-y-4
+        "
+      >
+        {/* TITLE */}
+
+        <Link href={serviceUrl}>
+          <h3
+            className="
+              font-semibold
+              text-gray-900
+
+              line-clamp-2
+
+              text-[13px]
+              sm:text-sm
+              md:text-base
+
+              leading-[1.3]
+
+              group-hover:text-blue-600
+              transition
+            "
+          >
             {title}
           </h3>
         </Link>
 
-        {/* Features */}
+        {/* FEATURES */}
+
         {features.length > 0 && (
-          <ul className="text-xs text-gray-500 space-y-1">
-            {features.slice(0, 2).map((feature, index) => (
-              <li key={index}>• {feature}</li>
-            ))}
+          <ul
+            className="
+              text-[10px]
+              sm:text-[11px]
+              md:text-xs
+
+              leading-5
+
+              text-gray-500
+
+              space-y-0.5
+              sm:space-y-1
+            "
+          >
+            {features
+              .slice(0, 2)
+              .map((feature, index) => (
+                <li key={index}>
+                  • {feature}
+                </li>
+              ))}
           </ul>
         )}
 
-        {/* Bottom Section */}
-        <div className="flex items-center justify-between pt-3">
+        {/* -------------------------------- */}
+        {/* BOTTOM SECTION */}
+        {/* -------------------------------- */}
 
-          {/* Price */}
-          <div className="text-base font-semibold text-gray-900">
-            {getPriceLabel()}
+        <div
+          className="
+            flex
+            items-end
+            justify-between
+
+            gap-2
+
+            pt-1
+            sm:pt-2
+            md:pt-3
+          "
+        >
+          {/* PRICE */}
+
+          <div className="min-w-0">
+            <p
+              className="
+                text-[10px]
+                sm:text-[11px]
+                md:text-xs
+
+                text-gray-500
+              "
+            >
+              Starting From
+            </p>
+
+            <p
+              className="
+                font-bold
+                leading-none
+                text-black
+
+                text-xs
+                sm:text-xl
+                md:text-2xl
+              "
+            >
+              {getPriceLabel()}
+            </p>
           </div>
 
-          {/* CTA Buttons */}
-          {/* <div className="flex gap-2">
-            {(contactMode === "call" || contactMode === "call_whatsapp") &&
-              callNumber && (
-                <a
-                  href={`tel:${callNumber}`}
-                  className="p-2 rounded-lg border hover:bg-gray-100 transition"
-                >
-                  <Phone size={16} />
-                </a>
-              )}
+          {/* CTA */}
 
-            {(contactMode === "whatsapp" ||
-              contactMode === "call_whatsapp") &&
-              whatsappNumber && (
-                <a
-                  href={`https://wa.me/${whatsappNumber}`}
-                  target="_blank"
-                  className="p-2 rounded-lg border hover:bg-green-50 transition"
-                >
-                  <MessageCircle size={16} />
-                </a>
-              )}
-          </div> */}
           <Link
-            href={`/${citySlug}/${slug}`}
-            className="inline-flex whitespace-nowrap items-center justify-center px-2 py-2 text-sm font-medium rounded-lg border border-black text-black hover:bg-black hover:text-white transition"
+            href={serviceUrl}
+            className="
+              inline-flex
+              flex-shrink-0
+
+              items-center
+              justify-center
+
+              px-2.5
+              sm:px-3
+              md:px-4
+
+              py-1.5
+              sm:py-2
+
+              text-[10px]
+              sm:text-xs
+              md:text-sm
+
+              font-medium
+
+              rounded-lg
+
+              border
+              border-black
+
+              text-black
+
+              whitespace-nowrap
+
+              hover:bg-black
+              hover:text-white
+
+              transition
+            "
           >
             View Service →
           </Link>

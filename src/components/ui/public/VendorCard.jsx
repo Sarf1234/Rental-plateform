@@ -37,7 +37,7 @@ export default function VendorCard({ vendor, citySlug }) {
       <div className="p-4 space-y-2">
 
         <Link href={vendorUrl}>
-          <h3 className="font-semibold text-gray-900 line-clamp-2 group-hover:text-blue-600">
+          <h3 className=" font-xs md:font-semibold text-gray-900 line-clamp-2 group-hover:text-blue-600">
             {vendor.name}
           </h3>
         </Link>
