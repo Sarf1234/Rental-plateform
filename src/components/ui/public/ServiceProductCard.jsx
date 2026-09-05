@@ -116,7 +116,9 @@ export default function ServiceCard({ service = {}, citySlug }) {
         <div className="flex items-center justify-between pt-3">
 
           {/* Price */}
-          <div className="text-base font-semibold text-gray-900">
+          <div className="text-xs
+                    sm:text-sm
+                    md:text-lg font-semibold text-gray-900">
             {getPriceLabel()}
           </div>
 
@@ -146,7 +148,18 @@ export default function ServiceCard({ service = {}, citySlug }) {
           </div> */}
           <Link
             href={`/${citySlug}/${slug}`}
-            className="inline-flex whitespace-nowrap items-center justify-center px-2 py-2 text-sm font-medium rounded-lg border border-black text-black hover:bg-black hover:text-white transition"
+            className="inline-flex whitespace-nowrap px-2.5
+              sm:px-3
+              md:px-4
+
+              py-1.5
+              sm:py-2
+
+              text-[10px]
+              sm:text-xs
+              md:text-sm
+
+              font-medium items-center justify-center  text-sm rounded-lg border border-black text-black hover:bg-black hover:text-white transition"
           >
             View Service →
           </Link>
